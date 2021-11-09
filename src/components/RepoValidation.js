@@ -18,7 +18,8 @@ import { useRouter } from 'next/router'
 import { HTTP_CONFIG } from '@common/constants'
 import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
-import { Card, useResourceClickListener } from 'translation-helps-rcl'
+//import { Card, useResourceClickListener } from 'translation-helps-rcl'
+import RepoValidationCard from './RepoValidationCard'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -221,12 +222,8 @@ function RepoValidation() {
 
         >
           {
-            Object.keys(ALL_BIBLE_BOOKS).map( (bookId) =>           
-              <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true}>
-                <p style={{ padding: '30px' }}>
-                  {ALL_BIBLE_BOOKS[bookId]} has bookId of "{bookId}".
-                </p>
-              </Card>
+            Object.keys(ALL_BIBLE_BOOKS).map( (bookId) =>        
+              <RepoValidationCard bookId={bookId} classes={classes} />
             )
           }
         </Workspace>
@@ -255,4 +252,13 @@ export default RepoValidation
             sm: 6,
             xs: 3,
           }}
+
+
+
+              <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true}>
+                <p style={{ padding: '30px' }}>
+                  {ALL_BIBLE_BOOKS[bookId]} has bookId of "{bookId}".
+                </p>
+              </Card>
+
 */
