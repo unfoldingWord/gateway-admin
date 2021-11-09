@@ -22,10 +22,10 @@ export default function Home() {
         </p>
 
         <div className={styles.grid}>
-          <Link href='/documentation'>
+          <Link href='/repo-validation'>
             <a className={styles.card}>
-              <h2>Documentation &rarr;</h2>
-              <p>Find in-depth information about this Next.js template app.</p>
+              <h2>Repo Validation &rarr;</h2>
+              <p>Check for DCS Project Setup.</p>
             </a>
           </Link>
 

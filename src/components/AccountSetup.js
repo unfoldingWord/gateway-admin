@@ -24,7 +24,7 @@ function AccountSetup({ authentication }) {
         <Paper className='flex flex-col h-40 w-full p-6 pt-3 px-7 my-2'>
           <h3>Account Setup</h3>
           <p className='text-lg'>
-            Choose your Organization and Primary Language
+            Choose your Organization and Language
           </p>
         </Paper>
         <TranslationSettings authentication={authentication} />
