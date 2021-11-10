@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
 import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import { StoreContext } from '@context/StoreContext'
+import { AdminContext } from '@context/AdminContext'
 
 
 
@@ -11,6 +12,8 @@ export default function RepoValidationCard({
   classes
 }) {
 
+  const [tnMsg, setTnMsg] = useState("Manifest Not Found")
+
   const {
     state: {
       owner,
@@ -18,15 +21,31 @@ export default function RepoValidationCard({
       languageId,
     },
   } = useContext(StoreContext)
-/*
+
+  const { state: {tnRepoTree, tnRepoTreeErrorMessage} } = useContext(AdminContext)
+
   useEffect(() => {
-    if (content) {
-      setSaved(false)
-    } else {
-      setSaved(true)
+    async function getManifest() {
+      if ( tnRepoTreeErrorMessage ) {
+        setTnMsg(tnRepoTreeErrorMessage);
+      } else {
+        const tnTree = tnRepoTree.tree;
+        let _tnMsg = "Manifest Not Found"
+        for (let i=0; i < tnTree.length; i++) {
+          if (tnTree[i].path === "manifest.yaml") {
+            _tnMsg = tnTree[i].path
+            break
+          }
+        }
+        setTnMsg(_tnMsg)
+      }
+      //const languages = await getGatewayLanguages()
+      //setLanguages(languages || [])
     }
-  }, [content])
-*/
+
+    getManifest()
+  }, [tnRepoTree])
+
 
 
   return (
@@ -35,7 +54,8 @@ export default function RepoValidationCard({
         {ALL_BIBLE_BOOKS[bookId]} has bookId of "{bookId}". <br/>
         Owner is: {owner}.<br/>
         LanguageId is: {languageId}.<br/>
-        Server is: {server}.
+        Server is: {server}. <br/>
+        Translation Notes: {tnMsg}
       </p>
     </Card>
   )

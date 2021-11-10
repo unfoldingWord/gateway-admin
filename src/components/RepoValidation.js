@@ -7,6 +7,9 @@ import { Workspace } from 'resource-workspace-rcl'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { StoreContext } from '@context/StoreContext'
+//import { AdminContext } from '@context/AdminContext'
+import AdminContextProvider from '@context/AdminContext'
+
 import CircularProgress from '@components/CircularProgress'
 import {
   addNetworkDisconnectError,
@@ -56,6 +59,11 @@ function RepoValidation() {
       setLastError,
     },
   } = useContext(StoreContext)
+
+  //const { state: {tnRepoTree, tnRepoTreeErrorMessage} } = useContext(AdminContext)
+  //console.log("admin context state:", state);
+  //console.log("tnRepoTree:", tnRepoTree||"no tree")
+  //console.log("tnRepoTreeErrorMessage:", tnRepoTreeErrorMessage||"no error")
 
   /**
    * in the case of a network error, process and display error dialog
@@ -147,6 +155,8 @@ function RepoValidation() {
         <CircularProgress size={180} />
       </>
       :
+      <AdminContextProvider>
+
         <Workspace
           layout={currentLayout}
           classes={classes}
@@ -223,10 +233,14 @@ function RepoValidation() {
         >
           {
             Object.keys(ALL_BIBLE_BOOKS).map( (bookId) =>        
-              <RepoValidationCard bookId={bookId} classes={classes} />
+              <RepoValidationCard 
+                bookId={bookId} 
+                classes={classes} 
+              />
             )
           }
         </Workspace>
+      </AdminContextProvider>
   )
 }
 
