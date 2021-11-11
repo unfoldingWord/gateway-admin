@@ -16,7 +16,6 @@ const useStyles = makeStyles({
 
 export default function DenseTable({cols, rows}) {
   const classes = useStyles();
-
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} size="small" aria-label="a dense table">

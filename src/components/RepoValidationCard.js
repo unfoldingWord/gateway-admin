@@ -13,9 +13,14 @@ export default function RepoValidationCard({
   bookId,
   classes
 }) {
-  const [projectExists, setProjectExists] = useState(false)
-  const [fileExists, setFileExists] = useState(false)
-  const [bookErrorMsg, setBookErrorMsg] = useState("")
+  // TN
+  const [tnProjectExists, setTnProjectExists] = useState(false)
+  const [tnFileExists, setTnFileExists] = useState(false)
+  const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
+  // TWL
+  const [twlProjectExists, setTwlProjectExists] = useState(false)
+  const [twlFileExists, setTwlFileExists] = useState(false)
+  const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
 
   const {
     state: {
@@ -29,12 +34,15 @@ export default function RepoValidationCard({
     tnRepoTree, 
     tnRepoTreeManifest,
     tnRepoTreeErrorMessage,
+    twlRepoTree,
+    twlRepoTreeManifest,
+    twlRepoTreeErrorMessage,
   } } = useContext(AdminContext)
 
   useEffect(() => {
     // reset the booleans
-    setProjectExists(false)
-    setFileExists(false)
+    setTnProjectExists(false)
+    setTnFileExists(false)
     let projects = []
     if (tnRepoTreeManifest && tnRepoTreeManifest.projects) {
       projects = tnRepoTreeManifest.projects
@@ -46,7 +54,7 @@ export default function RepoValidationCard({
     for (let i=0; i < projects.length; i++) {
       if ( projects[i].identifier === bookId ) {
         isBookIdInManfest = true
-        setProjectExists(true)
+        setTnProjectExists(true)
         pathToBook = projects[i].path
         break
       }
@@ -65,20 +73,68 @@ export default function RepoValidationCard({
         }
       }
       if ( _fileExists ) {
-        setFileExists(true)
+        setTnFileExists(true)
+        setTnBookErrorMsg(null)
       } else {
-        setFileExists(false)
-        setBookErrorMsg("Manifest book not found")
+        setTnFileExists(false)
+        setTnBookErrorMsg("Manifest book not found")
       }
     } else {
-      setBookErrorMsg("Book not in manifest")
+      setTnBookErrorMsg("Book not in manifest")
     }
-  
+
   }, [tnRepoTree, tnRepoTreeManifest])
+
+  useEffect(() => {
+    // reset the booleans
+    setTwlProjectExists(false)
+    setTwlFileExists(false)
+    let projects = []
+    if (twlRepoTreeManifest && twlRepoTreeManifest.projects) {
+      projects = twlRepoTreeManifest.projects
+    } else {
+      return
+    }
+    let isBookIdInManfest = false
+    let pathToBook;
+    for (let i=0; i < projects.length; i++) {
+      if ( projects[i].identifier === bookId ) {
+        isBookIdInManfest = true
+        setTwlProjectExists(true)
+        pathToBook = projects[i].path
+        break
+      }
+    }
+
+    // if project id exists, then does the file actually exist?
+    if ( isBookIdInManfest ) {
+      let _fileExists = false
+      for (let i=0; i < twlRepoTree.length; i++) {
+        let _path = twlRepoTree[i].path
+        let _manifestpath = pathToBook.replace(/^\.\//,'')
+        if ( _manifestpath === _path ) {
+          //setFileExists(true)
+          _fileExists = true
+          break
+        }
+      }
+      if ( _fileExists ) {
+        setTwlFileExists(true)
+        setTwlBookErrorMsg(null)
+      } else {
+        setTwlFileExists(false)
+        setTwlBookErrorMsg("Manifest book not found")
+      }
+    } else {
+      setTwlBookErrorMsg("Book not in manifest")
+    }
+
+  }, [twlRepoTree, twlRepoTreeManifest])
 
   const headers = ["Resource", "Repo", "Status"]
   const rows = [
-    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || bookErrorMsg || "OK"]
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg || "OK"],
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg || "OK"]
   ]
 
   return (

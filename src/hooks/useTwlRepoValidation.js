@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import base64 from 'base-64';
-import utf8 from 'utf8';
 import YAML from 'js-yaml-parser'
 import {
   HTTP_GET_MAX_WAIT_TIME,
@@ -15,19 +13,20 @@ import {
 import {decodeBase64ToUtf8} from '@utils/decode'
 
 
-export default function useTnRepoValidation({authentication, owner, server, languageId}) {
 
-  const [tnRepoTree, setTnRepoTree] = useState({})
-  const [tnRepoTreeManifest, setTnRepoTreeManifest] = useState({})
-  const [tnRepoTreeErrorMessage, setTnRepoTreeErrorMessage] = useState(null)
+export default function useTwlRepoValidation({authentication, owner, server, languageId}) {
+
+  const [twlRepoTree, setTwlRepoTree] = useState({})
+  const [twlRepoTreeManifest, setTwlRepoTreeManifest] = useState({})
+  const [twlRepoTreeErrorMessage, setTwlRepoTreeErrorMessage] = useState(null)
 
   // Translation Notes Hook
-  // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
+  // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_twl/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
       let errorCode = 0
       try {
-        const tnTree = await doFetch(`${server}/api/v1/repos/${owner}/${languageId}_tn/git/trees/master?recursive=false&per_page=999999`,
+        const twlTree = await doFetch(`${server}/api/v1/repos/${owner}/${languageId}_twl/git/trees/master?recursive=false&per_page=999999`,
           authentication, HTTP_GET_MAX_WAIT_TIME)
           .then(response => {
             if (response?.status !== 200) {
@@ -38,50 +37,50 @@ export default function useTnRepoValidation({authentication, owner, server, lang
             return response?.data
           })
 
-          if (tnTree === null) { // if no repo
+          if (twlTree === null) { // if no repo
             console.warn(`AdminContext - empty repo`)
-            setTnRepoTreeErrorMessage("Repo Not Found")
+            setTwlRepoTreeErrorMessage("Repo Not Found")
           } else {
-            setTnRepoTreeErrorMessage(null)
+            setTwlRepoTreeErrorMessage(null)
           }
-          if ( tnTree.tree ) {
-            setTnRepoTree(tnTree.tree)
+          if ( twlTree.tree ) {
+            setTwlRepoTree(twlTree.tree)
             let _url;
-            for (let i=0; i < tnTree.tree.length; i++) {
-              if (tnTree.tree[i].path === "manifest.yaml") {
-                _url = tnTree.tree[i].url
+            for (let i=0; i < twlTree.tree.length; i++) {
+              if (twlTree.tree[i].path === "manifest.yaml") {
+                _url = twlTree.tree[i].url
                 break
               }
             }
             if ( _url ) {
               // get the manifest
-              const tnManifest = await doFetch(_url,
+              const twlManifest = await doFetch(_url,
                 authentication, HTTP_GET_MAX_WAIT_TIME)
                 .then(response => {
                   if (response?.status !== 200) {
                     errorCode = response?.status
-                    console.warn(`AdminContext - error fetching tn manifest, status code ${errorCode}`)
+                    console.warn(`AdminContext - error fetching twl manifest, status code ${errorCode}`)
                     return null
                   }
                   return response?.data
               })
-              if ( tnManifest === null ) {
-                setTnRepoTreeErrorMessage("Unable to retrieve manifest")
+              if ( twlManifest === null ) {
+                setTwlRepoTreeErrorMessage("Unable to retrieve manifest")
               } else {
-                if (tnManifest.content && (tnManifest.encoding === 'base64')) {
-                  const _content = decodeBase64ToUtf8(tnManifest.content)
+                if (twlManifest.content && (twlManifest.encoding === 'base64')) {
+                  const _content = decodeBase64ToUtf8(twlManifest.content)
                   const manifestObj = YAML.safeLoad(_content)
-                  setTnRepoTreeManifest(manifestObj)
+                  setTwlRepoTreeManifest(manifestObj)
                 } else {
-                  setTnRepoTreeErrorMessage("Unable to decode manifest")
+                  setTwlRepoTreeErrorMessage("Unable to decode manifest")
                 }
               }
             } else {
-              setTnRepoTreeErrorMessage("No manifest found")
+              setTwlRepoTreeErrorMessage("No manifest found")
               console.log("no manifest found")
             }
           } else {
-            setTnRepoTreeErrorMessage("No files in repo")
+            setTwlRepoTreeErrorMessage("No files in repo")
           }
   
       } catch (e) {
@@ -101,9 +100,9 @@ export default function useTnRepoValidation({authentication, owner, server, lang
 
   return {
     state: {
-      tnRepoTree,
-      tnRepoTreeManifest,
-      tnRepoTreeErrorMessage,
+      twlRepoTree,
+      twlRepoTreeManifest,
+      twlRepoTreeErrorMessage,
     },
   }
 
