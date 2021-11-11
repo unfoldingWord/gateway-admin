@@ -1,27 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import base64 from 'base-64';
-import utf8 from 'utf8';
-import YAML from 'js-yaml-parser'
-
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
-import {
-  HTTP_GET_MAX_WAIT_TIME,
-} from '@common/constants'
-import {
-  doFetch,
-  isServerDisconnected,
-  onNetworkActionButton,
-  processNetworkError,
-  reloadApp,
-} from '@utils/network'
+import useTnRepoValidation from '@hooks/useTnRepoValidation'
 
-export const decodeBase64ToUtf8 = (encoded) => {
-  const bytes = base64.decode(encoded);
-  const text = utf8.decode(bytes);
-  return text;
-};
 
 
 
@@ -30,9 +12,6 @@ export const AdminContext = React.createContext({});
 export default function AdminContextProvider({
   children,
 }) {
-  const [tnRepoTree, setTnRepoTree] = useState({})
-  const [tnRepoTreeManifest, setTnRepoTreeManifest] = useState({})
-  const [tnRepoTreeErrorMessage, setTnRepoTreeErrorMessage] = useState(null)
 
   
   const {
@@ -58,6 +37,47 @@ export default function AdminContextProvider({
     console.log("processError() message:", errorMessage, httpCode)
     //processNetworkError(errorMessage, httpCode, logout, router, setNetworkError, setLastError )
   }
+
+
+  const {
+    state: {
+      tnRepoTree,
+      tnRepoTreeManifest,
+      tnRepoTreeErrorMessage,
+    },
+  } = useTnRepoValidation({authentication, owner, server, languageId});
+
+
+  // create the value for the context provider
+  const context = {
+    state: {
+      tnRepoTree,
+      tnRepoTreeManifest,
+      tnRepoTreeErrorMessage,
+    },
+  };
+
+  return (
+    <AdminContext.Provider value={context}>
+      {children}
+    </AdminContext.Provider>
+  );
+};
+
+AdminContextProvider.propTypes = {
+  /** Children to render inside of Provider */
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+};
+
+/*
+
+  const [tnRepoTree, setTnRepoTree] = useState({})
+  const [tnRepoTreeManifest, setTnRepoTreeManifest] = useState({})
+  const [tnRepoTreeErrorMessage, setTnRepoTreeErrorMessage] = useState(null)
+
 
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
@@ -140,51 +160,4 @@ export default function AdminContextProvider({
   }, [authentication, owner, server, languageId])
 
 
-  // create the value for the context provider
-  const context = {
-    state: {
-      tnRepoTree,
-      tnRepoTreeManifest,
-      tnRepoTreeErrorMessage,
-    },
-  };
-
-  return (
-    <AdminContext.Provider value={context}>
-      {children}
-    </AdminContext.Provider>
-  );
-};
-
-AdminContextProvider.propTypes = {
-  /** Children to render inside of Provider */
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
-};
-
-/*
-
-  useEffect(() => {
-    async function getManifest() {
-      if ( tnRepoTreeErrorMessage ) {
-        setTnMsg(tnRepoTreeErrorMessage);
-      } else {
-        const tnTree = tnRepoTree.tree;
-        let _tnMsg = "Manifest Not Found"
-        for (let i=0; i < tnTree.length; i++) {
-          if (tnTree[i].path === "manifest.yaml") {
-            _tnMsg = tnTree[i].path
-            break
-          }
-        }
-        setTnMsg(_tnMsg)
-      }
-      //const languages = await getGatewayLanguages()
-      //setLanguages(languages || [])
-    }
-
-    getManifest()
-  }, [tnRepoTree])
 */

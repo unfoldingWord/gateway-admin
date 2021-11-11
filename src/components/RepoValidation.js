@@ -237,34 +237,3 @@ function RepoValidation() {
 }
 
 export default RepoValidation
-/*
-          rowHeight={25}
-          layoutWidths={[
-            [1, 1, 1],
-            [2, 2, 2],
-            [3, 3, 3],
-            [4, 4, 4],
-          ]}
-          layoutHeights={[[10,10], [10, 10], [10, 10], [10, 10]]}
-          minW={3}
-          minH={4}
-          breakpoints={{
-            lg: 900,
-            sm: 680,
-            xs: 300,
-          }}
-          columns={{
-            lg: 12,
-            sm: 6,
-            xs: 3,
-          }}
-
-
-
-              <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true}>
-                <p style={{ padding: '30px' }}>
-                  {ALL_BIBLE_BOOKS[bookId]} has bookId of "{bookId}".
-                </p>
-              </Card>
-
-*/

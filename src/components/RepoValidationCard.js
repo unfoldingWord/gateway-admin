@@ -5,6 +5,7 @@ import { Card } from 'translation-helps-rcl'
 import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
+import DenseTable from '@components/DenseTable'
 
 
 
@@ -14,6 +15,7 @@ export default function RepoValidationCard({
 }) {
   const [projectExists, setProjectExists] = useState(false)
   const [fileExists, setFileExists] = useState(false)
+  const [bookErrorMsg, setBookErrorMsg] = useState("")
 
   const {
     state: {
@@ -52,21 +54,48 @@ export default function RepoValidationCard({
 
     // if project id exists, then does the file actually exist?
     if ( isBookIdInManfest ) {
+      let _fileExists = false
       for (let i=0; i < tnRepoTree.length; i++) {
         let _path = tnRepoTree[i].path
         let _manifestpath = pathToBook.replace(/^\.\//,'')
         if ( _manifestpath === _path ) {
-          setFileExists(true)
+          //setFileExists(true)
+          _fileExists = true
           break
         }
       }
+      if ( _fileExists ) {
+        setFileExists(true)
+      } else {
+        setFileExists(false)
+        setBookErrorMsg("Manifest book not found")
+      }
+    } else {
+      setBookErrorMsg("Book not in manifest")
     }
   
   }, [tnRepoTree, tnRepoTreeManifest])
 
+  const headers = ["Resource", "Repo", "Status"]
+  const rows = [
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || bookErrorMsg || "OK"]
+  ]
 
   return (
     <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true} >
+      <DenseTable cols={headers} rows={rows} />
+    </Card>
+  )
+}
+
+
+RepoValidationCard.propTypes = {
+  bookId: PropTypes.string,
+  classes: PropTypes.object,
+}
+
+
+/*
       <p style={{ padding: '30px' }}>
         {ALL_BIBLE_BOOKS[bookId]} has bookId of "{bookId}". <br/>
         Owner is: {owner}.<br/>
@@ -78,12 +107,5 @@ export default function RepoValidationCard({
         TN Project Id Exists? {projectExists ? "true":"false"} <br/>
         TN File Exists? {fileExists ? "true":"false"} <br/>
       </p>
-    </Card>
-  )
-}
 
-
-RepoValidationCard.propTypes = {
-  bookId: PropTypes.string,
-  classes: PropTypes.object,
-}
+*/
