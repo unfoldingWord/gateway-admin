@@ -65,14 +65,6 @@ function RepoValidation() {
   //console.log("tnRepoTree:", tnRepoTree||"no tree")
   //console.log("tnRepoTreeErrorMessage:", tnRepoTreeErrorMessage||"no error")
 
-  /**
-   * in the case of a network error, process and display error dialog
-   * @param {string} errorMessage - optional error message returned
-   * @param {number} httpCode - http code returned
-   */
-  function processError(errorMessage, httpCode=0) {
-    processNetworkError(errorMessage, httpCode, logout, router, setNetworkError, setLastError )
-  }
 
   /**
    * show either tokenNetworkError or NetworkError for workspace
