@@ -12,8 +12,6 @@ export default function RepoValidationCard({
   classes
 }) {
 
-  const [tnMsg, setTnMsg] = useState("Manifest Not Found")
-
   const {
     state: {
       owner,
@@ -22,29 +20,12 @@ export default function RepoValidationCard({
     },
   } = useContext(StoreContext)
 
-  const { state: {tnRepoTree, tnRepoTreeErrorMessage} } = useContext(AdminContext)
+  const { state: {
+    tnRepoTree, 
+    tnRepoTreeManifest,
+    tnRepoTreeErrorMessage,
+  } } = useContext(AdminContext)
 
-  useEffect(() => {
-    async function getManifest() {
-      if ( tnRepoTreeErrorMessage ) {
-        setTnMsg(tnRepoTreeErrorMessage);
-      } else {
-        const tnTree = tnRepoTree.tree;
-        let _tnMsg = "Manifest Not Found"
-        for (let i=0; i < tnTree.length; i++) {
-          if (tnTree[i].path === "manifest.yaml") {
-            _tnMsg = tnTree[i].path
-            break
-          }
-        }
-        setTnMsg(_tnMsg)
-      }
-      //const languages = await getGatewayLanguages()
-      //setLanguages(languages || [])
-    }
-
-    getManifest()
-  }, [tnRepoTree])
 
 
 
@@ -55,7 +36,9 @@ export default function RepoValidationCard({
         Owner is: {owner}.<br/>
         LanguageId is: {languageId}.<br/>
         Server is: {server}. <br/>
-        Translation Notes: {tnMsg}
+        TN Tree: {JSON.stringify(tnRepoTree).slice(0,16)} <br/>
+        TN Manifest: {JSON.stringify(tnRepoTreeManifest).slice(0,16)} <br/>
+        TN Err Msg: {tnRepoTreeErrorMessage}
       </p>
     </Card>
   )
