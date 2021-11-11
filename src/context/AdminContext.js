@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import base64 from 'base-64';
 import utf8 from 'utf8';
+import YAML from 'js-yaml-parser'
 
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
@@ -76,7 +77,7 @@ export default function AdminContextProvider({
             return response?.data
           })
 
-          if (tnTree === null) { // if no orgs
+          if (tnTree === null) { // if no repo
             console.warn(`AdminContext - empty repo`)
             setTnRepoTreeErrorMessage("Repo Not Found")
           } else {
@@ -85,9 +86,9 @@ export default function AdminContextProvider({
           if ( tnTree.tree ) {
             setTnRepoTree(tnTree.tree)
             let _url;
-            for (let i=0; i < tnRepoTree.length; i++) {
-              if (tnRepoTree[i].path === "manifest.yaml") {
-                _url = tnRepoTree[i].url
+            for (let i=0; i < tnTree.tree.length; i++) {
+              if (tnTree.tree[i].path === "manifest.yaml") {
+                _url = tnTree.tree[i].url
                 break
               }
             }
@@ -109,8 +110,8 @@ export default function AdminContextProvider({
               } else {
                 if (tnManifest.content && (tnManifest.encoding === 'base64')) {
                   const _content = decodeBase64ToUtf8(tnManifest.content)
-                  setTnRepoTreeManifest(_content)
-                  console.log("tnManifest", tnRepoTreeManifest)
+                  const manifestObj = YAML.safeLoad(_content)
+                  setTnRepoTreeManifest(manifestObj)
                 } else {
                   setTnRepoTreeErrorMessage("Unable to decode manifest")
                 }
@@ -133,11 +134,6 @@ export default function AdminContextProvider({
 
     if (authentication) {
       getReposTrees()
-      if ( tnRepoTreeErrorMessage ) {
-        console.log("tnRepoTreeErrorMessage", tnRepoTreeErrorMessage)
-      } else {
-        console.log("tnRepoTree", tnRepoTree)
-      }
     } else {
       console.warn(`AdminContext - reached, but not logged in`)
     }

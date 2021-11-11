@@ -4124,7 +4124,7 @@ jest-worker@^24.9.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml-parser@^1.0.0:
+js-yaml-parser@1.0.0, js-yaml-parser@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/js-yaml-parser/-/js-yaml-parser-1.0.0.tgz#818eec35b34eaa59a1eae1f78c86a4e8f79d1d0d"
   integrity sha512-k8bjr68s/d8+udOaTCy+Vfezr2dYtY3MUl/9nsLGeoXFa0sbSkx/I/6DONHYrWoKzKeeY/1Eb6j8K0sX2Vckdg==
