@@ -14,12 +14,12 @@ export default function RepoValidationCard({
   classes
 }) {
   // TN
-  const [tnProjectExists, setTnProjectExists] = useState(false)
-  const [tnFileExists, setTnFileExists] = useState(false)
+  //const [tnProjectExists, setTnProjectExists] = useState(false)
+  //const [tnFileExists, setTnFileExists] = useState(false)
   const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
   // TWL
-  const [twlProjectExists, setTwlProjectExists] = useState(false)
-  const [twlFileExists, setTwlFileExists] = useState(false)
+  //const [twlProjectExists, setTwlProjectExists] = useState(false)
+  //const [twlFileExists, setTwlFileExists] = useState(false)
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
 
   const {
@@ -41,8 +41,8 @@ export default function RepoValidationCard({
 
   useEffect(() => {
     // reset the booleans
-    setTnProjectExists(false)
-    setTnFileExists(false)
+    //setTnProjectExists(false)
+    //setTnFileExists(false)
     let projects = []
     if (tnRepoTreeManifest && tnRepoTreeManifest.projects) {
       projects = tnRepoTreeManifest.projects
@@ -54,7 +54,7 @@ export default function RepoValidationCard({
     for (let i=0; i < projects.length; i++) {
       if ( projects[i].identifier === bookId ) {
         isBookIdInManfest = true
-        setTnProjectExists(true)
+        //setTnProjectExists(true)
         pathToBook = projects[i].path
         break
       }
@@ -73,10 +73,10 @@ export default function RepoValidationCard({
         }
       }
       if ( _fileExists ) {
-        setTnFileExists(true)
+        //setTnFileExists(true)
         setTnBookErrorMsg(null)
       } else {
-        setTnFileExists(false)
+        //setTnFileExists(false)
         setTnBookErrorMsg("Manifest book not found")
       }
     } else {
@@ -87,8 +87,8 @@ export default function RepoValidationCard({
 
   useEffect(() => {
     // reset the booleans
-    setTwlProjectExists(false)
-    setTwlFileExists(false)
+    //setTwlProjectExists(false)
+    //setTwlFileExists(false)
     let projects = []
     if (twlRepoTreeManifest && twlRepoTreeManifest.projects) {
       projects = twlRepoTreeManifest.projects
@@ -100,7 +100,7 @@ export default function RepoValidationCard({
     for (let i=0; i < projects.length; i++) {
       if ( projects[i].identifier === bookId ) {
         isBookIdInManfest = true
-        setTwlProjectExists(true)
+        //setTwlProjectExists(true)
         pathToBook = projects[i].path
         break
       }
@@ -119,10 +119,10 @@ export default function RepoValidationCard({
         }
       }
       if ( _fileExists ) {
-        setTwlFileExists(true)
+        //setTwlFileExists(true)
         setTwlBookErrorMsg(null)
       } else {
-        setTwlFileExists(false)
+        //setTwlFileExists(false)
         setTwlBookErrorMsg("Manifest book not found")
       }
     } else {
