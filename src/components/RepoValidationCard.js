@@ -17,6 +17,16 @@ export default function RepoValidationCard({
   const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
   // TWL
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
+  // LT (GLT or ULT)
+  const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
+  // ST (GST or UST)
+  const [stBookErrorMsg, setStBookErrorMsg] = useState(null)
+  // TQ 
+  const [tqBookErrorMsg, setTqBookErrorMsg] = useState(null)
+  // SQ 
+  const [sqBookErrorMsg, setSqBookErrorMsg] = useState(null)
+  // TQ 
+  const [snBookErrorMsg, setSnBookErrorMsg] = useState(null)
 
   const {
     state: {
@@ -33,7 +43,22 @@ export default function RepoValidationCard({
     twlRepoTree,
     twlRepoTreeManifest,
     twlRepoTreeErrorMessage,
-  } } = useContext(AdminContext)
+    ltRepoTree,
+    ltRepoTreeManifest,
+    ltRepoTreeErrorMessage,
+    stRepoTree,
+    stRepoTreeManifest,
+    stRepoTreeErrorMessage,
+    tqRepoTree,
+    tqRepoTreeManifest,
+    tqRepoTreeErrorMessage,
+    sqRepoTree,
+    sqRepoTreeManifest,
+    sqRepoTreeErrorMessage,
+    snRepoTree,
+    snRepoTreeManifest,
+    snRepoTreeErrorMessage,
+} } = useContext(AdminContext)
 
   function checkManifestBook(manifest, repoTree, setError) {
     let projects = []
@@ -81,10 +106,44 @@ export default function RepoValidationCard({
     checkManifestBook(twlRepoTreeManifest, twlRepoTree, setTwlBookErrorMsg)
   }, [twlRepoTree, twlRepoTreeManifest])
 
+  useEffect(() => {
+    checkManifestBook(ltRepoTreeManifest, ltRepoTree, setLtBookErrorMsg)
+  }, [ltRepoTree, ltRepoTreeManifest])
+
+  useEffect(() => {
+    checkManifestBook(stRepoTreeManifest, stRepoTree, setStBookErrorMsg)
+  }, [stRepoTree, stRepoTreeManifest])
+
+  useEffect(() => {
+    checkManifestBook(tqRepoTreeManifest, tqRepoTree, setTqBookErrorMsg)
+  }, [tqRepoTree, tqRepoTreeManifest])
+
+  useEffect(() => {
+    checkManifestBook(sqRepoTreeManifest, sqRepoTree, setSqBookErrorMsg)
+  }, [sqRepoTree, sqRepoTreeManifest])
+
+  useEffect(() => {
+    checkManifestBook(snRepoTreeManifest, snRepoTree, setSnBookErrorMsg)
+  }, [snRepoTree, snRepoTreeManifest])
+
+  let _ltRepo = languageId
+  let _stRepo = languageId
+  if ( owner === "unfoldingWord" || owner === "unfoldingword" ) {
+    _ltRepo += "_ult"
+    _stRepo += "_ust"
+  } else {
+    _ltRepo += "_glt"
+    _stRepo += "_gst"
+  }
   const headers = ["Resource", "Repo", "Status"]
   const rows = [
+    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg || "OK"],
+    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg || "OK"],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg || "OK"],
-    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg || "OK"]
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg || "OK"],
+    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg || "OK"],
+    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg || "OK"],
+    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg || "OK"],
   ]
 
   return (

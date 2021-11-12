@@ -4,6 +4,11 @@ import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import useTnRepoValidation from '@hooks/useTnRepoValidation'
 import useTwlRepoValidation from '@hooks/useTwlRepoValidation'
+import useLtRepoValidation from '@hooks/useLtRepoValidation'
+import useStRepoValidation from '@hooks/useStRepoValidation'
+import useTqRepoValidation from '@hooks/useTqRepoValidation'
+import useSqRepoValidation from '@hooks/useSqRepoValidation'
+import useSnRepoValidation from '@hooks/useSnRepoValidation'
 
 
 
@@ -45,6 +50,46 @@ export default function AdminContextProvider({
       twlRepoTreeErrorMessage,
     },
   } = useTwlRepoValidation({authentication, owner, server, languageId});
+  
+  const {
+    state: {
+      ltRepoTree,
+      ltRepoTreeManifest,
+      ltRepoTreeErrorMessage,
+    },
+  } = useLtRepoValidation({authentication, owner, server, languageId});
+
+  const {
+    state: {
+      stRepoTree,
+      stRepoTreeManifest,
+      stRepoTreeErrorMessage,
+    },
+  } = useStRepoValidation({authentication, owner, server, languageId});
+
+  const {
+    state: {
+      tqRepoTree,
+      tqRepoTreeManifest,
+      tqRepoTreeErrorMessage,
+    },
+  } = useTqRepoValidation({authentication, owner, server, languageId});
+
+  const {
+    state: {
+      snRepoTree,
+      snRepoTreeManifest,
+      snRepoTreeErrorMessage,
+    },
+  } = useSnRepoValidation({authentication, owner, server, languageId});
+
+  const {
+    state: {
+      sqRepoTree,
+      sqRepoTreeManifest,
+      sqRepoTreeErrorMessage,
+    },
+  } = useSqRepoValidation({authentication, owner, server, languageId});
 
   // create the value for the context provider
   const context = {
@@ -55,6 +100,21 @@ export default function AdminContextProvider({
       twlRepoTree,
       twlRepoTreeManifest,
       twlRepoTreeErrorMessage,
+      ltRepoTree,
+      ltRepoTreeManifest,
+      ltRepoTreeErrorMessage,
+      stRepoTree,
+      stRepoTreeManifest,
+      stRepoTreeErrorMessage,
+      tqRepoTree,
+      tqRepoTreeManifest,
+      tqRepoTreeErrorMessage,
+      sqRepoTree,
+      sqRepoTreeManifest,
+      sqRepoTreeErrorMessage,
+      snRepoTree,
+      snRepoTreeManifest,
+      snRepoTreeErrorMessage,
     },
   };
 
