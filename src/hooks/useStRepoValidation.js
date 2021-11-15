@@ -24,20 +24,21 @@ export default function useStRepoValidation({authentication, owner, server, lang
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_st/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
+      let _repo = languageId
+      if ( owner === "unfoldingWord" || owner === "unfoldingword" ) {
+        _repo += "_ust"
+      } else {
+        _repo += "_gst"
+      }
+      const url = `${server}/api/v1/repos/${owner}/${_repo}/git/trees/master?recursive=false&per_page=999999`
       let errorCode = 0
       try {
-        let _repo = languageId
-        if ( owner === "unfoldingWord" || owner === "unfoldingword" ) {
-          _repo += "_ust"
-        } else {
-          _repo += "_gst"
-        }
-        const stTree = await doFetch(`${server}/api/v1/repos/${owner}/${_repo}/git/trees/master?recursive=false&per_page=999999`,
+        const stTree = await doFetch(url,
           authentication, HTTP_GET_MAX_WAIT_TIME)
           .then(response => {
             if (response?.status !== 200) {
               errorCode = response?.status
-              console.warn(`AdminContext - error fetching repos tree, status code ${errorCode}`)
+              console.warn(`AdminContext - error fetching repos tree, status code ${errorCode}\nURL=${url}`)
               return null
             }
             return response?.data
@@ -96,7 +97,7 @@ export default function useStRepoValidation({authentication, owner, server, lang
       }
     }
 
-    if (authentication) {
+    if (authentication && owner && server && languageId) {
       getReposTrees()
     } else {
       console.warn(`AdminContext - reached, but not logged in`)

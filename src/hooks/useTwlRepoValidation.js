@@ -24,14 +24,15 @@ export default function useTwlRepoValidation({authentication, owner, server, lan
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_twl/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
+      const url = `${server}/api/v1/repos/${owner}/${languageId}_twl/git/trees/master?recursive=false&per_page=999999`
       let errorCode = 0
       try {
-        const twlTree = await doFetch(`${server}/api/v1/repos/${owner}/${languageId}_twl/git/trees/master?recursive=false&per_page=999999`,
+        const twlTree = await doFetch(url,
           authentication, HTTP_GET_MAX_WAIT_TIME)
           .then(response => {
             if (response?.status !== 200) {
               errorCode = response?.status
-              console.warn(`AdminContext - error fetching repos tree, status code ${errorCode}`)
+              console.warn(`AdminContext - error fetching repos tree, status code ${errorCode}\nURL=${url}`)
               return null
             }
             return response?.data
@@ -90,7 +91,7 @@ export default function useTwlRepoValidation({authentication, owner, server, lan
       }
     }
 
-    if (authentication) {
+    if (authentication && owner && server && languageId) {
       getReposTrees()
     } else {
       console.warn(`AdminContext - reached, but not logged in`)

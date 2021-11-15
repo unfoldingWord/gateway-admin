@@ -4,6 +4,7 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import StoreContextProvider from '@context/StoreContext'
 import AuthContextProvider from '@context/AuthContext'
+import AdminContextProvider from '@context/AdminContext'
 import { APP_NAME } from '@common/constants'
 import AppHead from '@components/AppHead'
 import Layout from '@components/Layout'
@@ -28,9 +29,11 @@ export default function Application({ Component, pageProps }) {
         <CssBaseline />
         <AuthContextProvider>
           <StoreContextProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <AdminContextProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </AdminContextProvider>
           </StoreContextProvider>
         </AuthContextProvider>
       </ThemeProvider>

@@ -147,8 +147,6 @@ function RepoValidation() {
         <CircularProgress size={180} />
       </>
       :
-      <AdminContextProvider>
-
         <Workspace
           layout={currentLayout}
           classes={classes}
@@ -232,7 +230,6 @@ function RepoValidation() {
             )
           }
         </Workspace>
-      </AdminContextProvider>
   )
 }
 
