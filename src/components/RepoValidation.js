@@ -7,6 +7,9 @@ import { Workspace } from 'resource-workspace-rcl'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { StoreContext } from '@context/StoreContext'
+//import { AdminContext } from '@context/AdminContext'
+import AdminContextProvider from '@context/AdminContext'
+
 import CircularProgress from '@components/CircularProgress'
 import {
   addNetworkDisconnectError,
@@ -57,14 +60,11 @@ function RepoValidation() {
     },
   } = useContext(StoreContext)
 
-  /**
-   * in the case of a network error, process and display error dialog
-   * @param {string} errorMessage - optional error message returned
-   * @param {number} httpCode - http code returned
-   */
-  function processError(errorMessage, httpCode=0) {
-    processNetworkError(errorMessage, httpCode, logout, router, setNetworkError, setLastError )
-  }
+  //const { state: {tnRepoTree, tnRepoTreeErrorMessage} } = useContext(AdminContext)
+  //console.log("admin context state:", state);
+  //console.log("tnRepoTree:", tnRepoTree||"no tree")
+  //console.log("tnRepoTreeErrorMessage:", tnRepoTreeErrorMessage||"no error")
+
 
   /**
    * show either tokenNetworkError or NetworkError for workspace
@@ -223,7 +223,10 @@ function RepoValidation() {
         >
           {
             Object.keys(ALL_BIBLE_BOOKS).map( (bookId) =>        
-              <RepoValidationCard bookId={bookId} classes={classes} />
+              <RepoValidationCard 
+                bookId={bookId} 
+                classes={classes} 
+              />
             )
           }
         </Workspace>
@@ -231,34 +234,3 @@ function RepoValidation() {
 }
 
 export default RepoValidation
-/*
-          rowHeight={25}
-          layoutWidths={[
-            [1, 1, 1],
-            [2, 2, 2],
-            [3, 3, 3],
-            [4, 4, 4],
-          ]}
-          layoutHeights={[[10,10], [10, 10], [10, 10], [10, 10]]}
-          minW={3}
-          minH={4}
-          breakpoints={{
-            lg: 900,
-            sm: 680,
-            xs: 300,
-          }}
-          columns={{
-            lg: 12,
-            sm: 6,
-            xs: 3,
-          }}
-
-
-
-              <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true}>
-                <p style={{ padding: '30px' }}>
-                  {ALL_BIBLE_BOOKS[bookId]} has bookId of "{bookId}".
-                </p>
-              </Card>
-
-*/
