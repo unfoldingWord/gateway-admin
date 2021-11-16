@@ -7,8 +7,6 @@ import { Workspace } from 'resource-workspace-rcl'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { StoreContext } from '@context/StoreContext'
-//import { AdminContext } from '@context/AdminContext'
-import AdminContextProvider from '@context/AdminContext'
 
 import CircularProgress from '@components/CircularProgress'
 import {
@@ -21,7 +19,6 @@ import { useRouter } from 'next/router'
 import { HTTP_CONFIG } from '@common/constants'
 import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
-//import { Card, useResourceClickListener } from 'translation-helps-rcl'
 import RepoValidationCard from './RepoValidationCard'
 
 const useStyles = makeStyles(() => ({
@@ -59,12 +56,6 @@ function RepoValidation() {
       setLastError,
     },
   } = useContext(StoreContext)
-
-  //const { state: {tnRepoTree, tnRepoTreeErrorMessage} } = useContext(AdminContext)
-  //console.log("admin context state:", state);
-  //console.log("tnRepoTree:", tnRepoTree||"no tree")
-  //console.log("tnRepoTreeErrorMessage:", tnRepoTreeErrorMessage||"no error")
-
 
   /**
    * show either tokenNetworkError or NetworkError for workspace

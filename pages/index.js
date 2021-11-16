@@ -1,6 +1,15 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import styles from '../src/styles/Home.module.css'
+import dynamic from 'next/dynamic'
+import CircularProgress from '@components/CircularProgress'
+
+const RepoValidation = dynamic(
+  () => import('@components/RepoValidation'),
+  {
+    ssr: false,
+    loading: () => <CircularProgress size={180} />,
+  },
+)
 
 export default function Home() {
   return (
@@ -10,48 +19,7 @@ export default function Home() {
         <meta name="description" content="unfoldingWord Nextjs template app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js</a> Template App at <a href="https://unfoldingword.org">uW</a>!
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <Link href='/repo-validation'>
-            <a className={styles.card}>
-              <h2>Repo Validation &rarr;</h2>
-              <p>Check for DCS Project Setup.</p>
-            </a>
-          </Link>
-
-          <Link href='/workspace-rcl-demo'>
-            <a className={styles.card}>
-              <h2>Resource Workspace RCL &rarr;</h2>
-              <p>Check out the Resource Workspace RCL live!</p>
-            </a>
-          </Link>
-
-          <Link href='/example'>
-            <a className={styles.card}>
-              <h2>Example &rarr;</h2>
-              <p>Example description.</p>
-            </a>
-          </Link>
-
-          <Link href='/workspace-rcl-demo'>
-            <a className={styles.card}>
-              <h2>Example &rarr;</h2>
-              <p>Example description.</p>
-            </a>
-          </Link>
-
-        </div>
-      </main>
+      <RepoValidation />
     </div>
   )
 }
