@@ -123,7 +123,7 @@ export default function RepoValidationCard({
     // g. if not, then add to a "missing" array
     // h. if missing array length is > zero, then report "xx missing"
     // g. otherwise report "OK"
-    // i. be sure to add both missing and present arrays to the context.
+    // i. be sure to add both missing and present arrays to a state var in this card
   }, [twRepoTree, twlRepoTree, twlRepoTreeErrorMessage])
 
   useEffect(() => {
@@ -141,8 +141,8 @@ export default function RepoValidationCard({
     // g. if not, then add to a "missing" array
     // h. if missing array length is > zero, then report "xx missing"
     // g. otherwise report "OK"
-    // i. be sure to add both missing and present arrays to the context.
-  }, [taRepoTree, tnRepoTree], tnRepoTreeErrorMessage)
+    // i. be sure to add both missing and present arrays to a state var in this card
+  }, [taRepoTree, tnRepoTree, tnRepoTreeErrorMessage])
 
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
