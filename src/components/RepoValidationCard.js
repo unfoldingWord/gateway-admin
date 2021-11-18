@@ -15,6 +15,12 @@ export default function RepoValidationCard({
   const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
   // TWL
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
+  // TW
+  const [twErrorMsg, setTwErrorMsg] = useState(null)
+  // TA
+  const [taErrorMsg, setTaErrorMsg] = useState(null)
+  // TWL
+  const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   // ST (GST or UST)
@@ -56,7 +62,13 @@ export default function RepoValidationCard({
     snRepoTree,
     snRepoTreeManifest,
     snRepoTreeErrorMessage,
-} } = useContext(AdminContext)
+    taRepoTree,
+    taRepoTreeManifest,
+    taRepoTreeErrorMessage,
+    twRepoTree,
+    twRepoTreeManifest,
+    twRepoTreeErrorMessage,
+  } } = useContext(AdminContext)
 
   function checkManifestBook(manifest, repoTree, setError) {
     let projects = []
@@ -95,6 +107,42 @@ export default function RepoValidationCard({
       setError("Book not in manifest")
     }
   }
+
+  useEffect(() => {
+    // add twl book error message
+    // if message is null, just return
+    // if not null, then if not "OK", then report "TWL unavailable"
+    // only need to do something if the message = "OK"
+    // that something is:
+    // a. fetch the twl file
+    // b. parse it
+    // c. get the rc link to the tW article
+    // d. transform it to a URL
+    // e. fetch it
+    // f. if fetched then add to a "present" array
+    // g. if not, then add to a "missing" array
+    // h. if missing array length is > zero, then report "xx missing"
+    // g. otherwise report "OK"
+    // i. be sure to add both missing and present arrays to the context.
+  }, [twRepoTree, twlRepoTree, twlRepoTreeErrorMessage])
+
+  useEffect(() => {
+    // add tn book error message
+    // if message is null, just return
+    // if not null, then if not "OK", then report "TN unavailable"
+    // only need to do something if the message = "OK"
+    // that something is:
+    // a. fetch the tn file
+    // b. parse it
+    // c. get the rc link to the tA article
+    // d. transform it to a URL
+    // e. fetch it
+    // f. if fetched then add to a "present" array
+    // g. if not, then add to a "missing" array
+    // h. if missing array length is > zero, then report "xx missing"
+    // g. otherwise report "OK"
+    // i. be sure to add both missing and present arrays to the context.
+  }, [taRepoTree, tnRepoTree], tnRepoTreeErrorMessage)
 
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
@@ -139,6 +187,8 @@ export default function RepoValidationCard({
     ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg || "OK"],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg || "OK"],
     ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg || "OK"],
+    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg || "OK"],
+    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg || "OK"],
     ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg || "OK"],
     ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg || "OK"],
     ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg || "OK"],
