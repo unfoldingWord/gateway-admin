@@ -3,9 +3,11 @@ import { useEffect, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
 import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
+import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import DenseTable from '@components/DenseTable'
+import { checkTwForBook } from '@utils/checkArticles'
 
 export default function RepoValidationCard({
   bookId,
@@ -19,8 +21,6 @@ export default function RepoValidationCard({
   const [twErrorMsg, setTwErrorMsg] = useState(null)
   // TA
   const [taErrorMsg, setTaErrorMsg] = useState(null)
-  // TWL
-  const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   // ST (GST or UST)
@@ -31,6 +31,12 @@ export default function RepoValidationCard({
   const [sqBookErrorMsg, setSqBookErrorMsg] = useState(null)
   // TQ 
   const [snBookErrorMsg, setSnBookErrorMsg] = useState(null)
+
+  const {
+    state: {
+      authentication,
+    },
+  } = useContext(AuthContext)
 
   const {
     state: {
@@ -109,10 +115,9 @@ export default function RepoValidationCard({
   }
 
   useEffect(() => {
-    // add twl book error message
-    // if message is null, just return
-    // if not null, then if not "OK", then report "TWL unavailable"
-    // only need to do something if the message = "OK"
+    // Examine twl book error message
+    // - if message is null means all is OK
+    // - if not null, then report "TWL unavailable" and return
     // that something is:
     // a. fetch the twl file
     // b. parse it
@@ -124,7 +129,38 @@ export default function RepoValidationCard({
     // h. if missing array length is > zero, then report "xx missing"
     // g. otherwise report "OK"
     // i. be sure to add both missing and present arrays to a state var in this card
-  }, [twRepoTree, twlRepoTree, twlRepoTreeErrorMessage])
+    async function getTwWords() {
+      const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree, setTwErrorMsg)
+      //setValues({tnRepoTree: _tree, tnRepoTreeManifest: _manifest, tnRepoTreeErrorMessage: _errorMesage})
+      //console.log("getTwWords() rc=",rc)
+    }
+
+    // check tw repo first
+    if ( twRepoTreeErrorMessage !== null ) {
+      return
+    }
+    // OK repo is there as is manifest, but we won't be using the manifest for TW
+    // Now check to see if there is twlRepo error
+    if ( twlRepoTreeErrorMessage !== null ) {
+      setTwErrorMsg("No TWL Repo")
+      return
+    }
+    // OK, now check whether the twl book file is present
+    if ( twlBookErrorMsg !== null ) {
+      setTwErrorMsg("No TWL file for book")
+      return
+    }
+    // All looks good... let's get the TWL book file
+    // fetch it!
+    if (authentication) {
+      const rc = getTwWords()
+    }
+    
+
+
+
+
+  }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg])
 
   useEffect(() => {
     // add tn book error message
