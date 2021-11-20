@@ -18,7 +18,7 @@ export async function getTreesManifest(authentication, url) {
   let _errorMessage = null
   try {
     const trees = await doFetch(url,
-      authentication, HTTP_GET_MAX_WAIT_TIME)
+      authentication)
       .then(response => {
         if (response?.status !== 200) {
           errorCode = response?.status
@@ -41,7 +41,7 @@ export async function getTreesManifest(authentication, url) {
       if ( _url ) {
         // get the manifest
         const __manifest = await doFetch(_url,
-          authentication, HTTP_GET_MAX_WAIT_TIME)
+          authentication)
           .then(response => {
             if (response?.status !== 200) {
               errorCode = response?.status

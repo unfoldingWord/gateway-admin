@@ -12,27 +12,40 @@ import {
 import * as tsvparser from 'uw-tsv-parser';
 
 export async function checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree, setTwErrorMsg) {
-  let errorCode = 0
+  console.log("checkTwForBook() bookId:", bookId)
+  let errorCode
   let _errorMessage = null
+  let _absent = []
+  let _present = []
   // sample: https://git.door43.org/unfoldingWord/en_twl/raw/branch/master/twl_1TI.tsv
   let url = `${server}/${owner}/${languageId}_twl/raw/branch/master/twl_${bookId.toUpperCase()}.tsv`
+  let twltsv = null
+  let fetchError = true
   try {
-    const twltsv = await doFetch(url,
-      authentication, HTTP_GET_MAX_WAIT_TIME)
+    twltsv = await doFetch(url, authentication)
       .then(response => {
         if (response?.status !== 200) {
           errorCode = response?.status
-          console.warn(`checkTwForBook - error fetching twl file, status code ${errorCode}\nURL=${url}`)
+          console.warn(`checkTwForBook - error fetching twl file for book ${bookId}, status code ${errorCode}\nURL=${url}`)
+          fetchError = true
           return null
         }
+        fetchError = false
         return response?.data
     })
-    if (twltsv === null) { // if no file
-      _errorMessage = "Twl file not found"
-      setTwErrorMsg(_errorMessage)
-      return null
+    if (fetchError) { // if no file
+      _errorMessage = "Network error fetching"
+      twltsv = null // just to be sure...
     } 
-    // parse the tsv
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`checkTwForBook - error fetching twl file for book ${bookId}, message '${message}', disconnected=${disconnected}`, e)
+    _errorMessage = "Network error fetching"
+    twltsv = null // just to be sure...
+  }
+  // parse the tsv
+  if ( twltsv ) {
     const tsvObject = tsvparser.tsvStringToTable(twltsv);
     const twlTable  = tsvObject.data;
     // the rc link is in the last column
@@ -40,17 +53,14 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
       let rclink = twlTable[i][5]
       rclink = rclink.replace("rc://*/tw/dict/","")
       rclink += ".md"
-      console.log("rclink modded=",rclink)
-      const query = `tree | filter path == "${rclink}"`
-      console.log("twRepoTree:", twRepoTree)
+      const query = `@ | filter path == "${rclink}"`
       const results = mistql.query(query, twRepoTree);
-      console.log("mq results",results)
+      if ( results.length === 0 ) {
+        _absent.push(rclink)
+      } else {
+        _present.push(rclink)
+      }
     }
-  } catch (e) {
-    const message = e?.message
-    const disconnected = isServerDisconnected(e)
-    console.warn(`checkTwForBook - error fetching twl file, message '${message}', disconnected=${disconnected}`, e)
-    //_errorMessage = "Network error fetching"
   }
-  return {ErrorMessage: _errorMessage}
+  return {Present: _present, Absent: _absent, ErrorMessage: _errorMessage}
 }

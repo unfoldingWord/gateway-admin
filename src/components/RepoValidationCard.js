@@ -130,9 +130,10 @@ export default function RepoValidationCard({
     // g. otherwise report "OK"
     // i. be sure to add both missing and present arrays to a state var in this card
     async function getTwWords() {
-      const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree, setTwErrorMsg)
+      const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       //setValues({tnRepoTree: _tree, tnRepoTreeManifest: _manifest, tnRepoTreeErrorMessage: _errorMesage})
-      //console.log("getTwWords() rc=",rc)
+      setTwErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      console.log("getTwWords() rc=",rc)
     }
 
     // check tw repo first
@@ -150,9 +151,10 @@ export default function RepoValidationCard({
       setTwErrorMsg("No TWL file for book")
       return
     }
+
     // All looks good... let's get the TWL book file
     // fetch it!
-    if (authentication) {
+    if (authentication && twRepoTree && twlRepoTree) {
       const rc = getTwWords()
     }
     
