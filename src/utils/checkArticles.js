@@ -125,10 +125,16 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     const tnTable  = tsvObject.data;
     // the rc link is in the last column
     for (let i=0; i<tnTable.length; i++) {
-      let rclink = tnTable[i][5]
+      let rclink = tnTable[i][3]
       rclink = rclink.replace("rc://*/ta/man/","")
-      const query = `@ | filter path == "${rclink}"`
-      const results = mistql.query(query, taRepoTree);
+      let results
+      if ( rclink.startsWith("rc") ) {
+        const query = `@ | filter path == "${rclink}"`
+        results = mistql.query(query, taRepoTree);
+      } else {
+        console.warn("malformed rc link to TA:", rclink)
+        _absent.push(rclink)
+      }
       if ( results.length === 0 ) {
         _absent.push(rclink)
       } else {
