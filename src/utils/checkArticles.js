@@ -25,6 +25,7 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
     twltsv = await doFetch(url, authentication)
       .then(response => {
         if (response?.status !== 200) {
+          console.log("response=",bookId, response)
           errorCode = response?.status
           console.warn(`checkTwForBook - error fetching twl file for book ${bookId}, status code ${errorCode}\nURL=${url}`)
           fetchError = true
@@ -34,14 +35,19 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
         return response?.data
     })
     if (fetchError) { // if no file
-      _errorMessage = "Network error fetching"
+      _errorMessage = `Fetch error`
       twltsv = null // just to be sure...
     } 
   } catch (e) {
     const message = e?.message
     const disconnected = isServerDisconnected(e)
-    console.warn(`checkTwForBook - error fetching twl file for book ${bookId}, message '${message}', disconnected=${disconnected}`, e)
-    _errorMessage = "Network error fetching"
+    console.warn(`checkTwForBook - error fetching twl file for book ${bookId},
+      message '${message}',
+      disconnected=${disconnected},
+      URL=${url},
+      error message:`, 
+      e)
+    _errorMessage = "Network error"
     twltsv = null // just to be sure...
   }
   // parse the tsv
@@ -61,6 +67,11 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
         _present.push(rclink)
       }
     }
+    if ( _absent.length > 0 ) {
+      _errorMessage = `${_absent.length} Missing`
+    } else {
+      _errorMessage = "OK"
+    }
   }
-  return {Present: _present, Absent: _absent, ErrorMessage: _errorMessage}
+  return {Book: bookId, Present: _present, Absent: _absent, ErrorMessage: _errorMessage}
 }

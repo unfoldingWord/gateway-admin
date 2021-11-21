@@ -105,7 +105,7 @@ export default function RepoValidationCard({
         }
       }
       if ( _fileExists ) {
-        setError(null)
+        setError("OK")
       } else {
         setError("Manifest book not found")
       }
@@ -115,6 +115,9 @@ export default function RepoValidationCard({
   }
 
   useEffect(() => {
+    if ( twlBookErrorMsg === null ) {
+      return // wait until we know the result
+    }
     // Examine twl book error message
     // - if message is null means all is OK
     // - if not null, then report "TWL unavailable" and return
@@ -147,16 +150,16 @@ export default function RepoValidationCard({
       return
     }
     // OK, now check whether the twl book file is present
-    if ( twlBookErrorMsg !== null ) {
-      setTwErrorMsg("No TWL file for book")
-      return
+    if ( twlBookErrorMsg === "OK" ) {
+      // All looks good... let's get the TWL book file
+      // fetch it!
+      if (authentication && twRepoTree && twlRepoTree) {
+        const rc = getTwWords()
+      }
+    } else {
+      setTwErrorMsg("TWL error")
     }
 
-    // All looks good... let's get the TWL book file
-    // fetch it!
-    if (authentication && twRepoTree && twlRepoTree) {
-      const rc = getTwWords()
-    }
     
 
 
@@ -221,15 +224,15 @@ export default function RepoValidationCard({
   }
   const headers = ["Resource", "Repo", "Status"]
   const rows = [
-    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg || "OK"],
-    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg || "OK"],
-    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg || "OK"],
-    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg || "OK"],
-    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg || "OK"],
-    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg || "OK"],
-    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg || "OK"],
-    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg || "OK"],
-    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg || "OK"],
+    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg ],
+    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg ],
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg ],
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg ],
+    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg ],
+    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg ],
+    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg ],
+    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg ],
+    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg ],
   ]
 
   return (
