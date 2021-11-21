@@ -162,7 +162,7 @@ export default function RepoValidationCard({
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TW:",bookId,rc.Absent)
+        console.log("bookId, Missing TA:",bookId,rc.Absent)
       } 
     }
 

@@ -17,6 +17,7 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
   let _errorMessage = null
   let _absent = []
   let _present = []
+  let processed = []
   // sample: https://git.door43.org/unfoldingWord/en_twl/raw/branch/master/twl_1TI.tsv
   let url = `${server}/${owner}/${languageId}_twl/raw/branch/master/twl_${bookId.toUpperCase()}.tsv`
   let twltsv = null
@@ -59,6 +60,8 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
     // the rc link is in the last column
     for (let i=0; i<twlTable.length; i++) {
       let rclink = twlTable[i][5]
+      if ( processed.includes(rclink) ) {continue}
+      processed.push(rclink)
       rclink = rclink.replace("rc://*/tw/dict/","")
       rclink += ".md"
       const query = `@ | filter path == "${rclink}"`
@@ -79,11 +82,11 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
 }
 
 export async function checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree) {
-  //console.log("checkTwForBook() bookId:", bookId)
   let errorCode
   let _errorMessage = null
   let _absent = []
   let _present = []
+  let processed = []
   // sample: https://git.door43.org/unfoldingWord/en_tn/raw/branch/master/twl_1TI.tsv
   let url = `${server}/${owner}/${languageId}_tn/raw/branch/newFormat/tn_${bookId.toUpperCase()}.tsv`
   let tntsv = null
@@ -125,20 +128,24 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     const tnTable  = tsvObject.data;
     // the rc link is in the last column
     for (let i=0; i<tnTable.length; i++) {
-      let rclink = tnTable[i][3]
-      rclink = rclink.replace("rc://*/ta/man/","")
+      let rclink = tnTable[i][3].trim()
+      if ( rclink === "" ) { continue }
+      if ( processed.includes(rclink) ) { continue }
+      processed.push(rclink)
+      let _rclink = rclink.replace("rc://*/ta/man/","")
       let results
-      if ( rclink.startsWith("rc") ) {
-        const query = `@ | filter path == "${rclink}"`
+      if ( _rclink.startsWith("rc") ) {
+        // not a TA rc link!
+        console.warn("malformed rc link to TA:", _rclink)
+        _absent.push(_rclink)
+      } else {
+        const query = `@ | filter path == "${_rclink}"`
         results = mistql.query(query, taRepoTree);
-      } else {
-        console.warn("malformed rc link to TA:", rclink)
-        _absent.push(rclink)
-      }
-      if ( results.length === 0 ) {
-        _absent.push(rclink)
-      } else {
-        _present.push(rclink)
+        if ( results.length === 0 ) {
+          _absent.push(_rclink)
+        } else {
+          _present.push(_rclink)
+        }
       }
     }
     if ( _absent.length > 0 ) {

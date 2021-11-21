@@ -19,7 +19,7 @@ export default function useTqRepoValidation({authentication, owner, server, lang
     if (authentication && owner && server && languageId) {
       getReposTrees()
     } else {
-      console.warn(`AdminContext - reached, but not logged in`)
+      //console.warn(`AdminContext - reached, but not logged in`)
     }
   }, [authentication, owner, server, languageId])
 
