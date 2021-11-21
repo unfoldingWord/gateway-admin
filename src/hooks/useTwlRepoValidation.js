@@ -6,7 +6,7 @@ export default function useTwlRepoValidation({authentication, owner, server, lan
     twlRepoTreeManifest, 
     twlRepoTreeErrorMessage}, 
     setValues
-  ] = useState({twlRepoTree:null, twlRepoTreeManifest:null, twlRepoTreeErrorMessage:null})
+  ] = useState({twlRepoTree:null, twlRepoTreeManifest:null, twlRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_twl/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

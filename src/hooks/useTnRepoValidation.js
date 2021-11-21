@@ -6,7 +6,7 @@ export default function useTnRepoValidation({authentication, owner, server, lang
     tnRepoTreeManifest, 
     tnRepoTreeErrorMessage}, 
     setValues
-  ] = useState({tnRepoTree:null, tnRepoTreeManifest:null, tnRepoTreeErrorMessage:null})
+  ] = useState({tnRepoTree:null, tnRepoTreeManifest:null, tnRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

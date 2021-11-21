@@ -6,7 +6,7 @@ export default function useTaRepoValidation({authentication, owner, server, lang
     taRepoTreeManifest, 
     taRepoTreeErrorMessage}, 
     setValues
-  ] = useState({taRepoTree:null, taRepoTreeManifest:null, taRepoTreeErrorMessage:null})
+  ] = useState({taRepoTree:null, taRepoTreeManifest:null, taRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

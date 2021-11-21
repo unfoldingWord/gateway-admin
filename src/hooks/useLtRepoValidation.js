@@ -6,7 +6,7 @@ export default function useLtRepoValidation({authentication, owner, server, lang
     ltRepoTreeManifest, 
     ltRepoTreeErrorMessage}, 
     setValues
-  ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltRepoTreeErrorMessage:null})
+  ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_lt/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

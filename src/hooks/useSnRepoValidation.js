@@ -6,7 +6,7 @@ export default function useSnRepoValidation({authentication, owner, server, lang
     snRepoTreeManifest, 
     snRepoTreeErrorMessage}, 
     setValues
-  ] = useState({snRepoTree:null, snRepoTreeManifest:null, snRepoTreeErrorMessage:null})
+  ] = useState({snRepoTree:null, snRepoTreeManifest:null, snRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_sn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

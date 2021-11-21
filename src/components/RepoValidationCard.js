@@ -7,7 +7,7 @@ import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import DenseTable from '@components/DenseTable'
-import { checkTwForBook } from '@utils/checkArticles'
+import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 
 export default function RepoValidationCard({
   bookId,
@@ -18,9 +18,9 @@ export default function RepoValidationCard({
   // TWL
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
   // TW
-  const [twErrorMsg, setTwErrorMsg] = useState(null)
+  const [twErrorMsg, setTwErrorMsg] = useState("Working...")
   // TA
-  const [taErrorMsg, setTaErrorMsg] = useState(null)
+  const [taErrorMsg, setTaErrorMsg] = useState("Working...")
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   // ST (GST or UST)
@@ -118,29 +118,21 @@ export default function RepoValidationCard({
     if ( twlBookErrorMsg === null ) {
       return // wait until we know the result
     }
-    // Examine twl book error message
-    // - if message is null means all is OK
-    // - if not null, then report "TWL unavailable" and return
-    // that something is:
-    // a. fetch the twl file
-    // b. parse it
-    // c. get the rc link to the tW article
-    // d. transform it to a URL
-    // e. fetch it
-    // f. if fetched then add to a "present" array
-    // g. if not, then add to a "missing" array
-    // h. if missing array length is > zero, then report "xx missing"
-    // g. otherwise report "OK"
-    // i. be sure to add both missing and present arrays to a state var in this card
+
     async function getTwWords() {
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
-      //setValues({tnRepoTree: _tree, tnRepoTreeManifest: _manifest, tnRepoTreeErrorMessage: _errorMesage})
       setTwErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
-      console.log("getTwWords() rc=",rc)
+      if ( rc.Absent.length > 0 ) {
+        console.log("bookId, Missing TW:",bookId,rc.Absent)
+      } 
     }
 
+    // check twl repo first
+    if ( twlRepoTreeErrorMessage === "Working..." ) {
+      return
+    }
     // check tw repo first
-    if ( twRepoTreeErrorMessage !== null ) {
+    if ( twRepoTreeErrorMessage === "Working..." ) {
       return
     }
     // OK repo is there as is manifest, but we won't be using the manifest for TW
@@ -154,36 +146,51 @@ export default function RepoValidationCard({
       // All looks good... let's get the TWL book file
       // fetch it!
       if (authentication && twRepoTree && twlRepoTree) {
-        const rc = getTwWords()
+        getTwWords()
       }
     } else {
-      setTwErrorMsg("TWL error")
+      setTwErrorMsg("See TWL error")
     }
-
-    
-
-
-
-
   }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg])
 
   useEffect(() => {
-    // add tn book error message
-    // if message is null, just return
-    // if not null, then if not "OK", then report "TN unavailable"
-    // only need to do something if the message = "OK"
-    // that something is:
-    // a. fetch the tn file
-    // b. parse it
-    // c. get the rc link to the tA article
-    // d. transform it to a URL
-    // e. fetch it
-    // f. if fetched then add to a "present" array
-    // g. if not, then add to a "missing" array
-    // h. if missing array length is > zero, then report "xx missing"
-    // g. otherwise report "OK"
-    // i. be sure to add both missing and present arrays to a state var in this card
-  }, [taRepoTree, tnRepoTree, tnRepoTreeErrorMessage])
+    if ( tnBookErrorMsg === null ) {
+      return // wait until we know the result
+    }
+
+    async function getTaWords() {
+      const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
+      setTaErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      if ( rc.Absent.length > 0 ) {
+        console.log("bookId, Missing TW:",bookId,rc.Absent)
+      } 
+    }
+
+    // check tn repo first
+    if ( tnRepoTreeErrorMessage === "Working..." ) {
+      return
+    }
+    // check ta repo first
+    if ( taRepoTreeErrorMessage === "Working..." ) {
+      return
+    }
+    // OK repo is there as is manifest, but we won't be using the manifest for TA
+    // Now check to see if there is twlRepo error
+    if ( tnRepoTreeErrorMessage !== null ) {
+      setTaErrorMsg("No TN Repo")
+      return
+    }
+    // OK, now check whether the tn book file is present
+    if ( tnBookErrorMsg === "OK" ) {
+      // All looks good... let's get the TWL book file
+      // fetch it!
+      if (authentication && taRepoTree && tnRepoTree) {
+        getTaWords()
+      }
+    } else {
+      setTaErrorMsg("See TN error")
+    }
+  }, [taRepoTree, taRepoTreeErrorMessage, tnRepoTree, tnRepoTreeErrorMessage, tnBookErrorMsg])
 
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)

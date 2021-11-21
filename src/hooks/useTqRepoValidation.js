@@ -6,7 +6,7 @@ export default function useTqRepoValidation({authentication, owner, server, lang
     tqRepoTreeManifest, 
     tqRepoTreeErrorMessage}, 
     setValues
-  ] = useState({tqRepoTree:null, tqRepoTreeManifest:null, tqRepoTreeErrorMessage:null})
+  ] = useState({tqRepoTree:null, tqRepoTreeManifest:null, tqRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tq/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

@@ -6,7 +6,7 @@ export default function useSqRepoValidation({authentication, owner, server, lang
     sqRepoTreeManifest, 
     sqRepoTreeErrorMessage}, 
     setValues
-  ] = useState({sqRepoTree:null, sqRepoTreeManifest:null, sqRepoTreeErrorMessage:null})
+  ] = useState({sqRepoTree:null, sqRepoTreeManifest:null, sqRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_sq/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
