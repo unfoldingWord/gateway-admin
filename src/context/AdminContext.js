@@ -9,6 +9,8 @@ import useStRepoValidation from '@hooks/useStRepoValidation'
 import useTqRepoValidation from '@hooks/useTqRepoValidation'
 import useSqRepoValidation from '@hooks/useSqRepoValidation'
 import useSnRepoValidation from '@hooks/useSnRepoValidation'
+import useTaRepoValidation from '@hooks/useTaRepoValidation'
+import useTwRepoValidation from '@hooks/useTwRepoValidation'
 
 
 
@@ -91,6 +93,22 @@ export default function AdminContextProvider({
     },
   } = useSqRepoValidation({authentication, owner, server, languageId});
 
+  const {
+    state: {
+      taRepoTree,
+      taRepoTreeManifest,
+      taRepoTreeErrorMessage,
+    },
+  } = useTaRepoValidation({authentication, owner, server, languageId});
+
+  const {
+    state: {
+      twRepoTree,
+      twRepoTreeManifest,
+      twRepoTreeErrorMessage,
+    },
+  } = useTwRepoValidation({authentication, owner, server, languageId});
+
   // create the value for the context provider
   const context = {
     state: {
@@ -115,6 +133,12 @@ export default function AdminContextProvider({
       snRepoTree,
       snRepoTreeManifest,
       snRepoTreeErrorMessage,
+      taRepoTree,
+      taRepoTreeManifest,
+      taRepoTreeErrorMessage,
+      twRepoTree,
+      twRepoTreeManifest,
+      twRepoTreeErrorMessage,
     },
   };
 

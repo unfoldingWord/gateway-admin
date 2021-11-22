@@ -18,11 +18,11 @@ export async function getTreesManifest(authentication, url) {
   let _errorMessage = null
   try {
     const trees = await doFetch(url,
-      authentication, HTTP_GET_MAX_WAIT_TIME)
+      authentication)
       .then(response => {
         if (response?.status !== 200) {
           errorCode = response?.status
-          console.warn(`AdminContext - error fetching repos tree, status code ${errorCode}\nURL=${url}`)
+          console.warn(`getTreesManifest() - error fetching repos tree, status code ${errorCode}\nURL=${url}`)
           return null
         }
         return response?.data
@@ -41,11 +41,11 @@ export async function getTreesManifest(authentication, url) {
       if ( _url ) {
         // get the manifest
         const __manifest = await doFetch(_url,
-          authentication, HTTP_GET_MAX_WAIT_TIME)
+          authentication)
           .then(response => {
             if (response?.status !== 200) {
               errorCode = response?.status
-              console.warn(`AdminContext - error fetching manifest, status code ${errorCode}`)
+              console.warn(`getTreesManifest() - error fetching manifest, status code ${errorCode}`)
               return null
             }
             return response?.data
@@ -70,7 +70,7 @@ export async function getTreesManifest(authentication, url) {
   } catch (e) {
     const message = e?.message
     const disconnected = isServerDisconnected(e)
-    console.warn(`AdminContext - error fetching repos tree, message '${message}', disconnected=${disconnected}`, e)
+    console.warn(`getTreesManifest() - error fetching repos tree, message '${message}', disconnected=${disconnected}`, e)
     //_errorMessage = "Network error fetching repo tree"
   }
   return {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMessage}

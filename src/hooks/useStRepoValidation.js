@@ -6,7 +6,7 @@ export default function useStRepoValidation({authentication, owner, server, lang
     stRepoTreeManifest, 
     stRepoTreeErrorMessage}, 
     setValues
-  ] = useState({stRepoTree:null, stRepoTreeManifest:null, stRepoTreeErrorMessage:null})
+  ] = useState({stRepoTree:null, stRepoTreeManifest:null, stRepoTreeErrorMessage:"Working..."})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_st/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function useStRepoValidation({authentication, owner, server, lang
     if (authentication && owner && server && languageId) {
       getReposTrees()
     } else {
-      console.warn(`AdminContext - reached, but not logged in`)
+      //console.warn(`AdminContext - reached, but not logged in`)
     }
   }, [authentication, owner, server, languageId])
 
