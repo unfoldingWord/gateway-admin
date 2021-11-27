@@ -64,12 +64,19 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
       processed.push(rclink)
       rclink = rclink.replace("rc://*/tw/dict/","")
       rclink += ".md"
-      const query = `@ | filter path == "${rclink}"`
-      const results = mistql.query(query, twRepoTree);
-      if ( results.length === 0 ) {
+      let results
+      if ( rclink.startsWith("rc") ) {
+        // not a TA rc link!
+        console.warn("malformed rc link to TW:", rclink)
         _absent.push(rclink)
       } else {
-        _present.push(rclink)
+        const query = `@ | filter path == "${rclink}"`
+        results = mistql.query(query, twRepoTree);
+        if ( results.length === 0 ) {
+          _absent.push(rclink)
+        } else {
+          _present.push(rclink)
+        }
       }
     }
     if ( _absent.length > 0 ) {
