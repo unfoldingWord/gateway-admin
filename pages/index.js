@@ -15,8 +15,8 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>unfoldingWord Nextjs Template App</title>
-        <meta name="description" content="unfoldingWord Nextjs template app" />
+        <title>gatewayAdmin</title>
+        <meta name="description" content="gatewayAdmin" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <RepoValidation />
