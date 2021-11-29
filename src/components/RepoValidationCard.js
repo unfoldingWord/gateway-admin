@@ -8,6 +8,7 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import DenseTable from '@components/DenseTable'
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
+import { WORKING, OK } from '@common/constants'
 
 export default function RepoValidationCard({
   bookId,
@@ -18,9 +19,9 @@ export default function RepoValidationCard({
   // TWL
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
   // TW
-  const [twErrorMsg, setTwErrorMsg] = useState("Working...")
+  const [twErrorMsg, setTwErrorMsg] = useState(WORKING)
   // TA
-  const [taErrorMsg, setTaErrorMsg] = useState("Working...")
+  const [taErrorMsg, setTaErrorMsg] = useState(WORKING)
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   // ST (GST or UST)
@@ -105,7 +106,7 @@ export default function RepoValidationCard({
         }
       }
       if ( _fileExists ) {
-        setError("OK")
+        setError(OK)
       } else {
         setError("Manifest book not found")
       }
@@ -128,11 +129,11 @@ export default function RepoValidationCard({
     }
 
     // check twl repo first
-    if ( twlRepoTreeErrorMessage === "Working..." ) {
+    if ( twlRepoTreeErrorMessage === WORKING ) {
       return
     }
     // check tw repo first
-    if ( twRepoTreeErrorMessage === "Working..." ) {
+    if ( twRepoTreeErrorMessage === WORKING ) {
       return
     }
     // OK repo is there as is manifest, but we won't be using the manifest for TW
@@ -142,7 +143,7 @@ export default function RepoValidationCard({
       return
     }
     // OK, now check whether the twl book file is present
-    if ( twlBookErrorMsg === "OK" ) {
+    if ( twlBookErrorMsg === OK ) {
       // All looks good... let's get the TWL book file
       // fetch it!
       if (authentication && twRepoTree && twlRepoTree) {
@@ -151,7 +152,7 @@ export default function RepoValidationCard({
     } else {
       setTwErrorMsg("See TWL error")
     }
-  }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg])
+  }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg, OK])
 
   useEffect(() => {
     if ( tnBookErrorMsg === null ) {
@@ -167,21 +168,21 @@ export default function RepoValidationCard({
     }
 
     // check tn repo first
-    if ( tnRepoTreeErrorMessage === "Working..." ) {
+    if ( tnRepoTreeErrorMessage === WORKING ) {
       return
     }
     // check ta repo first
-    if ( taRepoTreeErrorMessage === "Working..." ) {
+    if ( taRepoTreeErrorMessage === WORKING ) {
       return
     }
-    // OK repo is there as is manifest, but we won't be using the manifest for TA
+    // OK, repo is there as is manifest, but we won't be using the manifest for TA
     // Now check to see if there is twlRepo error
     if ( tnRepoTreeErrorMessage !== null ) {
       setTaErrorMsg("No TN Repo")
       return
     }
     // OK, now check whether the tn book file is present
-    if ( tnBookErrorMsg === "OK" ) {
+    if ( tnBookErrorMsg === OK ) {
       // All looks good... let's get the TWL book file
       // fetch it!
       if (authentication && taRepoTree && tnRepoTree) {
@@ -190,7 +191,7 @@ export default function RepoValidationCard({
     } else {
       setTaErrorMsg("See TN error")
     }
-  }, [taRepoTree, taRepoTreeErrorMessage, tnRepoTree, tnRepoTreeErrorMessage, tnBookErrorMsg])
+  }, [taRepoTree, taRepoTreeErrorMessage, tnRepoTree, tnRepoTreeErrorMessage, tnBookErrorMsg, OK])
 
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)

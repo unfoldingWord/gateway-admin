@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
 export default function useStRepoValidation({authentication, owner, server, languageId}) {
   const [{stRepoTree, 
     stRepoTreeManifest, 
     stRepoTreeErrorMessage}, 
     setValues
-  ] = useState({stRepoTree:null, stRepoTreeManifest:null, stRepoTreeErrorMessage:"Working..."})
+  ] = useState({stRepoTree:null, stRepoTreeManifest:null, stRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_st/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

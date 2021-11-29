@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
 export default function useSqRepoValidation({authentication, owner, server, languageId}) {
   const [{sqRepoTree, 
     sqRepoTreeManifest, 
     sqRepoTreeErrorMessage}, 
     setValues
-  ] = useState({sqRepoTree:null, sqRepoTreeManifest:null, sqRepoTreeErrorMessage:"Working..."})
+  ] = useState({sqRepoTree:null, sqRepoTreeManifest:null, sqRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_sq/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
 export default function useTaRepoValidation({authentication, owner, server, languageId}) {
   const [{taRepoTree, 
     taRepoTreeManifest, 
     taRepoTreeErrorMessage}, 
     setValues
-  ] = useState({taRepoTree:null, taRepoTreeManifest:null, taRepoTreeErrorMessage:"Working..."})
+  ] = useState({taRepoTree:null, taRepoTreeManifest:null, taRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

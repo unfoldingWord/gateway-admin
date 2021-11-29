@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
 export default function useTqRepoValidation({authentication, owner, server, languageId}) {
   const [{tqRepoTree, 
     tqRepoTreeManifest, 
     tqRepoTreeErrorMessage}, 
     setValues
-  ] = useState({tqRepoTree:null, tqRepoTreeManifest:null, tqRepoTreeErrorMessage:"Working..."})
+  ] = useState({tqRepoTree:null, tqRepoTreeManifest:null, tqRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tq/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {

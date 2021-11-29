@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
 export default function useTwlRepoValidation({authentication, owner, server, languageId}) {
   const [{twlRepoTree, 
     twlRepoTreeManifest, 
     twlRepoTreeErrorMessage}, 
     setValues
-  ] = useState({twlRepoTree:null, twlRepoTreeManifest:null, twlRepoTreeErrorMessage:"Working..."})
+  ] = useState({twlRepoTree:null, twlRepoTreeManifest:null, twlRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_twl/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
