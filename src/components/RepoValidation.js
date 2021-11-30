@@ -20,6 +20,7 @@ import { HTTP_CONFIG } from '@common/constants'
 import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
 import RepoValidationCard from './RepoValidationCard'
+import useLocalStorage from '@hooks/useLocalStorage'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -39,6 +40,7 @@ function RepoValidation() {
   const classes = useStyles()
   const [workspaceReady, setWorkspaceReady] = useState(false)
   const [networkError, setNetworkError] = useState(null)
+  const [books, setBooks] = useLocalStorage('books',[])
   const {
     state: {
       owner,
@@ -123,8 +125,6 @@ function RepoValidation() {
       setWorkspaceReady(true)
     }// eslint-disable-next-line
   }, [owner, languageId, appRef, server, loggedInUser])
-
-
 
   const config = {
     server,
@@ -213,7 +213,7 @@ function RepoValidation() {
 
         >
           {
-            Object.keys(ALL_BIBLE_BOOKS).map( (bookId) =>        
+            books.map( (bookId) =>        
               <RepoValidationCard 
                 bookId={bookId} 
                 classes={classes} 
