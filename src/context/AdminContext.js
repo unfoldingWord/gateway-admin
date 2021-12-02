@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
@@ -11,8 +11,8 @@ import useSqRepoValidation from '@hooks/useSqRepoValidation'
 import useSnRepoValidation from '@hooks/useSnRepoValidation'
 import useTaRepoValidation from '@hooks/useTaRepoValidation'
 import useTwRepoValidation from '@hooks/useTwRepoValidation'
-
-
+import useLocalStorage from '@hooks/useLocalStorage'
+import useDeepEffect from 'use-deep-compare-effect';
 
 
 export const AdminContext = React.createContext({});
@@ -21,6 +21,13 @@ export default function AdminContextProvider({
   children,
 }) {
 
+  const [books, setBooks] = useLocalStorage('books',['gen'])
+  //const [books, setBooks] = useState(['gen'])
+
+  // test code...
+  useDeepEffect( () => {
+    console.log("AdminContext() books:", books)
+  }, [books])
   
   const {
     state: {
@@ -139,7 +146,11 @@ export default function AdminContextProvider({
       twRepoTree,
       twRepoTreeManifest,
       twRepoTreeErrorMessage,
+      books,
     },
+    actions: {
+      setBooks,
+    }
   };
 
   return (

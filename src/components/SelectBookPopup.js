@@ -22,6 +22,7 @@ export default function SelectBookPopup(
 
   const handleClickNext = () => {
     onNext(value)
+    handleClickClose()
   }
 
   
@@ -37,7 +38,7 @@ export default function SelectBookPopup(
     >
       <Card
         closeable
-        title={'Select a Book'}
+        title={`Select a Book                    `}
         onClose={handleClickClose}
         classes={{
           dragIndicator: 'draggable-dialog-title',
@@ -48,7 +49,7 @@ export default function SelectBookPopup(
           id="select-book"
           value={value}
           onChange={(event, newValue) => {
-            console.log("setValue:", newValue)
+            console.log("Autocomplete() onchange() setValue:", newValue)
             setValue(newValue);
           }}
           renderInput={(params) => <TextField {...params} label="Select" margin="normal" />}

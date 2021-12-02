@@ -12,6 +12,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Drawer from '@components/Drawer'
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
+import { AdminContext } from '@context/AdminContext'
 import FeedbackPopup from '@components/FeedbackPopup'
 import SelectBookPopup from './SelectBookPopup'
 
@@ -50,6 +51,7 @@ export default function Header({
   const [drawerOpen, setOpen] = useState(false)
   const { actions: { logout } } = useContext(AuthContext)
   const { state: { owner }, actions: { checkUnsavedChanges } } = useContext(StoreContext)
+  const { state: { books }, actions: { setBooks } } = useContext(AdminContext)
 
   const handleDrawerOpen = () => {
     if (!drawerOpen) {
@@ -72,7 +74,13 @@ export default function Header({
   }
 
   const onNext = (value) => {
-    console.log("select a book:", value)
+    if ( books && setBooks ) {
+      console.log("Header() selected a book:", value)
+      let _books = books
+      _books.push(value.id)
+      console.log("Header() new array of books:", _books)
+      setBooks(_books)
+    }
   }
 
 
@@ -102,7 +110,7 @@ export default function Header({
             {
               user && owner &&
               <Fab color="primary" aria-label="add" variant="extended"
-                onClick={() => {setShowModal(true); console.log("setting model to show")}}
+                onClick={() => { setShowModal(true)} }
               >
                 <AddIcon className={classes.extendedIcon}  />
                 Book
