@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
+import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import DraggableModal from 'translation-helps-rcl/dist/components/DraggableModal'
 import Card from 'translation-helps-rcl/dist/components/Card'
+import { bookSelectList } from '@common/BooksOfTheBible'
 
 export default function SelectBookPopup(
 {
@@ -11,11 +14,21 @@ export default function SelectBookPopup(
   setShowModal,
 }) {
 
+  const [value, setValue] = useState(null)
 
   const handleClickClose = () => {
     setShowModal(false)
   }
 
+  const handleClickNext = () => {
+    onNext(value)
+  }
+
+  
+  const defaultProps = {
+    options: bookSelectList(),
+    getOptionLabel: (option) => option.name,
+  };
 
   return (
     <DraggableModal
@@ -30,15 +43,22 @@ export default function SelectBookPopup(
           dragIndicator: 'draggable-dialog-title',
         }}
       >
-        <div style={{ padding: '45px', fontWeight: 'bold' }}>
-          Hello! You can drag me by holding on the drag icon.
-        </div>
+        <Autocomplete
+          {...defaultProps}
+          id="select-book"
+          value={value}
+          onChange={(event, newValue) => {
+            console.log("setValue:", newValue)
+            setValue(newValue);
+          }}
+          renderInput={(params) => <TextField {...params} label="Select" margin="normal" />}
+        />        
         <Button
           size='large'
           color='primary'
           className='my-3'
           variant='contained'
-          onClick={onNext}
+          onClick={handleClickNext}
         >
           Next
         </Button>

@@ -71,8 +71,8 @@ export default function Header({
     setFeedback && setFeedback(false)
   }
 
-  const onNext = () => {
-    console.log("select a book")
+  const onNext = (value) => {
+    console.log("select a book:", value)
   }
 
 
@@ -111,7 +111,7 @@ export default function Header({
           </>
           <> 
             <SelectBookPopup 
-              onNext={() => onNext()} 
+              onNext={(value) => onNext(value)} 
               showModal={showModal}
               setShowModal={setShowModal}
             /> 

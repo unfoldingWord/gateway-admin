@@ -223,3 +223,11 @@ export const TN_FILENAMES = {
 export function isNT(bookId) {
   return NT_BOOKS.includes(bookId)
 }
+
+export function bookSelectList() {
+  return Object.keys(ALL_BIBLE_BOOKS).map(
+    (bookId) => {
+      return { id: bookId, name: ALL_BIBLE_BOOKS[bookId] }
+    }
+  )
+}
