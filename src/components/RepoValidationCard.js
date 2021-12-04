@@ -9,6 +9,7 @@ import { AdminContext } from '@context/AdminContext'
 import DenseTable from '@components/DenseTable'
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 import { WORKING, OK } from '@common/constants'
+import CircularProgress from '@components/CircularProgress'
 
 export default function RepoValidationCard({
   bookId,
@@ -32,6 +33,9 @@ export default function RepoValidationCard({
   const [sqBookErrorMsg, setSqBookErrorMsg] = useState(null)
   // TQ 
   const [snBookErrorMsg, setSnBookErrorMsg] = useState(null)
+  // edit to fix stuff
+  //const [edit, setEdit] = useState(<CircularProgress size='10'/>)
+  const [edit, setEdit] = useState("---")
 
   const {
     state: {
@@ -230,17 +234,17 @@ export default function RepoValidationCard({
     _ltRepo += "_glt"
     _stRepo += "_gst"
   }
-  const headers = ["Resource", "Repo", "Status"]
+  const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
-    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg ],
-    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg ],
-    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg ],
-    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg ],
-    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg ],
-    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg ],
-    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg ],
-    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg ],
-    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg ],
+    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg, edit ],
+    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg, edit ],
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg, edit ],
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg, edit ],
+    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg, edit ],
+    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg, edit ],
+    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg, edit ],
+    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg, edit ],
+    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, edit ],
   ]
 
   return (
