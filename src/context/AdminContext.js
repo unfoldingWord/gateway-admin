@@ -41,6 +41,9 @@ export default function AdminContextProvider({
       server,
       languageId,
     },
+    actions: {
+      setCurrentLayout,
+    }
   } = useContext(StoreContext)
 
 
@@ -116,6 +119,11 @@ export default function AdminContextProvider({
     },
   } = useTwRepoValidation({authentication, owner, server, languageId});
 
+  const _setBooks = (value) => {
+    setBooks(value)
+    setCurrentLayout(null)
+  }
+
   // create the value for the context provider
   const context = {
     state: {
@@ -149,7 +157,7 @@ export default function AdminContextProvider({
       books,
     },
     actions: {
-      setBooks,
+      setBooks: _setBooks,
     }
   };
 

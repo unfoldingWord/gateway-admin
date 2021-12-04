@@ -49,11 +49,6 @@ export default function StoreContextProvider(props) {
   // TODO blm: for now we use unfoldingWord for original language bibles
   const [scriptureOwner, setScriptureOwner] = useState('unfoldingWord')
   const [appRef, setAppRef] = useUserLocalStorage('appRef', 'master') // default for app
-  const [bibleReference, setBibleReference] = useUserLocalStorage('bibleReference', {
-    bookId: 'mat',
-    chapter: '1',
-    verse: '1',
-  })
 
   const [greekRepoUrl, setGreekRepoUrl] = useLocalStorage('greekRepoUrl', null)
   const [hebrewRepoUrl, setHebrewRepoUrl] = useLocalStorage('hebrewRepoUrl', null)
@@ -95,7 +90,6 @@ export default function StoreContextProvider(props) {
     state: {
       showAccountSetup,
       scriptureOwner,
-      bibleReference,
       selectedQuote,
       languageId,
       taArticle,
