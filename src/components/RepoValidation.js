@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-//import useDeepEffect from 'use-deep-compare-effect';
+import useDeepEffect from 'use-deep-compare-effect';
 
 import { Workspace } from 'resource-workspace-rcl'
 import { makeStyles } from '@material-ui/core/styles'
@@ -50,6 +50,11 @@ function RepoValidation() {
     }
   } = useContext(AdminContext)
   console.log("RepoValidation() books:",books)
+  // test code...
+  useDeepEffect( () => {
+    console.log("RepoValidation() books:", books)
+  }, [books])
+  
   // after a bit update the books and see what happens
   //setTimeout( () => setBooks(['jud','rut']), 1000*10);
 
@@ -168,8 +173,8 @@ function RepoValidation() {
             setCurrentLayout(layouts)
           }}
 
-          minW={30}
-          minH={40}
+          minW={3}
+          minH={4}
 
           rowHeight={25}
           layoutWidths={[

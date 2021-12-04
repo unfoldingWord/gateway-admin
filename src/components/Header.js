@@ -80,6 +80,8 @@ export default function Header({
       _books.push(value.id)
       console.log("Header() new array of books:", _books)
       setBooks(_books)
+      // after a bit update the books and see what happens
+      setTimeout( () => console.log("Header() after setBooks, books:",books), 1 );
     }
   }
 
