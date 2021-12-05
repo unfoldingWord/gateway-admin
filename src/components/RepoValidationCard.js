@@ -21,7 +21,8 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 
 export default function RepoValidationCard({
   bookId,
-  classes
+  classes,
+  onClose: removeBook,
 }) {
   // TN
   const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
@@ -41,9 +42,6 @@ export default function RepoValidationCard({
   const [sqBookErrorMsg, setSqBookErrorMsg] = useState(null)
   // TQ 
   const [snBookErrorMsg, setSnBookErrorMsg] = useState(null)
-  // edit to fix stuff
-  //const [edit, setEdit] = useState(<CircularProgress size='10'/>)
-  const [edit, setEdit] = useState(<CreateIcon/>)
 
   const {
     state: {
@@ -311,7 +309,12 @@ export default function RepoValidationCard({
   ]
 
   return (
-    <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true} closeable={true}>
+    <Card title={ALL_BIBLE_BOOKS[bookId]} 
+      classes={classes} 
+      hideMarkdownToggle={true} 
+      closeable={true}
+      onClose={() => removeBook(bookId)}
+    >
       <TreeView aria-label="RepoCardView"
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}

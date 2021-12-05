@@ -21,7 +21,7 @@ export default function AdminContextProvider({
   children,
 }) {
 
-  const [books, setBooks] = useLocalStorage('books',['gen'])
+  const [books, setBooks] = useLocalStorage('books',[])
   //const [books, setBooks] = useState(['gen'])
 
   // test code...

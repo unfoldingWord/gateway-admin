@@ -50,6 +50,14 @@ function RepoValidation() {
     }
   } = useContext(AdminContext)
   console.log("RepoValidation() books:",books)
+
+  const removeBook = (bookId) => {
+    const _books = books.filter( (b) => {
+      return b !== bookId
+    })
+    setBooks(_books)
+  }
+
   // test code...
   useDeepEffect( () => {
     console.log("RepoValidation() books:", books)
@@ -244,6 +252,7 @@ function RepoValidation() {
               <RepoValidationCard 
                 bookId={bookId} 
                 classes={classes} 
+                onClose={removeBook}
               />
             )
           }
