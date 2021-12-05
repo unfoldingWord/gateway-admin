@@ -1,4 +1,8 @@
 import { useEffect, useState, useContext } from 'react'
+import TreeView from '@material-ui/lab/TreeView'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import TreeItem from '@material-ui/lab/TreeItem'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -9,7 +13,7 @@ import { AdminContext } from '@context/AdminContext'
 import DenseTable from '@components/DenseTable'
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 import { WORKING, OK } from '@common/constants'
-//import CircularProgress from '@components/CircularProgress'
+
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
@@ -308,7 +312,17 @@ export default function RepoValidationCard({
 
   return (
     <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true} closeable={true}>
-      <DenseTable cols={headers} rows={rows} />
+      <TreeView aria-label="RepoCardView"
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        <TreeItem nodeId="0" label="Assigments">
+          <p>Under construction!</p>
+        </TreeItem>
+        <TreeItem nodeId="1" label="Resources">
+          <DenseTable cols={headers} rows={rows} />
+        </TreeItem>
+      </TreeView>
     </Card>
   )
 }
@@ -318,3 +332,22 @@ RepoValidationCard.propTypes = {
   bookId: PropTypes.string,
   classes: PropTypes.object,
 }
+
+/*
+<TreeView
+  aria-label="file system navigator"
+  defaultCollapseIcon={<ExpandMoreIcon />}
+  defaultExpandIcon={<ChevronRightIcon />}
+  sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
+>
+  <TreeItem nodeId="1" label="Applications">
+    <TreeItem nodeId="2" label="Calendar" />
+  </TreeItem>
+  <TreeItem nodeId="5" label="Documents">
+    <TreeItem nodeId="10" label="OSS" />
+    <TreeItem nodeId="6" label="MUI">
+      <TreeItem nodeId="8" label="index.js" />
+    </TreeItem>
+  </TreeItem>
+</TreeView>
+*/
