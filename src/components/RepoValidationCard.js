@@ -307,7 +307,7 @@ export default function RepoValidationCard({
   ]
 
   return (
-    <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true} >
+    <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true} closeable={true}>
       <DenseTable cols={headers} rows={rows} />
     </Card>
   )
