@@ -9,7 +9,11 @@ import { AdminContext } from '@context/AdminContext'
 import DenseTable from '@components/DenseTable'
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 import { WORKING, OK } from '@common/constants'
-import CircularProgress from '@components/CircularProgress'
+//import CircularProgress from '@components/CircularProgress'
+import CreateIcon from '@material-ui/icons/Create'
+import DoneIcon from '@material-ui/icons/Done'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+import VisibilityIcon from '@material-ui/icons/Visibility'
 
 export default function RepoValidationCard({
   bookId,
@@ -35,7 +39,7 @@ export default function RepoValidationCard({
   const [snBookErrorMsg, setSnBookErrorMsg] = useState(null)
   // edit to fix stuff
   //const [edit, setEdit] = useState(<CircularProgress size='10'/>)
-  const [edit, setEdit] = useState("---")
+  const [edit, setEdit] = useState(<CreateIcon/>)
 
   const {
     state: {
@@ -234,17 +238,72 @@ export default function RepoValidationCard({
     _ltRepo += "_glt"
     _stRepo += "_gst"
   }
+  const applyIcon = (repo,repoErr,bookErr) => {
+    const allIsWell = repoErr || bookErr
+    if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+      if ( bookErr === WORKING ) {
+        return (
+          <p>`${WORKING}`</p>
+        )
+      }
+    }
+
+    if ( repoErr === null && bookErr === null ) {
+      return (
+        <p>`${WORKING}`</p>
+      )
+    }
+    if ( allIsWell === OK ) {
+      return (
+        <DoneIcon/>
+      )
+    }
+    if ( repoErr !== null ) {
+      return (
+        <AddCircleOutlineIcon />
+      )
+    }
+    if ( bookErr !== null ) {
+      if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+        return (
+          <VisibilityIcon />
+        )
+      }
+      return (
+        <CreateIcon/>
+      )
+    }
+
+  }
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
-    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg, edit ],
-    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg, edit ],
-    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg, edit ],
-    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg, edit ],
-    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg, edit ],
-    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg, edit ],
-    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg, edit ],
-    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg, edit ],
-    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, edit ],
+    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg, 
+      applyIcon(_ltRepo,ltRepoTreeErrorMessage,ltBookErrorMsg) 
+    ],
+    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg, 
+      applyIcon(_stRepo,stRepoTreeErrorMessage,stBookErrorMsg) 
+    ],
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg, 
+      applyIcon(`${languageId}_tn`,tnRepoTreeErrorMessage,tnBookErrorMsg) 
+    ],
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg, 
+      applyIcon(`${languageId}_twl`,twlRepoTreeErrorMessage,twlBookErrorMsg) 
+    ],
+    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg, 
+      applyIcon(`${languageId}_tw`,twRepoTreeErrorMessage,twErrorMsg) 
+    ],
+    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg, 
+      applyIcon(`${languageId}_ta`,taRepoTreeErrorMessage,taErrorMsg) 
+    ],
+    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg, 
+      applyIcon(`${languageId}_tq`,tqRepoTreeErrorMessage,tqBookErrorMsg) 
+    ],
+    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg, 
+      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg) 
+    ],
+    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, 
+      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg) 
+    ],
   ]
 
   return (
