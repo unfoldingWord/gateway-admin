@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
 import { WORKING } from '@common/constants';
 
-export default function useTwRepoValidation({authentication, owner, server, languageId}) {
+export default function useTwRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
   const [{twRepoTree, 
     twRepoTreeManifest, 
     twRepoTreeErrorMessage}, 
@@ -16,12 +16,13 @@ export default function useTwRepoValidation({authentication, owner, server, lang
       const {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMesage} =  await getTreesManifest(authentication, url)
       setValues({twRepoTree: _tree, twRepoTreeManifest: _manifest, twRepoTreeErrorMessage: _errorMesage})
     }
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId])
+  }, [authentication, owner, server, languageId, refresh, setRefresh])
 
   return {
     state: {

@@ -17,7 +17,7 @@ export default function useSnRepoValidation({authentication, owner, server, lang
       setValues({snRepoTree: _tree, snRepoTreeManifest: _manifest, snRepoTreeErrorMessage: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
       setRefresh(false)
     } else {

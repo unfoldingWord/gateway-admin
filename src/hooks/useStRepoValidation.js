@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
 import { WORKING } from '@common/constants';
 
-export default function useStRepoValidation({authentication, owner, server, languageId}) {
+export default function useStRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
   const [{stRepoTree, 
     stRepoTreeManifest, 
     stRepoTreeErrorMessage}, 
@@ -23,12 +23,13 @@ export default function useStRepoValidation({authentication, owner, server, lang
       setValues({stRepoTree: _tree, stRepoTreeManifest: _manifest, stRepoTreeErrorMessage: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId])
+  }, [authentication, owner, server, languageId, refresh, setRefresh])
 
   return {
     state: {
