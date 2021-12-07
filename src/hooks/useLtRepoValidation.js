@@ -25,6 +25,7 @@ export default function useLtRepoValidation({authentication, owner, server, lang
 
     if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
