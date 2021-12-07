@@ -253,14 +253,14 @@ export default function RepoValidationCard({
     if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
       if ( bookErr === WORKING ) {
         return (
-          <p>`${WORKING}`</p>
+          <p>{WORKING}</p>
         )
       }
     }
 
     if ( repoErr === null && bookErr === null ) {
       return (
-        <p>`${WORKING}`</p>
+        <p>{WORKING}</p>
       )
     }
     if ( allIsWell === OK ) {
