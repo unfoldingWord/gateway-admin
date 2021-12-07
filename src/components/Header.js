@@ -75,13 +75,11 @@ export default function Header({
 
   const onNext = (value) => {
     if ( books && setBooks ) {
-      console.log("Header() selected a book:", value)
       let _books = books
       _books.push(value.id)
-      console.log("Header() new array of books:", _books)
       setBooks(_books)
       // after a bit update the books and see what happens
-      setTimeout( () => console.log("Header() after setBooks, books:",books), 1 );
+      //setTimeout( () => console.log("Header() after setBooks, books:",books), 1 );
     }
   }
 

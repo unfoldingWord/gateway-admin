@@ -1,15 +1,9 @@
 import Path from 'path';
 import base64 from 'base-64';
 import utf8 from 'utf8';
-import yaml from 'yaml';
-import localforage from 'localforage';
-import { setup } from 'axios-cache-adapter';
 import _ from "lodash";
 import { apiPath } from '@common/constants'
 import getResourceManifest from '@common/manifests'
-
-
-
 
 export async function repoExists(server, username, repository, tokenid) {
 
@@ -25,34 +19,6 @@ export async function repoExists(server, username, repository, tokenid) {
     repoExistsFlag = true;
   } 
   return repoExistsFlag;
-}
-
-export async function manifestExists(username, repository, tokenid) {
-
-  // example: https://qa.door43.org/api/v1/repos/translate_test/en_ta/raw/manifest.yaml
-  //          https://qa.door43.org/translate_test/en_ta/raw/branch/master/manifest.yaml
-  const uri = Path.join(username,repository,'raw','branch/master/manifest.yaml');
-  let manifestInfo = {status: false, valid: false, format: 'UNKNOWN'}
-  try {
-    const { data } = await Door43Api.get(uri+'?token='+tokenid, {});
- 
-    if ( data ) {
-      // success
-      manifestInfo.status = true;
-      const manifestContents = data;
-      try {
-        let manifestJson = yaml.parse(manifestContents);
-        manifestInfo.valid = true;
-        if ( manifestJson.dublin_core.format ) manifestInfo.format = manifestJson.dublin_core.format;
-      }
-      catch (yamlError) {
-        console.error(`${username} ${repository} manifest yaml parse error: ${yamlError.message}`);
-      }
-    } 
-  } catch (geterror) {
-    //console.error("Error:",geterror,"on:",uri);
-  }
-  return manifestInfo;
 }
 
 export async function repoCreate({server, username, repository, tokenid}) {
@@ -80,11 +46,11 @@ export async function repoCreate({server, username, repository, tokenid}) {
 
 // swagger: https://qa.door43.org/api/v1/swagger#/repository/repoCreateFile
 // template: /repos/{owner}/{repo}/contents/{filepath}
-export async function manifestCreate({username, repository, tokenid}) {
+export async function manifestCreate({server, username, repository, tokenid}) {
   const resourceId = repository.split('_')[1];
   const manifest = getResourceManifest( {resourceId} );
   const content = base64.encode(utf8.encode(manifest));
-  const uri = Path.join(base_url,apiPath,'repos',username,repository,'contents','manifest.yaml') ;
+  const uri = Path.join(server,apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());
   const dateString = date.toISOString();
   const res = await fetch(uri+'?token='+tokenid, {
@@ -112,28 +78,3 @@ export async function manifestCreate({username, repository, tokenid}) {
 
   return res
 }
-
-
-// caches http file fetches done by fetchFileFromServer()
-const cacheStore = localforage.createInstance({
-  driver: [localforage.INDEXEDDB],
-  name: 'web-cache',
-});
-
-
-// API for http requests
-const Door43Api = setup({
-  baseURL: baseURL,
-  cache: {
-    store: cacheStore,
-    maxAge: 5 * 60 * 1000, // 5-minutes
-    exclude: { query: false },
-    key: req => {
-      // if (req.params) debugger
-      let serialized = req.params instanceof URLSearchParams ?
-        req.params.toString() : JSON.stringify(req.params) || '';
-      return req.url + serialized;
-    },
-  },
-});
-

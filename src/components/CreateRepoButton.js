@@ -2,6 +2,10 @@ import {useState, useEffect, useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import MuiAlert from '@material-ui/lab/Alert'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
+import { Tooltip } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
+
 import { AuthContext } from '@context/AuthContext'
 import * as dcsApis from '@utils/dcsApis'
 
@@ -41,67 +45,44 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function CreateRepoButton({ active, server, owner, repo }) {
-  console.log("CreateRepoButton() active, server, owner, repo:", active, server, owner, repo)
-  const {authentication} = useContext(AuthContext)
+function CreateRepoButton({ active, server, owner, repo, onRefresh }) {
+  const {
+    state: {
+      authentication,
+    },
+  } = useContext(AuthContext)
 
   const [submitCreate, setSubmitCreate] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [showError, setShowError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
    
   useEffect(() => {
     if ( !submitCreate ) return;
 
-    
     async function doSubmitCreate() {
       const tokenid = authentication.token.sha1;
       const res = await dcsApis.repoCreate({server: server, username: owner, repository: repo, tokenid})
     
       if (res.status === 201) {
-        setShowSuccess(true)
-        const manifestCreateRes = await dcsApis.manifestCreate({username: owner, repository: repo, tokenid})
+        const manifestCreateRes = await dcsApis.manifestCreate({server: server, username: owner, repository: repo, tokenid})
         if ( manifestCreateRes.status === 201 ) {
-          setShowSuccess(true)
+          // continue
         } else {
-          setErrorMessage('Repo created, but manifest creation failed with Error: '+manifestCreateRes.status+' ('+manifestCreateRes.statusText+')')
-          setShowError(true)
+          console.log('manifest Create Error Response:', manifestCreateRes)
         }
       } else {
-          console.log('response:', res)
-          setErrorMessage('Error: '+res.status+' ('+res.statusText+')')
-          setShowError(true)
+          console.log('repo Create Error Response:', res)
       }
-    
+      onRefresh(true)    
     }
-    
-    doSubmitCreate();
-    setSubmitCreate(false);
-  }, [submitCreate, server, owner, repo])
-    
-  function dismissAlert() {
-    setShowError(false);
-    setShowSuccess(false);
-  }
+    doSubmitCreate()
+  }, [submitCreate, server, owner, repo, onRefresh])
     
   const classes = useStyles({ active })
   return (
-    <div>
-      <Button className={classes.root} onClick={() => setSubmitCreate(true)} >
-          Create Repo
-      </Button>
-      {showSuccess || showError ? (
-          <Alert
-            onDismiss={() => dismissAlert()}
-            severity={showSuccess ? 'success' : 'error'}
-            message={
-            showSuccess
-                ? `Repo Created!`
-                : errorMessage
-            }
-          />
-      ) : null}
-    </div>
+      <Tooltip title="Create Repo">
+        <IconButton className={classes.iconButton} onClick={() => setSubmitCreate(true)} aria-label="Create Repo">
+          <AddCircleIcon />
+        </IconButton>
+      </Tooltip>
   )
 }
 

@@ -3,13 +3,6 @@ import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -24,8 +17,10 @@ import { WORKING, OK } from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import VisibilityIcon from '@material-ui/icons/Visibility'
+
+import CreateRepoButton from './CreateRepoButton'
+import DenseTable from './DenseTable'
 
 export default function RepoValidationCard({
   bookId,
@@ -65,35 +60,40 @@ export default function RepoValidationCard({
     },
   } = useContext(StoreContext)
 
-  const { state: {
-    tnRepoTree, 
-    tnRepoTreeManifest,
-    tnRepoTreeErrorMessage,
-    twlRepoTree,
-    twlRepoTreeManifest,
-    twlRepoTreeErrorMessage,
-    ltRepoTree,
-    ltRepoTreeManifest,
-    ltRepoTreeErrorMessage,
-    stRepoTree,
-    stRepoTreeManifest,
-    stRepoTreeErrorMessage,
-    tqRepoTree,
-    tqRepoTreeManifest,
-    tqRepoTreeErrorMessage,
-    sqRepoTree,
-    sqRepoTreeManifest,
-    sqRepoTreeErrorMessage,
-    snRepoTree,
-    snRepoTreeManifest,
-    snRepoTreeErrorMessage,
-    taRepoTree,
-    taRepoTreeManifest,
-    taRepoTreeErrorMessage,
-    twRepoTree,
-    twRepoTreeManifest,
-    twRepoTreeErrorMessage,
-  } } = useContext(AdminContext)
+  const { 
+    state: {
+      tnRepoTree, 
+      tnRepoTreeManifest,
+      tnRepoTreeErrorMessage,
+      twlRepoTree,
+      twlRepoTreeManifest,
+      twlRepoTreeErrorMessage,
+      ltRepoTree,
+      ltRepoTreeManifest,
+      ltRepoTreeErrorMessage,
+      stRepoTree,
+      stRepoTreeManifest,
+      stRepoTreeErrorMessage,
+      tqRepoTree,
+      tqRepoTreeManifest,
+      tqRepoTreeErrorMessage,
+      sqRepoTree,
+      sqRepoTreeManifest,
+      sqRepoTreeErrorMessage,
+      snRepoTree,
+      snRepoTreeManifest,
+      snRepoTreeErrorMessage,
+      taRepoTree,
+      taRepoTreeManifest,
+      taRepoTreeErrorMessage,
+      twRepoTree,
+      twRepoTreeManifest,
+      twRepoTreeErrorMessage,
+    },
+    actions: {
+      setRefresh,
+    }
+  } = useContext(AdminContext)
 
   function checkManifestBook(manifest, repoTree, setError) {
     let projects = []
@@ -270,7 +270,7 @@ export default function RepoValidationCard({
     }
     if ( repoErr !== null ) {
       return (
-        <AddCircleOutlineIcon />
+        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} onRefresh={setRefresh} />
       )
     }
     if ( bookErr !== null ) {
@@ -312,7 +312,7 @@ export default function RepoValidationCard({
       applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg) 
     ],
     ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, 
-      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg) 
+      applyIcon(`${languageId}_sn`,snRepoTreeErrorMessage,snBookErrorMsg) 
     ],
   ]
 
@@ -328,38 +328,12 @@ export default function RepoValidationCard({
         defaultExpandIcon={<ChevronRightIcon />}
       >
         <TreeItem nodeId="1" label="Resources">
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="repoInitTable">
-              <TableHead>
-                <TableRow>
-                  {
-                    headers.map( (header) => (
-                      <TableCell>{header}</TableCell>
-                    ))
-                  }
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row[0]}>
-                    <TableCell component="th" scope="row">
-                      {row[0]}
-                    </TableCell>
-                    <TableCell>{row[1]}</TableCell>
-                    <TableCell>{row[2]}</TableCell>
-                    <TableCell>{row[3]}</TableCell>
-                    <TableCell>{row[4]}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <DenseTable cols={headers} rows={rows} />
         </TreeItem>
       </TreeView>
     </Card>
   )
 }
-
 
 RepoValidationCard.propTypes = {
   bookId: PropTypes.string,

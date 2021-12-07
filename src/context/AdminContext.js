@@ -12,8 +12,6 @@ import useSnRepoValidation from '@hooks/useSnRepoValidation'
 import useTaRepoValidation from '@hooks/useTaRepoValidation'
 import useTwRepoValidation from '@hooks/useTwRepoValidation'
 import useLocalStorage from '@hooks/useLocalStorage'
-import useDeepEffect from 'use-deep-compare-effect';
-
 
 export const AdminContext = React.createContext({});
 
@@ -22,13 +20,8 @@ export default function AdminContextProvider({
 }) {
 
   const [books, setBooks] = useLocalStorage('books',[])
-  //const [books, setBooks] = useState(['gen'])
+  const [refresh, setRefresh] = useState(true)
 
-  // test code...
-  useDeepEffect( () => {
-    console.log("AdminContext() books:", books)
-  }, [books])
-  
   const {
     state: {
       authentication,
@@ -93,7 +86,7 @@ export default function AdminContextProvider({
       snRepoTreeManifest,
       snRepoTreeErrorMessage,
     },
-  } = useSnRepoValidation({authentication, owner, server, languageId});
+  } = useSnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -101,7 +94,7 @@ export default function AdminContextProvider({
       sqRepoTreeManifest,
       sqRepoTreeErrorMessage,
     },
-  } = useSqRepoValidation({authentication, owner, server, languageId});
+  } = useSqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -158,6 +151,7 @@ export default function AdminContextProvider({
     },
     actions: {
       setBooks: _setBooks,
+      setRefresh: setRefresh,
     }
   };
 

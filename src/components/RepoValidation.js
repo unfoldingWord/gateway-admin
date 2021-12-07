@@ -52,7 +52,6 @@ function RepoValidation() {
       setBooks,
     }
   } = useContext(AdminContext)
-  console.log("RepoValidation() books:",books)
 
   const removeBook = (bookId) => {
     const _books = books.filter( (b) => {
@@ -60,14 +59,6 @@ function RepoValidation() {
     })
     setBooks(_books)
   }
-
-  // test code...
-  useDeepEffect( () => {
-    console.log("RepoValidation() books:", books)
-  }, [books])
-  
-  // after a bit update the books and see what happens
-  //setTimeout( () => setBooks(['jud','rut']), 1000*10);
 
   const {
     state: {
@@ -153,16 +144,6 @@ function RepoValidation() {
       setWorkspaceReady(true)
     }// eslint-disable-next-line
   }, [owner, languageId, appRef, server, loggedInUser])
-
-  /* didn't work
-  const [cards, setCards] = useState([])
-  useDeepEffect( () => {
-    if ( books ) {
-      console.log("useDeepEffect() books:",books)
-      setCards(books)
-    }
-  }, [books])
-  */
 
   const config = {
     server,
