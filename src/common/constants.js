@@ -43,3 +43,5 @@ export const CLOSE = 'Close'
 export const LOADING = 'Loading...'
 export const WORKING = 'Working...'
 export const OK = 'OK'
+
+export const apiPath  = 'api/v1'

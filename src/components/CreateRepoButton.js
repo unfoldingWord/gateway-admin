@@ -1,9 +1,7 @@
 import {useState, useEffect, useContext} from 'react'
-//import Path from 'path';
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import MuiAlert from '@material-ui/lab/Alert'
-//import { base_url, apiPath } from '@common/constants'
 import { AuthContext } from '@context/AuthContext'
 import * as dcsApis from '@utils/dcsApis'
 
@@ -43,7 +41,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function CreateRepoButton({active, owner, languageId, resourceId, refresh }) {
+function CreateRepoButton({ active, server, owner, repo }) {
+  console.log("CreateRepoButton() active, server, owner, repo:", active, server, owner, repo)
   const {authentication} = useContext(AuthContext)
 
   const [submitCreate, setSubmitCreate] = useState(false)
@@ -54,20 +53,14 @@ function CreateRepoButton({active, owner, languageId, resourceId, refresh }) {
   useEffect(() => {
     if ( !submitCreate ) return;
 
-    if ( owner.toLowerCase() === 'unfoldingword') {
-      if ( resourceId === 'glt' ) resourceId = 'ult';
-      if ( resourceId === 'gst' ) resourceId = 'ust';
-    }
-  
-    const rid = languageId + '_' + resourceId.toLowerCase();
     
     async function doSubmitCreate() {
       const tokenid = authentication.token.sha1;
-      const res = await dcsApis.repoCreate({username: owner, repository: rid, tokenid})
+      const res = await dcsApis.repoCreate({server: server, username: owner, repository: repo, tokenid})
     
       if (res.status === 201) {
         setShowSuccess(true)
-        const manifestCreateRes = await dcsApis.manifestCreate({username: owner, repository: rid, tokenid})
+        const manifestCreateRes = await dcsApis.manifestCreate({username: owner, repository: repo, tokenid})
         if ( manifestCreateRes.status === 201 ) {
           setShowSuccess(true)
         } else {
@@ -84,12 +77,11 @@ function CreateRepoButton({active, owner, languageId, resourceId, refresh }) {
     
     doSubmitCreate();
     setSubmitCreate(false);
-  }, [submitCreate, owner, languageId, resourceId])
+  }, [submitCreate, server, owner, repo])
     
   function dismissAlert() {
     setShowError(false);
     setShowSuccess(false);
-    refresh(true);
   }
     
   const classes = useStyles({ active })

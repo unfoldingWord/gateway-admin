@@ -33,6 +33,9 @@ const useStyles = makeStyles(() => ({
     backgroundColor: 'transparent',
   },
   dragIndicator: {},
+  label: {
+    color: 'red',
+  }
 }))
 
 function RepoValidation() {

@@ -3,6 +3,13 @@ import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Paper from '@material-ui/core/Paper'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -10,7 +17,8 @@ import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import DenseTable from '@components/DenseTable'
+import React from 'react';
+//import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 import { WORKING, OK } from '@common/constants'
 
@@ -319,11 +327,33 @@ export default function RepoValidationCard({
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        <TreeItem nodeId="0" label="Assigments">
-          <p>Under construction!</p>
-        </TreeItem>
         <TreeItem nodeId="1" label="Resources">
-          <DenseTable cols={headers} rows={rows} />
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="repoInitTable">
+              <TableHead>
+                <TableRow>
+                  {
+                    headers.map( (header) => (
+                      <TableCell>{header}</TableCell>
+                    ))
+                  }
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row[0]}>
+                    <TableCell component="th" scope="row">
+                      {row[0]}
+                    </TableCell>
+                    <TableCell>{row[1]}</TableCell>
+                    <TableCell>{row[2]}</TableCell>
+                    <TableCell>{row[3]}</TableCell>
+                    <TableCell>{row[4]}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </TreeItem>
       </TreeView>
     </Card>
@@ -336,21 +366,3 @@ RepoValidationCard.propTypes = {
   classes: PropTypes.object,
 }
 
-/*
-<TreeView
-  aria-label="file system navigator"
-  defaultCollapseIcon={<ExpandMoreIcon />}
-  defaultExpandIcon={<ChevronRightIcon />}
-  sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
->
-  <TreeItem nodeId="1" label="Applications">
-    <TreeItem nodeId="2" label="Calendar" />
-  </TreeItem>
-  <TreeItem nodeId="5" label="Documents">
-    <TreeItem nodeId="10" label="OSS" />
-    <TreeItem nodeId="6" label="MUI">
-      <TreeItem nodeId="8" label="index.js" />
-    </TreeItem>
-  </TreeItem>
-</TreeView>
-*/
