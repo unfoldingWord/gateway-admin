@@ -46,7 +46,7 @@ export default function AdminContextProvider({
       tnRepoTreeManifest,
       tnRepoTreeErrorMessage,
     },
-  } = useTnRepoValidation({authentication, owner, server, languageId});
+  } = useTnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -54,7 +54,7 @@ export default function AdminContextProvider({
       twlRepoTreeManifest,
       twlRepoTreeErrorMessage,
     },
-  } = useTwlRepoValidation({authentication, owner, server, languageId});
+  } = useTwlRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
   
   const {
     state: {
@@ -62,7 +62,7 @@ export default function AdminContextProvider({
       ltRepoTreeManifest,
       ltRepoTreeErrorMessage,
     },
-  } = useLtRepoValidation({authentication, owner, server, languageId});
+  } = useLtRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -70,7 +70,7 @@ export default function AdminContextProvider({
       stRepoTreeManifest,
       stRepoTreeErrorMessage,
     },
-  } = useStRepoValidation({authentication, owner, server, languageId});
+  } = useStRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -78,7 +78,7 @@ export default function AdminContextProvider({
       tqRepoTreeManifest,
       tqRepoTreeErrorMessage,
     },
-  } = useTqRepoValidation({authentication, owner, server, languageId});
+  } = useTqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -102,7 +102,7 @@ export default function AdminContextProvider({
       taRepoTreeManifest,
       taRepoTreeErrorMessage,
     },
-  } = useTaRepoValidation({authentication, owner, server, languageId});
+  } = useTaRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -110,7 +110,7 @@ export default function AdminContextProvider({
       twRepoTreeManifest,
       twRepoTreeErrorMessage,
     },
-  } = useTwRepoValidation({authentication, owner, server, languageId});
+  } = useTwRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const _setBooks = (value) => {
     setBooks(value)
