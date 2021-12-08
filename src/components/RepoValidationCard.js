@@ -1,4 +1,8 @@
 import { useEffect, useState, useContext } from 'react'
+import TreeView from '@material-ui/lab/TreeView'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import TreeItem from '@material-ui/lab/TreeItem'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -6,21 +10,31 @@ import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import DenseTable from '@components/DenseTable'
+import React from 'react';
+//import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
+import { WORKING, OK, REPO_NOT_FOUND } from '@common/constants'
+
+import CreateIcon from '@material-ui/icons/Create'
+import DoneIcon from '@material-ui/icons/Done'
+import VisibilityIcon from '@material-ui/icons/Visibility'
+
+import CreateRepoButton from './CreateRepoButton'
+import DenseTable from './DenseTable'
 
 export default function RepoValidationCard({
   bookId,
-  classes
+  classes,
+  onClose: removeBook,
 }) {
   // TN
   const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
   // TWL
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
   // TW
-  const [twErrorMsg, setTwErrorMsg] = useState("Working...")
+  const [twErrorMsg, setTwErrorMsg] = useState(WORKING)
   // TA
-  const [taErrorMsg, setTaErrorMsg] = useState("Working...")
+  const [taErrorMsg, setTaErrorMsg] = useState(WORKING)
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   // ST (GST or UST)
@@ -46,35 +60,40 @@ export default function RepoValidationCard({
     },
   } = useContext(StoreContext)
 
-  const { state: {
-    tnRepoTree, 
-    tnRepoTreeManifest,
-    tnRepoTreeErrorMessage,
-    twlRepoTree,
-    twlRepoTreeManifest,
-    twlRepoTreeErrorMessage,
-    ltRepoTree,
-    ltRepoTreeManifest,
-    ltRepoTreeErrorMessage,
-    stRepoTree,
-    stRepoTreeManifest,
-    stRepoTreeErrorMessage,
-    tqRepoTree,
-    tqRepoTreeManifest,
-    tqRepoTreeErrorMessage,
-    sqRepoTree,
-    sqRepoTreeManifest,
-    sqRepoTreeErrorMessage,
-    snRepoTree,
-    snRepoTreeManifest,
-    snRepoTreeErrorMessage,
-    taRepoTree,
-    taRepoTreeManifest,
-    taRepoTreeErrorMessage,
-    twRepoTree,
-    twRepoTreeManifest,
-    twRepoTreeErrorMessage,
-  } } = useContext(AdminContext)
+  const { 
+    state: {
+      tnRepoTree, 
+      tnRepoTreeManifest,
+      tnRepoTreeErrorMessage,
+      twlRepoTree,
+      twlRepoTreeManifest,
+      twlRepoTreeErrorMessage,
+      ltRepoTree,
+      ltRepoTreeManifest,
+      ltRepoTreeErrorMessage,
+      stRepoTree,
+      stRepoTreeManifest,
+      stRepoTreeErrorMessage,
+      tqRepoTree,
+      tqRepoTreeManifest,
+      tqRepoTreeErrorMessage,
+      sqRepoTree,
+      sqRepoTreeManifest,
+      sqRepoTreeErrorMessage,
+      snRepoTree,
+      snRepoTreeManifest,
+      snRepoTreeErrorMessage,
+      taRepoTree,
+      taRepoTreeManifest,
+      taRepoTreeErrorMessage,
+      twRepoTree,
+      twRepoTreeManifest,
+      twRepoTreeErrorMessage,
+    },
+    actions: {
+      setRefresh,
+    }
+  } = useContext(AdminContext)
 
   function checkManifestBook(manifest, repoTree, setError) {
     let projects = []
@@ -105,7 +124,7 @@ export default function RepoValidationCard({
         }
       }
       if ( _fileExists ) {
-        setError("OK")
+        setError(OK)
       } else {
         setError("Manifest book not found")
       }
@@ -128,11 +147,11 @@ export default function RepoValidationCard({
     }
 
     // check twl repo first
-    if ( twlRepoTreeErrorMessage === "Working..." ) {
+    if ( twlRepoTreeErrorMessage === WORKING ) {
       return
     }
     // check tw repo first
-    if ( twRepoTreeErrorMessage === "Working..." ) {
+    if ( twRepoTreeErrorMessage === WORKING ) {
       return
     }
     // OK repo is there as is manifest, but we won't be using the manifest for TW
@@ -142,7 +161,7 @@ export default function RepoValidationCard({
       return
     }
     // OK, now check whether the twl book file is present
-    if ( twlBookErrorMsg === "OK" ) {
+    if ( twlBookErrorMsg === OK ) {
       // All looks good... let's get the TWL book file
       // fetch it!
       if (authentication && twRepoTree && twlRepoTree) {
@@ -151,7 +170,7 @@ export default function RepoValidationCard({
     } else {
       setTwErrorMsg("See TWL error")
     }
-  }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg])
+  }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg, OK])
 
   useEffect(() => {
     if ( tnBookErrorMsg === null ) {
@@ -167,21 +186,21 @@ export default function RepoValidationCard({
     }
 
     // check tn repo first
-    if ( tnRepoTreeErrorMessage === "Working..." ) {
+    if ( tnRepoTreeErrorMessage === WORKING ) {
       return
     }
     // check ta repo first
-    if ( taRepoTreeErrorMessage === "Working..." ) {
+    if ( taRepoTreeErrorMessage === WORKING ) {
       return
     }
-    // OK repo is there as is manifest, but we won't be using the manifest for TA
+    // OK, repo is there as is manifest, but we won't be using the manifest for TA
     // Now check to see if there is twlRepo error
     if ( tnRepoTreeErrorMessage !== null ) {
       setTaErrorMsg("No TN Repo")
       return
     }
     // OK, now check whether the tn book file is present
-    if ( tnBookErrorMsg === "OK" ) {
+    if ( tnBookErrorMsg === OK ) {
       // All looks good... let's get the TWL book file
       // fetch it!
       if (authentication && taRepoTree && tnRepoTree) {
@@ -190,7 +209,7 @@ export default function RepoValidationCard({
     } else {
       setTaErrorMsg("See TN error")
     }
-  }, [taRepoTree, taRepoTreeErrorMessage, tnRepoTree, tnRepoTreeErrorMessage, tnBookErrorMsg])
+  }, [taRepoTree, taRepoTreeErrorMessage, tnRepoTree, tnRepoTreeErrorMessage, tnBookErrorMsg, OK])
 
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
@@ -229,28 +248,101 @@ export default function RepoValidationCard({
     _ltRepo += "_glt"
     _stRepo += "_gst"
   }
-  const headers = ["Resource", "Repo", "Status"]
+  const applyIcon = (repo,repoErr,bookErr) => {
+    if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+      if ( repoErr === null && bookErr === WORKING ) {
+        return (
+          <p>{WORKING}</p>
+        )
+      }
+    }
+
+    if ( repoErr === null && bookErr === null ) {
+      return (
+        <p>{WORKING}</p>
+      )
+    }
+    // if ( allIsWell === OK ) {
+    //   return (
+    //     <DoneIcon/>
+    //   )
+    // }
+    if ( repoErr === REPO_NOT_FOUND ) {
+      return (
+        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} onRefresh={setRefresh} />
+      )
+    }
+
+    if ( repoErr !== null ) {
+      return (
+        <p>{repoErr}</p>
+      )
+    }
+
+    if ( bookErr !== null ) {
+      if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+        return (
+          <VisibilityIcon />
+        )
+      }
+      return (
+        <CreateIcon/>
+      )
+    }
+
+  }
+  const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
-    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg ],
-    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg ],
-    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg ],
-    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg ],
-    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg ],
-    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg ],
-    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg ],
-    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg ],
-    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg ],
+    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg, 
+      applyIcon(_ltRepo,ltRepoTreeErrorMessage,ltBookErrorMsg) 
+    ],
+    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg, 
+      applyIcon(_stRepo,stRepoTreeErrorMessage,stBookErrorMsg) 
+    ],
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg, 
+      applyIcon(`${languageId}_tn`,tnRepoTreeErrorMessage,tnBookErrorMsg) 
+    ],
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg, 
+      applyIcon(`${languageId}_twl`,twlRepoTreeErrorMessage,twlBookErrorMsg) 
+    ],
+    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg, 
+      applyIcon(`${languageId}_tw`,twRepoTreeErrorMessage,twErrorMsg) 
+    ],
+    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg, 
+      applyIcon(`${languageId}_ta`,taRepoTreeErrorMessage,taErrorMsg) 
+    ],
+    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg, 
+      applyIcon(`${languageId}_tq`,tqRepoTreeErrorMessage,tqBookErrorMsg) 
+    ],
+    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg, 
+      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg) 
+    ],
+    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, 
+      applyIcon(`${languageId}_sn`,snRepoTreeErrorMessage,snBookErrorMsg) 
+    ],
   ]
 
   return (
-    <Card title={ALL_BIBLE_BOOKS[bookId]} classes={classes} hideMarkdownToggle={true} >
-      <DenseTable cols={headers} rows={rows} />
+    <Card title={ALL_BIBLE_BOOKS[bookId]} 
+      classes={classes} 
+      hideMarkdownToggle={true} 
+      closeable={true}
+      onClose={() => removeBook(bookId)}
+    >
+      <TreeView aria-label="RepoCardView"
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        <TreeItem nodeId="1" label="Resources">
+          <DenseTable cols={headers} rows={rows} />
+        </TreeItem>
+      </TreeView>
     </Card>
   )
 }
-
 
 RepoValidationCard.propTypes = {
   bookId: PropTypes.string,
   classes: PropTypes.object,
 }
+

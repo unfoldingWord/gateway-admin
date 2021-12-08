@@ -1,6 +1,6 @@
 import YAML from 'js-yaml-parser'
 import {
-  HTTP_GET_MAX_WAIT_TIME,
+  REPO_NOT_FOUND,
 } from '@common/constants'
 import {
   doFetch,
@@ -28,7 +28,7 @@ export async function getTreesManifest(authentication, url) {
         return response?.data
     })
     if (trees === null) { // if no repo
-      _errorMessage = "Repo not found"
+      _errorMessage = REPO_NOT_FOUND
     } else if ( trees.tree ) {
       _tree = trees.tree
       let _url;
@@ -45,7 +45,9 @@ export async function getTreesManifest(authentication, url) {
           .then(response => {
             if (response?.status !== 200) {
               errorCode = response?.status
-              console.warn(`getTreesManifest() - error fetching manifest, status code ${errorCode}`)
+              console.warn(`getTreesManifest() - error fetching manifest, status code ${errorCode},
+                url ${_url}
+              `)
               return null
             }
             return response?.data
@@ -70,8 +72,18 @@ export async function getTreesManifest(authentication, url) {
   } catch (e) {
     const message = e?.message
     const disconnected = isServerDisconnected(e)
-    console.warn(`getTreesManifest() - error fetching repos tree, message '${message}', disconnected=${disconnected}`, e)
+    console.warn(`getTreesManifest() - error fetching repos tree,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${url}
+      Error:`, 
+      e)
     //_errorMessage = "Network error fetching repo tree"
   }
+  console.log("getTreesManifest() return:",`
+    RepoTree: ${_tree},
+    Manifest: ${_manifest},
+    Error Message: ${_errorMessage}
+  `)
   return {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMessage}
 }

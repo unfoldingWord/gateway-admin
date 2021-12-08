@@ -3,11 +3,13 @@ import {
   useEffect,
   useState,
 } from 'react'
+//import useDeepEffect from 'use-deep-compare-effect';
+
 import { Workspace } from 'resource-workspace-rcl'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { StoreContext } from '@context/StoreContext'
-
+import { AdminContext } from '@context/AdminContext'
 import CircularProgress from '@components/CircularProgress'
 import {
   addNetworkDisconnectError,
@@ -17,7 +19,6 @@ import {
 } from '@utils/network'
 import { useRouter } from 'next/router'
 import { HTTP_CONFIG } from '@common/constants'
-import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
 import RepoValidationCard from './RepoValidationCard'
 
@@ -32,6 +33,9 @@ const useStyles = makeStyles(() => ({
     backgroundColor: 'transparent',
   },
   dragIndicator: {},
+  label: {
+    color: 'red',
+  }
 }))
 
 function RepoValidation() {
@@ -39,6 +43,23 @@ function RepoValidation() {
   const classes = useStyles()
   const [workspaceReady, setWorkspaceReady] = useState(false)
   const [networkError, setNetworkError] = useState(null)
+
+  const {
+    state: {
+      books,
+    },
+    actions: {
+      setBooks,
+    }
+  } = useContext(AdminContext)
+
+  const removeBook = (bookId) => {
+    const _books = books.filter( (b) => {
+      return b !== bookId
+    })
+    setBooks(_books)
+  }
+
   const {
     state: {
       owner,
@@ -56,6 +77,7 @@ function RepoValidation() {
       setLastError,
     },
   } = useContext(StoreContext)
+  console.log("RepoValidation() StoreContext states:",`Server:${server}, Owner:${owner}, LanguageId:${languageId}`)
 
   /**
    * show either tokenNetworkError or NetworkError for workspace
@@ -123,8 +145,6 @@ function RepoValidation() {
       setWorkspaceReady(true)
     }// eslint-disable-next-line
   }, [owner, languageId, appRef, server, loggedInUser])
-
-
 
   const config = {
     server,
@@ -213,10 +233,11 @@ function RepoValidation() {
 
         >
           {
-            Object.keys(ALL_BIBLE_BOOKS).map( (bookId) =>        
+            books.map( (bookId) =>        
               <RepoValidationCard 
                 bookId={bookId} 
                 classes={classes} 
+                onClose={removeBook}
               />
             )
           }

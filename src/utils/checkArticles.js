@@ -9,7 +9,8 @@ import {
   processNetworkError,
   reloadApp,
 } from '@utils/network'
-import * as tsvparser from 'uw-tsv-parser';
+import * as tsvparser from 'uw-tsv-parser'
+import { OK } from '@common/constants'
 
 export async function checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree) {
   //console.log("checkTwForBook() bookId:", bookId)
@@ -82,7 +83,7 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
     if ( _absent.length > 0 ) {
       _errorMessage = `${_absent.length} Missing`
     } else {
-      _errorMessage = "OK"
+      _errorMessage = OK
     }
   }
   return {Book: bookId, Present: _present, Absent: _absent, ErrorMessage: _errorMessage}
@@ -158,7 +159,7 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     if ( _absent.length > 0 ) {
       _errorMessage = `${_absent.length} Missing`
     } else {
-      _errorMessage = "OK"
+      _errorMessage = OK
     }
   }
   return {Book: bookId, Present: _present, Absent: _absent, ErrorMessage: _errorMessage}

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
-export default function useTnRepoValidation({authentication, owner, server, languageId}) {
+export default function useTnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
   const [{tnRepoTree, 
     tnRepoTreeManifest, 
     tnRepoTreeErrorMessage}, 
     setValues
-  ] = useState({tnRepoTree:null, tnRepoTreeManifest:null, tnRepoTreeErrorMessage:"Working..."})
+  ] = useState({tnRepoTree:null, tnRepoTreeManifest:null, tnRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -15,12 +16,13 @@ export default function useTnRepoValidation({authentication, owner, server, lang
       const {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMesage} =  await getTreesManifest(authentication, url)
       setValues({tnRepoTree: _tree, tnRepoTreeManifest: _manifest, tnRepoTreeErrorMessage: _errorMesage})
     }
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId])
+  }, [authentication, owner, server, languageId, refresh, setRefresh])
 
   return {
     state: {

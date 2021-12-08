@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
@@ -11,9 +11,7 @@ import useSqRepoValidation from '@hooks/useSqRepoValidation'
 import useSnRepoValidation from '@hooks/useSnRepoValidation'
 import useTaRepoValidation from '@hooks/useTaRepoValidation'
 import useTwRepoValidation from '@hooks/useTwRepoValidation'
-
-
-
+import useLocalStorage from '@hooks/useLocalStorage'
 
 export const AdminContext = React.createContext({});
 
@@ -21,7 +19,9 @@ export default function AdminContextProvider({
   children,
 }) {
 
-  
+  const [books, setBooks] = useLocalStorage('books',[])
+  const [refresh, setRefresh] = useState(true)
+
   const {
     state: {
       authentication,
@@ -34,6 +34,9 @@ export default function AdminContextProvider({
       server,
       languageId,
     },
+    actions: {
+      setCurrentLayout,
+    }
   } = useContext(StoreContext)
 
 
@@ -43,7 +46,7 @@ export default function AdminContextProvider({
       tnRepoTreeManifest,
       tnRepoTreeErrorMessage,
     },
-  } = useTnRepoValidation({authentication, owner, server, languageId});
+  } = useTnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -51,7 +54,7 @@ export default function AdminContextProvider({
       twlRepoTreeManifest,
       twlRepoTreeErrorMessage,
     },
-  } = useTwlRepoValidation({authentication, owner, server, languageId});
+  } = useTwlRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
   
   const {
     state: {
@@ -59,7 +62,7 @@ export default function AdminContextProvider({
       ltRepoTreeManifest,
       ltRepoTreeErrorMessage,
     },
-  } = useLtRepoValidation({authentication, owner, server, languageId});
+  } = useLtRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -67,7 +70,7 @@ export default function AdminContextProvider({
       stRepoTreeManifest,
       stRepoTreeErrorMessage,
     },
-  } = useStRepoValidation({authentication, owner, server, languageId});
+  } = useStRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -75,7 +78,7 @@ export default function AdminContextProvider({
       tqRepoTreeManifest,
       tqRepoTreeErrorMessage,
     },
-  } = useTqRepoValidation({authentication, owner, server, languageId});
+  } = useTqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -83,7 +86,7 @@ export default function AdminContextProvider({
       snRepoTreeManifest,
       snRepoTreeErrorMessage,
     },
-  } = useSnRepoValidation({authentication, owner, server, languageId});
+  } = useSnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -91,7 +94,7 @@ export default function AdminContextProvider({
       sqRepoTreeManifest,
       sqRepoTreeErrorMessage,
     },
-  } = useSqRepoValidation({authentication, owner, server, languageId});
+  } = useSqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -99,7 +102,7 @@ export default function AdminContextProvider({
       taRepoTreeManifest,
       taRepoTreeErrorMessage,
     },
-  } = useTaRepoValidation({authentication, owner, server, languageId});
+  } = useTaRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
   const {
     state: {
@@ -107,7 +110,12 @@ export default function AdminContextProvider({
       twRepoTreeManifest,
       twRepoTreeErrorMessage,
     },
-  } = useTwRepoValidation({authentication, owner, server, languageId});
+  } = useTwRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
+
+  const _setBooks = (value) => {
+    setBooks(value)
+    setCurrentLayout(null)
+  }
 
   // create the value for the context provider
   const context = {
@@ -139,7 +147,12 @@ export default function AdminContextProvider({
       twRepoTree,
       twRepoTreeManifest,
       twRepoTreeErrorMessage,
+      books,
     },
+    actions: {
+      setBooks: _setBooks,
+      setRefresh: setRefresh,
+    }
   };
 
   return (

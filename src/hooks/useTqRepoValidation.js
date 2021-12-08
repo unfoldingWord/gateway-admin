@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
-export default function useTqRepoValidation({authentication, owner, server, languageId}) {
+export default function useTqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
   const [{tqRepoTree, 
     tqRepoTreeManifest, 
     tqRepoTreeErrorMessage}, 
     setValues
-  ] = useState({tqRepoTree:null, tqRepoTreeManifest:null, tqRepoTreeErrorMessage:"Working..."})
+  ] = useState({tqRepoTree:null, tqRepoTreeManifest:null, tqRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tq/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -16,12 +17,13 @@ export default function useTqRepoValidation({authentication, owner, server, lang
       setValues({tqRepoTree: _tree, tqRepoTreeManifest: _manifest, tqRepoTreeErrorMessage: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId])
+  }, [authentication, owner, server, languageId, refresh, setRefresh])
 
   return {
     state: {

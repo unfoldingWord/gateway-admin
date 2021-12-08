@@ -30,9 +30,7 @@ export default function Application({ Component, pageProps }) {
         <AuthContextProvider>
           <StoreContextProvider>
             <AdminContextProvider>
-              <Layout>
                 <Component {...pageProps} />
-              </Layout>
             </AdminContextProvider>
           </StoreContextProvider>
         </AuthContextProvider>

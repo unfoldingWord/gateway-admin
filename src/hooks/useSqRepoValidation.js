@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
-export default function useSqRepoValidation({authentication, owner, server, languageId}) {
+export default function useSqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
   const [{sqRepoTree, 
     sqRepoTreeManifest, 
     sqRepoTreeErrorMessage}, 
     setValues
-  ] = useState({sqRepoTree:null, sqRepoTreeManifest:null, sqRepoTreeErrorMessage:"Working..."})
+  ] = useState({sqRepoTree:null, sqRepoTreeManifest:null, sqRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_sq/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -16,12 +17,13 @@ export default function useSqRepoValidation({authentication, owner, server, lang
       setValues({sqRepoTree: _tree, sqRepoTreeManifest: _manifest, sqRepoTreeErrorMessage: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId])
+  }, [authentication, owner, server, languageId, refresh, setRefresh])
 
   return {
     state: {

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
+import { WORKING } from '@common/constants';
 
-export default function useSnRepoValidation({authentication, owner, server, languageId}) {
+export default function useSnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
   const [{snRepoTree, 
     snRepoTreeManifest, 
     snRepoTreeErrorMessage}, 
     setValues
-  ] = useState({snRepoTree:null, snRepoTreeManifest:null, snRepoTreeErrorMessage:"Working..."})
+  ] = useState({snRepoTree:null, snRepoTreeManifest:null, snRepoTreeErrorMessage:WORKING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_sn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -16,12 +17,13 @@ export default function useSnRepoValidation({authentication, owner, server, lang
       setValues({snRepoTree: _tree, snRepoTreeManifest: _manifest, snRepoTreeErrorMessage: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId) {
+    if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
+      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId])
+  }, [authentication, owner, server, languageId, refresh, setRefresh])
 
   return {
     state: {
