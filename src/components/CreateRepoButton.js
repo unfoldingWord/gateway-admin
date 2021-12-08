@@ -62,15 +62,18 @@ function CreateRepoButton({ active, server, owner, repo, onRefresh }) {
       const res = await dcsApis.repoCreate({server: server, username: owner, repository: repo, tokenid})
     
       if (res.status === 201) {
+        console.log("Repo Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         const manifestCreateRes = await dcsApis.manifestCreate({server: server, username: owner, repository: repo, tokenid})
         if ( manifestCreateRes.status === 201 ) {
-          // continue
+          console.log("Manifest Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         } else {
-          console.log('manifest Create Error Response:', manifestCreateRes)
+          console.log('Manifest Create Error:', manifestCreateRes)
+          console.log("Manifest Failed! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         }
       } else {
-          console.log('repo Create Error Response:', res)
-      }
+          console.log('Repo Create Error:', res)
+          console.log("Repo Failed! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
+        }
       onRefresh(true)    
     }
     doSubmitCreate()

@@ -13,7 +13,7 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND } from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
@@ -249,9 +249,8 @@ export default function RepoValidationCard({
     _stRepo += "_gst"
   }
   const applyIcon = (repo,repoErr,bookErr) => {
-    const allIsWell = repoErr || bookErr
     if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
-      if ( bookErr === WORKING ) {
+      if ( repoErr === null && bookErr === WORKING ) {
         return (
           <p>{WORKING}</p>
         )
@@ -263,16 +262,23 @@ export default function RepoValidationCard({
         <p>{WORKING}</p>
       )
     }
-    if ( allIsWell === OK ) {
-      return (
-        <DoneIcon/>
-      )
-    }
-    if ( repoErr !== null ) {
+    // if ( allIsWell === OK ) {
+    //   return (
+    //     <DoneIcon/>
+    //   )
+    // }
+    if ( repoErr === REPO_NOT_FOUND ) {
       return (
         <CreateRepoButton active={true} server={server} owner={owner} repo={repo} onRefresh={setRefresh} />
       )
     }
+
+    if ( repoErr !== null ) {
+      return (
+        <p>{repoErr}</p>
+      )
+    }
+
     if ( bookErr !== null ) {
       if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
         return (

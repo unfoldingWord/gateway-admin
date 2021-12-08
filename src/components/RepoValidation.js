@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import useDeepEffect from 'use-deep-compare-effect';
+//import useDeepEffect from 'use-deep-compare-effect';
 
 import { Workspace } from 'resource-workspace-rcl'
 import { makeStyles } from '@material-ui/core/styles'
@@ -77,6 +77,7 @@ function RepoValidation() {
       setLastError,
     },
   } = useContext(StoreContext)
+  console.log("RepoValidation() StoreContext states:",`Server:${server}, Owner:${owner}, LanguageId:${languageId}`)
 
   /**
    * show either tokenNetworkError or NetworkError for workspace

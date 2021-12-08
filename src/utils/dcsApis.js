@@ -5,22 +5,6 @@ import _ from "lodash";
 import { apiPath } from '@common/constants'
 import getResourceManifest from '@common/manifests'
 
-export async function repoExists(server, username, repository, tokenid) {
-
-  // example: https://qa.door43.org/api/v1/repos/translate_test/en_tn 
-  const uri = Path.join(server,apiPath,'repos',username,repository) ;
-  const res = await fetch(uri+'?token='+tokenid, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  })
-  let repoExistsFlag = false;
-  if (res.status === 200) {
-    // success
-    repoExistsFlag = true;
-  } 
-  return repoExistsFlag;
-}
-
 export async function repoCreate({server, username, repository, tokenid}) {
   const uri = Path.join(server,apiPath,'orgs',username,'repos') ;
   const res = await fetch(uri+'?token='+tokenid, {
