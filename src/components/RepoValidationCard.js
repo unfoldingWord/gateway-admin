@@ -279,6 +279,11 @@ export default function RepoValidationCard({
       )
     }
 
+    if ( bookErr === OK ) {
+      return (
+        <DoneIcon />
+      )
+    }
     if ( bookErr !== null ) {
       if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
         return (
