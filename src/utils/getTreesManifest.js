@@ -80,10 +80,12 @@ export async function getTreesManifest(authentication, url) {
       e)
     //_errorMessage = "Network error fetching repo tree"
   }
+  /*
   console.log("getTreesManifest() return:",`
     RepoTree: ${_tree},
     Manifest: ${_manifest},
     Error Message: ${_errorMessage}
   `)
+  */
   return {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMessage}
 }

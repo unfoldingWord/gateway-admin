@@ -89,6 +89,7 @@ export default function RepoValidationCard({
       twRepoTree,
       twRepoTreeManifest,
       twRepoTreeErrorMessage,
+      refresh,
     },
     actions: {
       setRefresh,
@@ -269,7 +270,7 @@ export default function RepoValidationCard({
     // }
     if ( repoErr === REPO_NOT_FOUND ) {
       return (
-        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} onRefresh={setRefresh} />
+        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} refresh={refresh} onRefresh={setRefresh} />
       )
     }
 

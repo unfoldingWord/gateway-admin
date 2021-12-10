@@ -13,7 +13,6 @@ import * as tsvparser from 'uw-tsv-parser'
 import { OK } from '@common/constants'
 
 export async function checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree) {
-  //console.log("checkTwForBook() bookId:", bookId)
   let errorCode
   let _errorMessage = null
   let _absent = []

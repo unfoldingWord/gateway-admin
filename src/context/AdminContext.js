@@ -20,7 +20,12 @@ export default function AdminContextProvider({
 }) {
 
   const [books, setBooks] = useLocalStorage('books',[])
-  const [refresh, setRefresh] = useState(true)
+
+  // The refresh state is a simple integer, which is incremented
+  // when the user creates a repo from the UI. This state
+  // is monitored by all the repo hooks and when changed
+  // will re-evaluate the repo data.
+  const [refresh, setRefresh] = useState(1)
 
   const {
     state: {
@@ -148,6 +153,7 @@ export default function AdminContextProvider({
       twRepoTreeManifest,
       twRepoTreeErrorMessage,
       books,
+      refresh,
     },
     actions: {
       setBooks: _setBooks,

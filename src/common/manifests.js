@@ -27,7 +27,6 @@
  */
 
 export default function getResourceManifest({resourceId}) {
-  console.log("getResourceManifest() resource id=", resourceId);
   switch(resourceId) {
     case 'ta':       return ta_manifest;
     case 'tn':       return tn_manifest;
