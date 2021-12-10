@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function CreateRepoButton({ active, server, owner, repo, onRefresh }) {
+function CreateRepoButton({ active, server, owner, repo, refresh, onRefresh }) {
   const {
     state: {
       authentication,
@@ -74,10 +74,10 @@ function CreateRepoButton({ active, server, owner, repo, onRefresh }) {
           console.log('Repo Create Error:', res)
           console.log("Repo Failed! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         }
-      onRefresh(true)    
+      onRefresh(refresh+1)    
     }
     doSubmitCreate()
-  }, [submitCreate, server, owner, repo, onRefresh])
+  }, [submitCreate, server, owner, repo, refresh, onRefresh])
     
   const classes = useStyles({ active })
   return (

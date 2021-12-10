@@ -77,7 +77,6 @@ function RepoValidation() {
       setLastError,
     },
   } = useContext(StoreContext)
-  console.log("RepoValidation() StoreContext states:",`Server:${server}, Owner:${owner}, LanguageId:${languageId}`)
 
   /**
    * show either tokenNetworkError or NetworkError for workspace

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
 import { WORKING } from '@common/constants';
 
-export default function useTwlRepoValidation({authentication, owner, server, languageId, refresh, setRefresh}) {
+export default function useTwlRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{twlRepoTree, 
     twlRepoTreeManifest, 
     twlRepoTreeErrorMessage}, 
@@ -19,11 +19,10 @@ export default function useTwlRepoValidation({authentication, owner, server, lan
 
     if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
-      setRefresh(false)
     } else {
       //console.warn(`AdminContext - reached, but not logged in`)
     }
-  }, [authentication, owner, server, languageId, refresh, setRefresh])
+  }, [authentication, owner, server, languageId, refresh])
 
   return {
     state: {
