@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function CreateRepoButton({ active, server, owner, repo, refresh, onRefresh }) {
+function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefresh }) {
   const {
     state: {
       authentication,
@@ -63,7 +63,7 @@ function CreateRepoButton({ active, server, owner, repo, refresh, onRefresh }) {
     
       if (res.status === 201) {
         console.log("Repo Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
-        const manifestCreateRes = await dcsApis.manifestCreate({server: server, username: owner, repository: repo, tokenid})
+        const manifestCreateRes = await dcsApis.manifestCreate({server: server, username: owner, repository: repo, bookId, tokenid})
         if ( manifestCreateRes.status === 201 ) {
           console.log("Manifest Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         } else {

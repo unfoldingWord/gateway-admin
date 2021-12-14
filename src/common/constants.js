@@ -44,5 +44,7 @@ export const LOADING = 'Loading...'
 export const WORKING = 'Working...'
 export const REPO_NOT_FOUND = 'Repo not found'
 export const OK = 'OK'
+export const FILE_NOT_FOUND = 'File not found'
+export const BOOK_NOT_IN_MANIFEST = 'Book not in manifest'
 
 export const apiPath  = 'api/v1'

@@ -13,7 +13,7 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST } from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
@@ -106,7 +106,7 @@ export default function RepoValidationCard({
     let isBookIdInManfest = false
     let pathToBook;
     for (let i=0; i < projects.length; i++) {
-      if ( projects[i].identifier === bookId ) {
+      if ( projects[i]?.identifier === bookId ) {
         isBookIdInManfest = true
         pathToBook = projects[i].path
         break
@@ -127,10 +127,10 @@ export default function RepoValidationCard({
       if ( _fileExists ) {
         setError(OK)
       } else {
-        setError("Manifest book not found")
+        setError(FILE_NOT_FOUND)
       }
     } else {
-      setError("Book not in manifest")
+      setError(BOOK_NOT_IN_MANIFEST)
     }
   }
 
@@ -270,7 +270,7 @@ export default function RepoValidationCard({
     // }
     if ( repoErr === REPO_NOT_FOUND ) {
       return (
-        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} refresh={refresh} onRefresh={setRefresh} />
+        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
       )
     }
 
