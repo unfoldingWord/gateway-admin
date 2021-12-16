@@ -137,14 +137,14 @@ export async function manifestCreate({server, username, repository, bookId, toke
   console.log("manifestCreate() with parms:",`${server}, ${username}, ${repository}, ${bookId}`)
   const resourceId = repository.split('_')[1];
   const manifestYaml = getResourceManifest( {resourceId} );
-  let _manifest // version to be posted to repo
-  if ( resourceId === 'ta' || resourceId === 'tw' ) {
-    _manifest = manifestYaml // no changes required!
-  } else {
-    const manifest = YAML.safeLoad(manifestYaml)
-    _manifest = addProject( { resourceId, manifest, bookId })
-  }
-  const content = base64.encode(utf8.encode(_manifest));
+  // let _manifest // version to be posted to repo
+  // if ( resourceId === 'ta' || resourceId === 'tw' ) {
+  //   _manifest = manifestYaml // no changes required!
+  // } else {
+  //   const manifest = YAML.safeLoad(manifestYaml)
+  //   _manifest = addProject( { resourceId, manifest, bookId })
+  // }
+  const content = base64.encode(utf8.encode(manifestYaml));
   const uri = Path.join(server,apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());
   const dateString = date.toISOString();
