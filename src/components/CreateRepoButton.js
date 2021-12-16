@@ -38,7 +38,12 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
     
       if (res.status === 201) {
         console.log("Repo Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
-        const manifestCreateRes = await dcsApis.manifestCreate({server: server, username: owner, repository: repo, bookId, tokenid})
+        const manifestCreateRes = await dcsApis.manifestCreate({
+          server: server, 
+          username: owner, 
+          repository: repo, 
+          bookId, tokenid
+        })
         if ( manifestCreateRes.status === 201 ) {
           console.log("Manifest Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         } else {

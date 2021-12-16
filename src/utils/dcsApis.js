@@ -36,12 +36,26 @@ function addProject( { resourceId, manifest, bookId }) {
   let currentProjects = manifest.projects
   let projectTemplate = getResourceManifestProject({resourceId})
 
-  // fix the title
   const _title = ALL_BIBLE_BOOKS[bookId]
   projectTemplate.title = _title
   projectTemplate.identifier = bookId
   projectTemplate.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
-  projectTemplate.path = "./" + BIBLES_ABBRV_INDEX[bookId] + "-" + bookId.toUpperCase() + ".usfm"
+
+  if ( resourceId === 'glt' || resourceId === 'ult' || resourceId === 'gst' || resourceId === 'ust' ) {
+    projectTemplate.path = "./" + BIBLES_ABBRV_INDEX[bookId] + "-" + bookId.toUpperCase() + ".usfm"
+  } else if ( resourceId === 'twl' ) {
+    projectTemplate.path = "./twl_" + bookId.toUpperCase() + ".tsv"
+  } else if ( resourceId === 'tn' ) {
+    projectTemplate.path = "./tn_" + bookId.toUpperCase() + ".tsv"
+  } else if ( resourceId === 'tq' ) {
+    projectTemplate.path = "./tq_" + bookId.toUpperCase() + ".tsv"
+  } else if ( resourceId === 'sn' ) {
+    projectTemplate.path = "./sn_" + bookId.toUpperCase() + ".tsv"
+  } else if ( resourceId === 'sq' ) {
+    projectTemplate.path = "./sq_" + bookId.toUpperCase() + ".tsv"
+  }
+
+
   if ( isNT(bookId) ) {
     projectTemplate.categories = [ 'bible-nt' ]
   } else {
@@ -69,7 +83,14 @@ export async function manifestAddBook({server, username, repository, manifest, b
   // console.log("manifestAddBook() with parms:",`${server}, ${username}, ${repository}, ${bookId}, and manifest is:`)
   // console.log(manifest)
   const resourceId = repository.split('_')[1];
-  const _manifest = addProject( { resourceId, manifest, bookId })
+  // only applies to scripture oriented resources, skip tw and ta
+  let _manifest
+  if ( resourceId === 'ta' || resourceId === 'tw' ) {
+    // skip adding book to project section
+    _manifest = manifest
+  } else {
+    _manifest = addProject( { resourceId, manifest, bookId })
+  }
   //console.log("new manifest:",_manifest)
   const content = base64.encode(utf8.encode(_manifest));
   const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
@@ -104,30 +125,6 @@ export async function manifestAddBook({server, username, repository, manifest, b
 
   return res
 }
-/* model for PUT
-{
-  "author": {
-    "email": "user@example.com",
-    "name": "string"
-  },
-  "branch": "string",
-  "committer": {
-    "email": "user@example.com",
-    "name": "string"
-  },
-  "content": "string",
-  "dates": {
-    "author": "2021-12-15T23:27:18.129Z",
-    "committer": "2021-12-15T23:27:18.129Z"
-  },
-  "from_path": "string",
-  "message": "string",
-  "new_branch": "string",
-  "sha": "string",
-  "signoff": true
-}
-
-*/
 
 //
 // swagger: https://qa.door43.org/api/v1/swagger#/repository/repoCreateFile
@@ -140,8 +137,13 @@ export async function manifestCreate({server, username, repository, bookId, toke
   console.log("manifestCreate() with parms:",`${server}, ${username}, ${repository}, ${bookId}`)
   const resourceId = repository.split('_')[1];
   const manifestYaml = getResourceManifest( {resourceId} );
-  const manifest = YAML.safeLoad(manifestYaml)
-  const _manifest = addProject( { resourceId, manifest, bookId })
+  let _manifest // version to be posted to repo
+  if ( resourceId === 'ta' || resourceId === 'tw' ) {
+    _manifest = manifestYaml // no changes required!
+  } else {
+    const manifest = YAML.safeLoad(manifestYaml)
+    _manifest = addProject( { resourceId, manifest, bookId })
+  }
   const content = base64.encode(utf8.encode(_manifest));
   const uri = Path.join(server,apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());

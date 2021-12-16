@@ -251,11 +251,11 @@ export default function RepoValidationCard({
     _stRepo += "_gst"
   }
   const applyIcon = (repo,repoErr,bookErr, manifest) => {
-    console.log("applyIcon() parameters:",`repo:${repo}
-      repoErr:${repoErr}
-      bookErr:${bookErr}
-      manifest:${manifest}
-    `)
+    // console.log("applyIcon() parameters:",`repo:${repo}
+    //   repoErr:${repoErr}
+    //   bookErr:${bookErr}
+    //   manifest:${manifest}
+    // `)
     if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
       if ( repoErr === null && bookErr === WORKING ) {
         return (
@@ -287,13 +287,13 @@ export default function RepoValidationCard({
         <DoneIcon />
       )
     }
-
+/* not working yet... problem with PUT to update file, error 422 (not helpful)
     if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
       return (
         <AddBookToManifest active={true} server={server} owner={owner} repo={repo} refresh={refresh} manifest={manifest} bookId={bookId} onRefresh={setRefresh} />
       )
     }
-
+*/
 
     if ( bookErr !== null ) {
       if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {

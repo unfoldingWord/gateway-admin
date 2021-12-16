@@ -85,7 +85,9 @@ checking:
   checking_level: '1'
 
 projects:
+  -
 `
+
 
 const obs_sq_manifest = `
 ---
@@ -123,6 +125,7 @@ checking:
   checking_level: '1'
 
 projects:
+  -
 `
 
 const obs_tn_manifest = `
@@ -161,6 +164,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const obs_manifest = `
@@ -204,12 +208,6 @@ checking:
 
 projects:
   -
-    categories:
-    identifier: 'obs'
-    path: './content'
-    sort: 0
-    title: 'unfoldingWord® Open Bible Stories'
-    versification:
 `
 
 
@@ -250,6 +248,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const sn_manifest = `
@@ -287,6 +286,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const tq_manifest = `
@@ -326,6 +326,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const twl_manifest = `
@@ -362,6 +363,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const tw_manifest = `
@@ -457,6 +459,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const lt_manifest = `
@@ -543,6 +546,7 @@ checking:
   checking_level: '3'
 
 projects:
+  -
 `
 
 const ta_manifest = 
