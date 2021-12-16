@@ -20,6 +20,7 @@ import DoneIcon from '@material-ui/icons/Done'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 
 import CreateRepoButton from './CreateRepoButton'
+import AddBookToManifest from './AddBookToManifest'
 import DenseTable from './DenseTable'
 
 export default function RepoValidationCard({
@@ -249,7 +250,12 @@ export default function RepoValidationCard({
     _ltRepo += "_glt"
     _stRepo += "_gst"
   }
-  const applyIcon = (repo,repoErr,bookErr) => {
+  const applyIcon = (repo,repoErr,bookErr, manifest) => {
+    console.log("applyIcon() parameters:",`repo:${repo}
+      repoErr:${repoErr}
+      bookErr:${bookErr}
+      manifest:${manifest}
+    `)
     if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
       if ( repoErr === null && bookErr === WORKING ) {
         return (
@@ -263,11 +269,7 @@ export default function RepoValidationCard({
         <p>{WORKING}</p>
       )
     }
-    // if ( allIsWell === OK ) {
-    //   return (
-    //     <DoneIcon/>
-    //   )
-    // }
+
     if ( repoErr === REPO_NOT_FOUND ) {
       return (
         <CreateRepoButton active={true} server={server} owner={owner} repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
@@ -285,6 +287,14 @@ export default function RepoValidationCard({
         <DoneIcon />
       )
     }
+
+    if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
+      return (
+        <AddBookToManifest active={true} server={server} owner={owner} repo={repo} refresh={refresh} manifest={manifest} bookId={bookId} onRefresh={setRefresh} />
+      )
+    }
+
+
     if ( bookErr !== null ) {
       if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
         return (
@@ -300,31 +310,31 @@ export default function RepoValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg, 
-      applyIcon(_ltRepo,ltRepoTreeErrorMessage,ltBookErrorMsg) 
+      applyIcon(_ltRepo,ltRepoTreeErrorMessage,ltBookErrorMsg, ltRepoTreeManifest) 
     ],
     ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg, 
-      applyIcon(_stRepo,stRepoTreeErrorMessage,stBookErrorMsg) 
+      applyIcon(_stRepo,stRepoTreeErrorMessage,stBookErrorMsg, stRepoTreeManifest) 
     ],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg, 
-      applyIcon(`${languageId}_tn`,tnRepoTreeErrorMessage,tnBookErrorMsg) 
+      applyIcon(`${languageId}_tn`,tnRepoTreeErrorMessage,tnBookErrorMsg, tnRepoTreeManifest) 
     ],
     ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg, 
-      applyIcon(`${languageId}_twl`,twlRepoTreeErrorMessage,twlBookErrorMsg) 
+      applyIcon(`${languageId}_twl`,twlRepoTreeErrorMessage,twlBookErrorMsg, twlRepoTreeManifest) 
     ],
     ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg, 
-      applyIcon(`${languageId}_tw`,twRepoTreeErrorMessage,twErrorMsg) 
+      applyIcon(`${languageId}_tw`,twRepoTreeErrorMessage,twErrorMsg, twRepoTreeManifest) 
     ],
     ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg, 
-      applyIcon(`${languageId}_ta`,taRepoTreeErrorMessage,taErrorMsg) 
+      applyIcon(`${languageId}_ta`,taRepoTreeErrorMessage,taErrorMsg, taRepoTreeManifest) 
     ],
     ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg, 
-      applyIcon(`${languageId}_tq`,tqRepoTreeErrorMessage,tqBookErrorMsg) 
+      applyIcon(`${languageId}_tq`,tqRepoTreeErrorMessage,tqBookErrorMsg, tqRepoTreeManifest) 
     ],
     ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg, 
-      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg) 
+      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg, sqRepoTreeManifest) 
     ],
     ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, 
-      applyIcon(`${languageId}_sn`,snRepoTreeErrorMessage,snBookErrorMsg) 
+      applyIcon(`${languageId}_sn`,snRepoTreeErrorMessage,snBookErrorMsg, snRepoTreeManifest) 
     ],
   ]
 

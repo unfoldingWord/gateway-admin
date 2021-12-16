@@ -33,9 +33,7 @@ export async function repoCreate({server, username, repository, tokenid}) {
 }
 
 function addProject( { resourceId, manifest, bookId }) {
-  // convert to JSON
-  const manifestObj = YAML.safeLoad(manifest)
-  let currentProjects = manifestObj.projects
+  let currentProjects = manifest.projects
   let projectTemplate = getResourceManifestProject({resourceId})
 
   // fix the title
@@ -53,12 +51,12 @@ function addProject( { resourceId, manifest, bookId }) {
   let _manifest
   if ( currentProjects[0] === null ) {
     _manifest = {
-      ...manifestObj,
+      ...manifest,
       projects: [projectTemplate],
     }
   } else {
     _manifest = {
-      ...manifestObj,
+      ...manifest,
       projects: [...currentProjects, projectTemplate],
     }
   }
@@ -66,6 +64,70 @@ function addProject( { resourceId, manifest, bookId }) {
 
   return __manifest
 }
+
+export async function manifestAddBook({server, username, repository, manifest, bookId, tokenid}) {
+  // console.log("manifestAddBook() with parms:",`${server}, ${username}, ${repository}, ${bookId}, and manifest is:`)
+  // console.log(manifest)
+  const resourceId = repository.split('_')[1];
+  const _manifest = addProject( { resourceId, manifest, bookId })
+  //console.log("new manifest:",_manifest)
+  const content = base64.encode(utf8.encode(_manifest));
+  const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
+  const date = new Date(Date.now());
+  const dateString = date.toISOString();
+  //console.log("manifestAddBook() uri=", uri)
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' }, 
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "manifest.yaml",
+      "message": "Add Book to Manifest",
+      "new_branch": "master",
+      "sha": "",
+      "signoff": true
+    }`
+  })
+
+  return res
+}
+/* model for PUT
+{
+  "author": {
+    "email": "user@example.com",
+    "name": "string"
+  },
+  "branch": "string",
+  "committer": {
+    "email": "user@example.com",
+    "name": "string"
+  },
+  "content": "string",
+  "dates": {
+    "author": "2021-12-15T23:27:18.129Z",
+    "committer": "2021-12-15T23:27:18.129Z"
+  },
+  "from_path": "string",
+  "message": "string",
+  "new_branch": "string",
+  "sha": "string",
+  "signoff": true
+}
+
+*/
 
 //
 // swagger: https://qa.door43.org/api/v1/swagger#/repository/repoCreateFile
@@ -77,7 +139,8 @@ function addProject( { resourceId, manifest, bookId }) {
 export async function manifestCreate({server, username, repository, bookId, tokenid}) {
   console.log("manifestCreate() with parms:",`${server}, ${username}, ${repository}, ${bookId}`)
   const resourceId = repository.split('_')[1];
-  const manifest = getResourceManifest( {resourceId} );
+  const manifestYaml = getResourceManifest( {resourceId} );
+  const manifest = YAML.safeLoad(manifestYaml)
   const _manifest = addProject( { resourceId, manifest, bookId })
   const content = base64.encode(utf8.encode(_manifest));
   const uri = Path.join(server,apiPath,'repos',username,repository,'contents','manifest.yaml') ;

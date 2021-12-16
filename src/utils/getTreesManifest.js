@@ -1,6 +1,10 @@
 import YAML from 'js-yaml-parser'
 import {
+  NO_FILES_IN_REPO,
   REPO_NOT_FOUND,
+  NO_MANIFEST_FOUND,
+  UNABLE_TO_DECODE_MANIFEST,
+  UNABLE_TO_RETRIEVE_MANIFEST,
 } from '@common/constants'
 import {
   doFetch,
@@ -53,21 +57,21 @@ export async function getTreesManifest(authentication, url) {
             return response?.data
         })
         if ( __manifest === null ) {
-          _errorMessage = "Unable to retrieve manifest"
+          _errorMessage = UNABLE_TO_RETRIEVE_MANIFEST
         } else {
           if (__manifest.content && (__manifest.encoding === 'base64')) {
             const _content = decodeBase64ToUtf8(__manifest.content)
             const manifestObj = YAML.safeLoad(_content)
             _manifest = manifestObj
           } else {
-            _errorMessage = "Unable to decode manifest"
+            _errorMessage = UNABLE_TO_DECODE_MANIFEST
           }
         }
       } else {
-        _errorMessage = "No manifest found"
+        _errorMessage = NO_MANIFEST_FOUND
       }
     } else {
-      _errorMessage = "No files in repo"
+      _errorMessage = NO_FILES_IN_REPO
     }
   } catch (e) {
     const message = e?.message

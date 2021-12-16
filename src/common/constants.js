@@ -46,5 +46,9 @@ export const REPO_NOT_FOUND = 'Repo not found'
 export const OK = 'OK'
 export const FILE_NOT_FOUND = 'File not found'
 export const BOOK_NOT_IN_MANIFEST = 'Book not in manifest'
+export const NO_FILES_IN_REPO = "No files in repo"
+export const NO_MANIFEST_FOUND = "No manifest found"
+export const UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
+export const UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
 
 export const apiPath  = 'api/v1'
