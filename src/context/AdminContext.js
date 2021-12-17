@@ -17,6 +17,8 @@ import useObsTwlRepoValidation from '@hooks/useObsTwlRepoValidation'
 import useObsTqRepoValidation from '@hooks/useObsTqRepoValidation'
 import useObsTaRepoValidation from '@hooks/useObsTaRepoValidation'
 import useObsTwRepoValidation from '@hooks/useObsTwRepoValidation'
+import useObsSnRepoValidation from '@hooks/useObsSnRepoValidation'
+import useObsSqRepoValidation from '@hooks/useObsSqRepoValidation'
 import useLocalStorage from '@hooks/useLocalStorage'
 
 export const AdminContext = React.createContext({});
@@ -171,6 +173,22 @@ export default function AdminContextProvider({
     },
   } = useObsTwRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
+  const {
+    state: {
+      obsSnRepoTree,
+      obsSnRepoTreeManifest,
+      obsSnRepoTreeErrorMessage,
+    },
+  } = useObsSnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
+
+  const {
+    state: {
+      obsSqRepoTree,
+      obsSqRepoTreeManifest,
+      obsSqRepoTreeErrorMessage,
+    },
+  } = useObsSqRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
+
   const _setBooks = (value) => {
     setBooks(value)
     setCurrentLayout(null)
@@ -197,6 +215,12 @@ export default function AdminContextProvider({
       obsTwRepoTree,
       obsTwRepoTreeManifest,
       obsTwRepoTreeErrorMessage,
+      obsSnRepoTree,
+      obsSnRepoTreeManifest,
+      obsSnRepoTreeErrorMessage,
+      obsSqRepoTree,
+      obsSqRepoTreeManifest,
+      obsSqRepoTreeErrorMessage,
       tnRepoTree,
       tnRepoTreeManifest,
       tnRepoTreeErrorMessage,

@@ -35,6 +35,8 @@ export default function RepoObsValidationCard({
   const [obsTqBookErrorMsg, setObsTqBookErrorMsg] = useState(null)
   const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
+  const [obsSnBookErrorMsg, setObsSnBookErrorMsg] = useState(null)
+  const [obsSqBookErrorMsg, setObsSqBookErrorMsg] = useState(null)
 
   const {
     state: {
@@ -70,6 +72,12 @@ export default function RepoObsValidationCard({
       obsTwRepoTree,
       obsTwRepoTreeManifest,
       obsTwRepoTreeErrorMessage,
+      obsSnRepoTree,
+      obsSnRepoTreeManifest,
+      obsSnRepoTreeErrorMessage,
+      obsSqRepoTree,
+      obsSqRepoTreeManifest,
+      obsSqRepoTreeErrorMessage,
       refresh,
     },
     actions: {
@@ -210,6 +218,14 @@ export default function RepoObsValidationCard({
     }
   }, [obsTwRepoTree, obsTwRepoTreeErrorMessage, obsTwlRepoTree, obsTwlRepoTreeErrorMessage, obsTwlBookErrorMsg, OK])
 
+  useEffect(() => {
+    checkManifestBook(obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg)
+  }, [obsSnRepoTree, obsSnRepoTreeManifest])
+
+  useEffect(() => {
+    checkManifestBook(obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
+  }, [obsSqRepoTree, obsSqRepoTreeManifest])
+
   const applyIcon = (repo,repoErr,bookErr, manifest) => {
     // console.log("applyIcon() parameters:",`repo:${repo}
     //   repoErr:${repoErr}
@@ -286,6 +302,12 @@ export default function RepoObsValidationCard({
     ],
     ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeErrorMessage || obsTwErrorMsg, 
       applyIcon(`${languageId}_tw`,obsTwRepoTreeErrorMessage,obsTwErrorMsg, obsTwRepoTreeManifest) 
+    ],
+    ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeErrorMessage || obsSnBookErrorMsg, 
+      applyIcon(`${languageId}_obs-sn`,obsSnRepoTreeErrorMessage,obsSnBookErrorMsg, obsSnRepoTreeManifest) 
+    ],
+    ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeErrorMessage || obsSqBookErrorMsg, 
+      applyIcon(`${languageId}_obs-sq`,obsSqRepoTreeErrorMessage,obsSqBookErrorMsg, obsSqRepoTreeManifest) 
     ],
   ]
 
