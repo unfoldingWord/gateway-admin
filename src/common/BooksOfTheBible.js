@@ -151,6 +151,10 @@ export const ALL_BIBLE_BOOKS = {
   ...BIBLE_BOOKS.newTestament,
 }
 
+export const BIBLE_AND_OBS = {
+  ...ALL_BIBLE_BOOKS, obs: 'Open Bible Stories (OBS)',
+}
+
 export const TN_FILENAMES = {
   gen: '_tn_01-GEN',
   exo: '_tn_02-EXO',
@@ -225,9 +229,9 @@ export function isNT(bookId) {
 }
 
 export function bookSelectList() {
-  return Object.keys(ALL_BIBLE_BOOKS).map(
+  return Object.keys(BIBLE_AND_OBS).map(
     (bookId) => {
-      return { id: bookId, name: ALL_BIBLE_BOOKS[bookId] }
+      return { id: bookId, name: BIBLE_AND_OBS[bookId] }
     }
   )
 }

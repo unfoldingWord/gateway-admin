@@ -11,6 +11,9 @@ import useSqRepoValidation from '@hooks/useSqRepoValidation'
 import useSnRepoValidation from '@hooks/useSnRepoValidation'
 import useTaRepoValidation from '@hooks/useTaRepoValidation'
 import useTwRepoValidation from '@hooks/useTwRepoValidation'
+import useObsRepoValidation from '@hooks/useObsRepoValidation'
+import useObsTnRepoValidation from '@hooks/useObsTnRepoValidation'
+import useObsTwlRepoValidation from '@hooks/useObsTwlRepoValidation'
 import useLocalStorage from '@hooks/useLocalStorage'
 
 export const AdminContext = React.createContext({});
@@ -117,6 +120,30 @@ export default function AdminContextProvider({
     },
   } = useTwRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
 
+  const {
+    state: {
+      obsRepoTree,
+      obsRepoTreeManifest,
+      obsRepoTreeErrorMessage,
+    },
+  } = useObsRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
+
+  const {
+    state: {
+      obsTnRepoTree,
+      obsTnRepoTreeManifest,
+      obsTnRepoTreeErrorMessage,
+    },
+  } = useObsTnRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
+
+  const {
+    state: {
+      obsTwlRepoTree,
+      obsTwlRepoTreeManifest,
+      obsTwlRepoTreeErrorMessage,
+    },
+  } = useObsTwlRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
+
   const _setBooks = (value) => {
     setBooks(value)
     setCurrentLayout(null)
@@ -125,6 +152,15 @@ export default function AdminContextProvider({
   // create the value for the context provider
   const context = {
     state: {
+      obsRepoTree,
+      obsRepoTreeManifest,
+      obsRepoTreeErrorMessage,
+      obsTnRepoTree,
+      obsTnRepoTreeManifest,
+      obsTnRepoTreeErrorMessage,
+      obsTwlRepoTree,
+      obsTwlRepoTreeManifest,
+      obsTwlRepoTreeErrorMessage,
       tnRepoTree,
       tnRepoTreeManifest,
       tnRepoTreeErrorMessage,
