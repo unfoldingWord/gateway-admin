@@ -40,14 +40,114 @@ export default function getResourceManifest({resourceId}) {
     case 'sn':       return sn_manifest;
     case 'sq':       return sq_manifest;
     case 'obs':      return obs_manifest;
-    case 'tn_obs':   return obs_tn_manifest;
-    case 'obs_sq':   return obs_sq_manifest;
-    case 'obs_sn':   return obs_sn_manifest;
+    case 'obs-tn':   return obs_tn_manifest;
+    case 'obs-tq':   return obs_tq_manifest;
+    case 'obs-sq':   return obs_sq_manifest;
+    case 'obs-sn':   return obs_sn_manifest;
+    case 'obs-twl':   return obs_twl_manifest;
   
     default:
       return "no template manifest available for resource type:"+resourceId;
   }
 }
+
+const obs_twl_manifest = `
+dublin_core:
+  conformsto: 'rc0.2'
+  contributor:
+  - 'This list was copied and not necessarily correct for this resource'
+  - 'Door43 World Missions Community'
+  - 'Jesse Griffin (BA Biblical Studies, Liberty University; MA Biblical Languages, Gordon-Conwell Theological Seminary)'
+  - 'Perry Oakes (BA Biblical Studies, Taylor University; MA Theology, Fuller Seminary; MA Linguistics, University of Texas at Arlington; PhD Old Testament, Southwestern Baptist Theological Seminary)'
+  - 'Larry Sallee (Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary)'
+  - 'Joel D. Ruark (M.A.Th. Gordon-Conwell Theological Seminary; Th.M. Stellenbosch University; Ph.D. Candidate in Old Testament Studies, Stellenbosch University)'
+  creator: 'Door43 World Missions Community'
+  description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
+  format: 'text/tsv'
+  identifier: 'obs-twl'
+  issued: '2021-03-22'
+  language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'
+  modified: '2021-03-22'
+  publisher: 'unfoldingWord'
+  relation:
+  - 'en/obs?v=8'
+  rights: 'CC BY-SA 4.0'
+  source:
+  - identifier: 'obs-twl'
+    language: 'en'
+    version: '0'
+  subject: 'TSV OBS Translation Words Links'
+  title: 'unfoldingWord® OBS Translation Words Links'
+  type: 'help'
+  version: '1'
+
+checking:
+  checking_entity:
+  - 'unfoldingWord'
+  checking_level: '3'
+
+projects:
+  -
+    title: 'OBS Translation Words Links'
+    versification: 'ufw'
+    identifier: 'obs'
+    sort: 1
+    path: './twl_OBS.tsv'
+    categories: [ ]
+`
+
+const obs_tq_manifest = `
+---
+
+dublin_core:
+  conformsto: 'rc0.2'
+  contributor:
+    - 'Larry Sallee, Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary'
+    - 'Susan Quigley, MA in Linguistics'
+    - 'Jerrell Hein'
+    - 'Lizz Carlton'
+    - 'Door43 World Missions Community'
+  creator: 'unfoldingWord'
+  description: 'Comprehension and theological questions for unfoldingWord® Open Bible Stories. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
+  format: 'text/tsv'
+  identifier: 'obs-tq'
+  issued: '2021-09-29'
+  language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'
+  modified: '2021-09-29'
+  publisher: 'unfoldingWord'
+  relation:
+    - 'en/obs?v=8'
+  rights: 'CC BY-SA 4.0'
+  source:
+    -
+      identifier: 'obs-tq'
+      language: 'en'
+      version: '7'
+  subject: 'TSV OBS Translation Questions'
+  title: 'unfoldingWord® Open Bible Stories Translation Questions'
+  type: 'help'
+  version: '8'
+
+checking:
+  checking_entity:
+    - 'unfoldingWord'
+  checking_level: '3'
+
+projects:
+  -
+    categories:
+    identifier: 'obs'
+    path: './tq_OBS.tsv'
+    sort: 0
+    title: 'unfoldingWord® Open Bible Stories Translation Questions'
+    versification: "ufw"
+`
 
 const obs_sn_manifest = `
 ---
