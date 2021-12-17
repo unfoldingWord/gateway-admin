@@ -21,6 +21,7 @@ import { useRouter } from 'next/router'
 import { HTTP_CONFIG } from '@common/constants'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
 import RepoValidationCard from './RepoValidationCard'
+import RepoObsValidationCard from './RepoObsValidationCard'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -233,6 +234,15 @@ function RepoValidation() {
         >
           {
             books.map( (bookId) =>        
+              bookId === 'obs' ? 
+              <RepoObsValidationCard 
+                bookId={bookId} 
+                classes={classes} 
+                onClose={removeBook}
+              />
+
+              :
+
               <RepoValidationCard 
                 bookId={bookId} 
                 classes={classes} 

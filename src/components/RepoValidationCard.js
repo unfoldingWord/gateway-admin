@@ -6,7 +6,7 @@ import TreeItem from '@material-ui/lab/TreeItem'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
-import { ALL_BIBLE_BOOKS } from '@common/BooksOfTheBible'
+import { BIBLE_AND_OBS } from '@common/BooksOfTheBible'
 import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
@@ -339,7 +339,7 @@ export default function RepoValidationCard({
   ]
 
   return (
-    <Card title={ALL_BIBLE_BOOKS[bookId]} 
+    <Card title={BIBLE_AND_OBS[bookId]} 
       classes={classes} 
       hideMarkdownToggle={true} 
       closeable={true}

@@ -25,7 +25,6 @@ export default function SelectBookPopup(
     handleClickClose()
   }
 
-  
   const defaultProps = {
     options: bookSelectList(),
     getOptionLabel: (option) => option.name,
@@ -38,7 +37,7 @@ export default function SelectBookPopup(
     >
       <Card
         closeable
-        title={`Select a Book                    `}
+        title={`Select a Book`}
         onClose={handleClickClose}
         classes={{
           dragIndicator: 'draggable-dialog-title',
