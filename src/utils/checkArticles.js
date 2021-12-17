@@ -20,6 +20,9 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
   let processed = []
   // sample: https://git.door43.org/unfoldingWord/en_twl/raw/branch/master/twl_1TI.tsv
   let url = `${server}/${owner}/${languageId}_twl/raw/branch/master/twl_${bookId.toUpperCase()}.tsv`
+  if ( bookId === 'obs' ) {
+    url = `${server}/${owner}/${languageId}_obs-twl/raw/branch/master/twl_OBS.tsv`
+  }
   let twltsv = null
   let fetchError = true
   try {
@@ -96,6 +99,9 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
   let processed = []
   // sample: https://git.door43.org/unfoldingWord/en_tn/raw/branch/master/twl_1TI.tsv
   let url = `${server}/${owner}/${languageId}_tn/raw/branch/newFormat/tn_${bookId.toUpperCase()}.tsv`
+  if ( bookId === 'obs' ) {
+    url = `${server}/${owner}/${languageId}_obs-tn/raw/branch/master/tn_OBS.tsv`
+  }
   let tntsv = null
   let fetchError = true
   try {

@@ -32,6 +32,15 @@ export default function RepoObsValidationCard({
   const [obsBookErrorMsg, setObsBookErrorMsg] = useState(null)
   const [obsTnBookErrorMsg, setObsTnBookErrorMsg] = useState(null)
   const [obsTwlBookErrorMsg, setObsTwlBookErrorMsg] = useState(null)
+  const [obsTqBookErrorMsg, setObsTqBookErrorMsg] = useState(null)
+  const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
+  const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
+
+  const {
+    state: {
+      authentication,
+    },
+  } = useContext(AuthContext)
 
   const {
     state: {
@@ -52,6 +61,15 @@ export default function RepoObsValidationCard({
       obsTwlRepoTree,
       obsTwlRepoTreeManifest,
       obsTwlRepoTreeErrorMessage,
+      obsTqRepoTree,
+      obsTqRepoTreeManifest,
+      obsTqRepoTreeErrorMessage,
+      obsTaRepoTree,
+      obsTaRepoTreeManifest,
+      obsTaRepoTreeErrorMessage,
+      obsTwRepoTree,
+      obsTwRepoTreeManifest,
+      obsTwRepoTreeErrorMessage,
       refresh,
     },
     actions: {
@@ -109,6 +127,88 @@ export default function RepoObsValidationCard({
   useEffect(() => {
     checkManifestBook(obsTwlRepoTreeManifest, obsTwlRepoTree, setObsTwlBookErrorMsg)
   }, [obsTwlRepoTree, obsTwlRepoTreeManifest])
+
+  useEffect(() => {
+    checkManifestBook(obsTqRepoTreeManifest, obsTqRepoTree, setObsTqBookErrorMsg)
+  }, [obsTqRepoTree, obsTqRepoTreeManifest])
+
+  useEffect(() => {
+    if ( obsTnBookErrorMsg === null ) {
+      return // wait until we know the result
+    }
+
+    async function getTaWords() {
+      const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, obsTaRepoTree)
+      setObsTaErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      if ( rc.Absent.length > 0 ) {
+        console.log("bookId, Missing TA:",bookId,rc.Absent)
+      } 
+    }
+
+    // check tn repo first
+    if ( obsTnRepoTreeErrorMessage === WORKING ) {
+      return
+    }
+    // check ta repo first
+    if ( obsTaRepoTreeErrorMessage === WORKING ) {
+      return
+    }
+    // OK, repo is there as is manifest, but we won't be using the manifest for TA
+    // Now check to see if there is twlRepo error
+    if ( obsTnRepoTreeErrorMessage !== null ) {
+      setObsTaErrorMsg("No TN Repo")
+      return
+    }
+    // OK, now check whether the tn book file is present
+    if ( obsTnBookErrorMsg === OK ) {
+      // All looks good... let's get the TN book file
+      // fetch it!
+      if (authentication && obsTaRepoTree && obsTnRepoTree) {
+        getTaWords()
+      }
+    } else {
+      setObsTaErrorMsg("See TN error")
+    }
+  }, [obsTaRepoTree, obsTaRepoTreeErrorMessage, obsTnRepoTree, obsTnRepoTreeErrorMessage, obsTnBookErrorMsg, OK])
+
+  useEffect(() => {
+    if ( obsTwlBookErrorMsg === null ) {
+      return // wait until we know the result
+    }
+
+    async function getTwWords() {
+      const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, obsTwRepoTree)
+      setObsTwErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      if ( rc.Absent.length > 0 ) {
+        console.log("bookId, Missing TW:",bookId,rc.Absent)
+      } 
+    }
+
+    // check twl repo first
+    if ( obsTwlRepoTreeErrorMessage === WORKING ) {
+      return
+    }
+    // check tw repo first
+    if ( obsTwRepoTreeErrorMessage === WORKING ) {
+      return
+    }
+    // OK repo is there as is manifest, but we won't be using the manifest for TW
+    // Now check to see if there is twlRepo error
+    if ( obsTwlRepoTreeErrorMessage !== null ) {
+      setObsTwErrorMsg("No TWL Repo")
+      return
+    }
+    // OK, now check whether the twl book file is present
+    if ( obsTwlBookErrorMsg === OK ) {
+      // All looks good... let's get the TWL book file
+      // fetch it!
+      if (authentication && obsTwRepoTree && obsTwlRepoTree) {
+        getTwWords()
+      }
+    } else {
+      setObsTwErrorMsg("See TWL error")
+    }
+  }, [obsTwRepoTree, obsTwRepoTreeErrorMessage, obsTwlRepoTree, obsTwlRepoTreeErrorMessage, obsTwlBookErrorMsg, OK])
 
   const applyIcon = (repo,repoErr,bookErr, manifest) => {
     // console.log("applyIcon() parameters:",`repo:${repo}
@@ -177,6 +277,15 @@ export default function RepoObsValidationCard({
     ],
     ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeErrorMessage || obsTwlBookErrorMsg, 
       applyIcon(`${languageId}_obs-twl`,obsTwlRepoTreeErrorMessage,obsTwlBookErrorMsg, obsTwlRepoTreeManifest) 
+    ],
+    ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeErrorMessage || obsTqBookErrorMsg, 
+      applyIcon(`${languageId}_obs-tq`,obsTqRepoTreeErrorMessage,obsTqBookErrorMsg, obsTqRepoTreeManifest) 
+    ],
+    ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeErrorMessage || obsTaErrorMsg, 
+      applyIcon(`${languageId}_ta`,obsTaRepoTreeErrorMessage,obsTaErrorMsg, obsTaRepoTreeManifest) 
+    ],
+    ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeErrorMessage || obsTwErrorMsg, 
+      applyIcon(`${languageId}_tw`,obsTwRepoTreeErrorMessage,obsTwErrorMsg, obsTwRepoTreeManifest) 
     ],
   ]
 
