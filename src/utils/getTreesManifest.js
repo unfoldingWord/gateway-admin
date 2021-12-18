@@ -91,5 +91,5 @@ export async function getTreesManifest(authentication, url) {
     Error Message: ${_errorMessage}
   `)
   */
-  return {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMessage}
+  return {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMessage}
 }

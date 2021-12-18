@@ -88,7 +88,7 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
       _errorMessage = OK
     }
   }
-  return {Book: bookId, Present: _present, Absent: _absent, ErrorMessage: _errorMessage}
+  return {Book: bookId, Present: _present, Absent: _absent, Status: _errorMessage}
 }
 
 export async function checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree) {
@@ -167,5 +167,5 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
       _errorMessage = OK
     }
   }
-  return {Book: bookId, Present: _present, Absent: _absent, ErrorMessage: _errorMessage}
+  return {Book: bookId, Present: _present, Absent: _absent, Status: _errorMessage}
 }

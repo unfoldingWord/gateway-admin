@@ -5,17 +5,17 @@ import { WAITING, WORKING } from '@common/constants';
 export default function useObsTwRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{obsTwRepoTree, 
     obsTwRepoTreeManifest, 
-    obsTwRepoTreeErrorMessage}, 
+    obsTwRepoTreeStatus}, 
     setValues
-  ] = useState({obsTwRepoTree:null, obsTwRepoTreeManifest:null, obsTwRepoTreeErrorMessage:WAITING})
+  ] = useState({obsTwRepoTree:null, obsTwRepoTreeManifest:null, obsTwRepoTreeStatus:WAITING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
-      setValues({obsTwRepoTree: null, obsTwRepoTreeManifest: null, obsTwRepoTreeErrorMessage: WORKING})
+      setValues({obsTwRepoTree: null, obsTwRepoTreeManifest: null, obsTwRepoTreeStatus: WORKING})
       const url = `${server}/api/v1/repos/${owner}/${languageId}_tw/git/trees/master?recursive=true&per_page=999999`
-      const {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMesage} =  await getTreesManifest(authentication, url)
-      setValues({obsTwRepoTree: _tree, obsTwRepoTreeManifest: _manifest, obsTwRepoTreeErrorMessage: _errorMesage})
+      const {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
+      setValues({obsTwRepoTree: _tree, obsTwRepoTreeManifest: _manifest, obsTwRepoTreeStatus: _errorMesage})
     }
     if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
@@ -28,7 +28,7 @@ export default function useObsTwRepoValidation({authentication, owner, server, l
     state: {
       obsTwRepoTree,
       obsTwRepoTreeManifest,
-      obsTwRepoTreeErrorMessage,
+      obsTwRepoTreeStatus,
     },
   }
 }
