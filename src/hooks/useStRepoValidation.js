@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WORKING } from '@common/constants';
+import { WAITING, WORKING } from '@common/constants';
 
 export default function useStRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{stRepoTree, 
     stRepoTreeManifest, 
     stRepoTreeErrorMessage}, 
     setValues
-  ] = useState({stRepoTree:null, stRepoTreeManifest:null, stRepoTreeErrorMessage:WORKING})
+  ] = useState({stRepoTree:null, stRepoTreeManifest:null, stRepoTreeErrorMessage:WAITING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_st/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
+      setValues({stRepoTree: null, stRepoTreeManifest: null, stRepoTreeErrorMessage: WORKING})
       let _repo = languageId
       if ( owner === "unfoldingWord" || owner === "unfoldingword" ) {
         _repo += "_ust"

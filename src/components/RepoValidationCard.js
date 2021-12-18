@@ -141,6 +141,7 @@ export default function RepoValidationCard({
     }
 
     async function getTwWords() {
+      setTwErrorMsg('Checking TW list')
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
       if ( rc.Absent.length > 0 ) {

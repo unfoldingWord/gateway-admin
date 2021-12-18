@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WORKING } from '@common/constants'
+import { WORKING, WAITING } from '@common/constants'
 
 export default function useLtRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{ltRepoTree, 
@@ -12,6 +12,7 @@ export default function useLtRepoValidation({authentication, owner, server, lang
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_lt/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
+      setValues({ltRepoTree: null, ltRepoTreeManifest: null, ltRepoTreeErrorMessage: WORKING})
       let _repo = languageId
       if ( owner === "unfoldingWord" || owner === "unfoldingword" ) {
         _repo += "_ult"
