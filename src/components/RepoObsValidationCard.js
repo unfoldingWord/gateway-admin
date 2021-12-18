@@ -56,28 +56,28 @@ export default function RepoObsValidationCard({
     state: {
       obsRepoTree, 
       obsRepoTreeManifest,
-      obsRepoTreeErrorMessage,
+      obsRepoTreeStatus,
       obsTnRepoTree,
       obsTnRepoTreeManifest,
-      obsTnRepoTreeErrorMessage,
+      obsTnRepoTreeStatus,
       obsTwlRepoTree,
       obsTwlRepoTreeManifest,
-      obsTwlRepoTreeErrorMessage,
+      obsTwlRepoTreeStatus,
       obsTqRepoTree,
       obsTqRepoTreeManifest,
-      obsTqRepoTreeErrorMessage,
+      obsTqRepoTreeStatus,
       obsTaRepoTree,
       obsTaRepoTreeManifest,
-      obsTaRepoTreeErrorMessage,
+      obsTaRepoTreeStatus,
       obsTwRepoTree,
       obsTwRepoTreeManifest,
-      obsTwRepoTreeErrorMessage,
+      obsTwRepoTreeStatus,
       obsSnRepoTree,
       obsSnRepoTreeManifest,
-      obsSnRepoTreeErrorMessage,
+      obsSnRepoTreeStatus,
       obsSqRepoTree,
       obsSqRepoTreeManifest,
-      obsSqRepoTreeErrorMessage,
+      obsSqRepoTreeStatus,
       refresh,
     },
     actions: {
@@ -147,23 +147,23 @@ export default function RepoObsValidationCard({
 
     async function getTaWords() {
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, obsTaRepoTree)
-      setObsTaErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      setObsTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
         console.log("bookId, Missing TA:",bookId,rc.Absent)
       } 
     }
 
     // check tn repo first
-    if ( obsTnRepoTreeErrorMessage === WORKING ) {
+    if ( obsTnRepoTreeStatus === WORKING ) {
       return
     }
     // check ta repo first
-    if ( obsTaRepoTreeErrorMessage === WORKING ) {
+    if ( obsTaRepoTreeStatus === WORKING ) {
       return
     }
     // OK, repo is there as is manifest, but we won't be using the manifest for TA
     // Now check to see if there is twlRepo error
-    if ( obsTnRepoTreeErrorMessage !== null ) {
+    if ( obsTnRepoTreeStatus !== null ) {
       setObsTaErrorMsg("No TN Repo")
       return
     }
@@ -177,7 +177,7 @@ export default function RepoObsValidationCard({
     } else {
       setObsTaErrorMsg("See TN error")
     }
-  }, [obsTaRepoTree, obsTaRepoTreeErrorMessage, obsTnRepoTree, obsTnRepoTreeErrorMessage, obsTnBookErrorMsg, OK])
+  }, [obsTaRepoTree, obsTaRepoTreeStatus, obsTnRepoTree, obsTnRepoTreeStatus, obsTnBookErrorMsg, OK])
 
   useEffect(() => {
     if ( obsTwlBookErrorMsg === null ) {
@@ -186,23 +186,23 @@ export default function RepoObsValidationCard({
 
     async function getTwWords() {
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, obsTwRepoTree)
-      setObsTwErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      setObsTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
         console.log("bookId, Missing TW:",bookId,rc.Absent)
       } 
     }
 
     // check twl repo first
-    if ( obsTwlRepoTreeErrorMessage === WORKING ) {
+    if ( obsTwlRepoTreeStatus === WORKING ) {
       return
     }
     // check tw repo first
-    if ( obsTwRepoTreeErrorMessage === WORKING ) {
+    if ( obsTwRepoTreeStatus === WORKING ) {
       return
     }
     // OK repo is there as is manifest, but we won't be using the manifest for TW
     // Now check to see if there is twlRepo error
-    if ( obsTwlRepoTreeErrorMessage !== null ) {
+    if ( obsTwlRepoTreeStatus !== null ) {
       setObsTwErrorMsg("No TWL Repo")
       return
     }
@@ -216,7 +216,7 @@ export default function RepoObsValidationCard({
     } else {
       setObsTwErrorMsg("See TWL error")
     }
-  }, [obsTwRepoTree, obsTwRepoTreeErrorMessage, obsTwlRepoTree, obsTwlRepoTreeErrorMessage, obsTwlBookErrorMsg, OK])
+  }, [obsTwRepoTree, obsTwRepoTreeStatus, obsTwlRepoTree, obsTwlRepoTreeStatus, obsTwlBookErrorMsg, OK])
 
   useEffect(() => {
     checkManifestBook(obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg)
@@ -285,29 +285,29 @@ export default function RepoObsValidationCard({
   }
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
-    ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeErrorMessage || obsBookErrorMsg, 
-      applyIcon(`${languageId}_obs`,obsRepoTreeErrorMessage,obsBookErrorMsg, obsRepoTreeManifest) 
+    ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
+      applyIcon(`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest) 
     ],
-    ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeErrorMessage || obsTnBookErrorMsg, 
-      applyIcon(`${languageId}_obs-tn`,obsTnRepoTreeErrorMessage,obsTnBookErrorMsg, obsTnRepoTreeManifest) 
+    ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
+      applyIcon(`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest) 
     ],
-    ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeErrorMessage || obsTwlBookErrorMsg, 
-      applyIcon(`${languageId}_obs-twl`,obsTwlRepoTreeErrorMessage,obsTwlBookErrorMsg, obsTwlRepoTreeManifest) 
+    ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeStatus || obsTwlBookErrorMsg, 
+      applyIcon(`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest) 
     ],
-    ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeErrorMessage || obsTqBookErrorMsg, 
-      applyIcon(`${languageId}_obs-tq`,obsTqRepoTreeErrorMessage,obsTqBookErrorMsg, obsTqRepoTreeManifest) 
+    ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeStatus || obsTqBookErrorMsg, 
+      applyIcon(`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest) 
     ],
-    ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeErrorMessage || obsTaErrorMsg, 
-      applyIcon(`${languageId}_ta`,obsTaRepoTreeErrorMessage,obsTaErrorMsg, obsTaRepoTreeManifest) 
+    ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeStatus || obsTaErrorMsg, 
+      applyIcon(`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest) 
     ],
-    ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeErrorMessage || obsTwErrorMsg, 
-      applyIcon(`${languageId}_tw`,obsTwRepoTreeErrorMessage,obsTwErrorMsg, obsTwRepoTreeManifest) 
+    ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeStatus || obsTwErrorMsg, 
+      applyIcon(`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest) 
     ],
-    ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeErrorMessage || obsSnBookErrorMsg, 
-      applyIcon(`${languageId}_obs-sn`,obsSnRepoTreeErrorMessage,obsSnBookErrorMsg, obsSnRepoTreeManifest) 
+    ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeStatus || obsSnBookErrorMsg, 
+      applyIcon(`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest) 
     ],
-    ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeErrorMessage || obsSqBookErrorMsg, 
-      applyIcon(`${languageId}_obs-sq`,obsSqRepoTreeErrorMessage,obsSqBookErrorMsg, obsSqRepoTreeManifest) 
+    ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeStatus || obsSqBookErrorMsg, 
+      applyIcon(`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest) 
     ],
   ]
 

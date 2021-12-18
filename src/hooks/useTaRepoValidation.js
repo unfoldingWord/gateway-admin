@@ -5,17 +5,17 @@ import { WAITING, WORKING } from '@common/constants';
 export default function useTaRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{taRepoTree, 
     taRepoTreeManifest, 
-    taRepoTreeErrorMessage}, 
+    taRepoTreeStatus}, 
     setValues
-  ] = useState({taRepoTree:null, taRepoTreeManifest:null, taRepoTreeErrorMessage:WAITING})
+  ] = useState({taRepoTree:null, taRepoTreeManifest:null, taRepoTreeStatus:WAITING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_tn/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
     async function getReposTrees() {
-      setValues({taRepoTree: null, taRepoTreeManifest: null, taRepoTreeErrorMessage: WORKING})
+      setValues({taRepoTree: null, taRepoTreeManifest: null, taRepoTreeStatus: WORKING})
       const url = `${server}/api/v1/repos/${owner}/${languageId}_ta/git/trees/master?recursive=true&per_page=999999`
-      const {RepoTree: _tree, Manifest: _manifest, RepoTreeErrorMessage: _errorMesage} =  await getTreesManifest(authentication, url)
-      setValues({taRepoTree: _tree, taRepoTreeManifest: _manifest, taRepoTreeErrorMessage: _errorMesage})
+      const {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
+      setValues({taRepoTree: _tree, taRepoTreeManifest: _manifest, taRepoTreeStatus: _errorMesage})
     }
     if (authentication && owner && server && languageId && refresh) {
       getReposTrees()
@@ -28,7 +28,7 @@ export default function useTaRepoValidation({authentication, owner, server, lang
     state: {
       taRepoTree,
       taRepoTreeManifest,
-      taRepoTreeErrorMessage,
+      taRepoTreeStatus,
     },
   }
 }

@@ -65,31 +65,31 @@ export default function RepoValidationCard({
     state: {
       tnRepoTree, 
       tnRepoTreeManifest,
-      tnRepoTreeErrorMessage,
+      tnRepoTreeStatus,
       twlRepoTree,
       twlRepoTreeManifest,
-      twlRepoTreeErrorMessage,
+      twlRepoTreeStatus,
       ltRepoTree,
       ltRepoTreeManifest,
-      ltRepoTreeErrorMessage,
+      ltRepoTreeStatus,
       stRepoTree,
       stRepoTreeManifest,
-      stRepoTreeErrorMessage,
+      stRepoTreeStatus,
       tqRepoTree,
       tqRepoTreeManifest,
-      tqRepoTreeErrorMessage,
+      tqRepoTreeStatus,
       sqRepoTree,
       sqRepoTreeManifest,
-      sqRepoTreeErrorMessage,
+      sqRepoTreeStatus,
       snRepoTree,
       snRepoTreeManifest,
-      snRepoTreeErrorMessage,
+      snRepoTreeStatus,
       taRepoTree,
       taRepoTreeManifest,
-      taRepoTreeErrorMessage,
+      taRepoTreeStatus,
       twRepoTree,
       twRepoTreeManifest,
-      twRepoTreeErrorMessage,
+      twRepoTreeStatus,
       refresh,
     },
     actions: {
@@ -143,23 +143,23 @@ export default function RepoValidationCard({
     async function getTwWords() {
       setTwErrorMsg('Checking TW list')
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
-      setTwErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      setTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
         console.log("bookId, Missing TW:",bookId,rc.Absent)
       } 
     }
 
     // check twl repo first
-    if ( twlRepoTreeErrorMessage === WORKING ) {
+    if ( twlRepoTreeStatus === WORKING ) {
       return
     }
     // check tw repo first
-    if ( twRepoTreeErrorMessage === WORKING ) {
+    if ( twRepoTreeStatus === WORKING ) {
       return
     }
     // OK repo is there as is manifest, but we won't be using the manifest for TW
     // Now check to see if there is twlRepo error
-    if ( twlRepoTreeErrorMessage !== null ) {
+    if ( twlRepoTreeStatus !== null ) {
       setTwErrorMsg("No TWL Repo")
       return
     }
@@ -173,7 +173,7 @@ export default function RepoValidationCard({
     } else {
       setTwErrorMsg("See TWL error")
     }
-  }, [twRepoTree, twRepoTreeErrorMessage, twlRepoTree, twlRepoTreeErrorMessage, twlBookErrorMsg, OK])
+  }, [twRepoTree, twRepoTreeStatus, twlRepoTree, twlRepoTreeStatus, twlBookErrorMsg, OK])
 
   useEffect(() => {
     if ( tnBookErrorMsg === null ) {
@@ -182,23 +182,23 @@ export default function RepoValidationCard({
 
     async function getTaWords() {
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
-      setTaErrorMsg(rc.ErrorMessage ? rc.ErrorMessage : null)
+      setTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
         console.log("bookId, Missing TA:",bookId,rc.Absent)
       } 
     }
 
     // check tn repo first
-    if ( tnRepoTreeErrorMessage === WORKING ) {
+    if ( tnRepoTreeStatus === WORKING ) {
       return
     }
     // check ta repo first
-    if ( taRepoTreeErrorMessage === WORKING ) {
+    if ( taRepoTreeStatus === WORKING ) {
       return
     }
     // OK, repo is there as is manifest, but we won't be using the manifest for TA
     // Now check to see if there is twlRepo error
-    if ( tnRepoTreeErrorMessage !== null ) {
+    if ( tnRepoTreeStatus !== null ) {
       setTaErrorMsg("No TN Repo")
       return
     }
@@ -212,7 +212,7 @@ export default function RepoValidationCard({
     } else {
       setTaErrorMsg("See TN error")
     }
-  }, [taRepoTree, taRepoTreeErrorMessage, tnRepoTree, tnRepoTreeErrorMessage, tnBookErrorMsg, OK])
+  }, [taRepoTree, taRepoTreeStatus, tnRepoTree, tnRepoTreeStatus, tnBookErrorMsg, OK])
 
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
@@ -310,32 +310,32 @@ export default function RepoValidationCard({
   }
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
-    ["Literal Translation", `${_ltRepo}`, ltRepoTreeErrorMessage || ltBookErrorMsg, 
-      applyIcon(_ltRepo,ltRepoTreeErrorMessage,ltBookErrorMsg, ltRepoTreeManifest) 
+    ["Literal Translation", `${_ltRepo}`, ltRepoTreeStatus || ltBookErrorMsg, 
+      applyIcon(_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest) 
     ],
-    ["Simplified Translation", `${_stRepo}`, stRepoTreeErrorMessage || stBookErrorMsg, 
-      applyIcon(_stRepo,stRepoTreeErrorMessage,stBookErrorMsg, stRepoTreeManifest) 
+    ["Simplified Translation", `${_stRepo}`, stRepoTreeStatus || stBookErrorMsg, 
+      applyIcon(_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest) 
     ],
-    ["Translation Notes", `${languageId}_tn`, tnRepoTreeErrorMessage || tnBookErrorMsg, 
-      applyIcon(`${languageId}_tn`,tnRepoTreeErrorMessage,tnBookErrorMsg, tnRepoTreeManifest) 
+    ["Translation Notes", `${languageId}_tn`, tnRepoTreeStatus || tnBookErrorMsg, 
+      applyIcon(`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest) 
     ],
-    ["Translation Word List", `${languageId}_twl`, twlRepoTreeErrorMessage || twlBookErrorMsg, 
-      applyIcon(`${languageId}_twl`,twlRepoTreeErrorMessage,twlBookErrorMsg, twlRepoTreeManifest) 
+    ["Translation Word List", `${languageId}_twl`, twlRepoTreeStatus || twlBookErrorMsg, 
+      applyIcon(`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest) 
     ],
-    ["Translation Words", `${languageId}_tw`, twRepoTreeErrorMessage || twErrorMsg, 
-      applyIcon(`${languageId}_tw`,twRepoTreeErrorMessage,twErrorMsg, twRepoTreeManifest) 
+    ["Translation Words", `${languageId}_tw`, twRepoTreeStatus || twErrorMsg, 
+      applyIcon(`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest) 
     ],
-    ["Translation Academy", `${languageId}_ta`, taRepoTreeErrorMessage || taErrorMsg, 
-      applyIcon(`${languageId}_ta`,taRepoTreeErrorMessage,taErrorMsg, taRepoTreeManifest) 
+    ["Translation Academy", `${languageId}_ta`, taRepoTreeStatus || taErrorMsg, 
+      applyIcon(`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest) 
     ],
-    ["Translation Questions", `${languageId}_tq`, tqRepoTreeErrorMessage || tqBookErrorMsg, 
-      applyIcon(`${languageId}_tq`,tqRepoTreeErrorMessage,tqBookErrorMsg, tqRepoTreeManifest) 
+    ["Translation Questions", `${languageId}_tq`, tqRepoTreeStatus || tqBookErrorMsg, 
+      applyIcon(`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest) 
     ],
-    ["Study Questions", `${languageId}_sq`, sqRepoTreeErrorMessage || sqBookErrorMsg, 
-      applyIcon(`${languageId}_sq`,sqRepoTreeErrorMessage,sqBookErrorMsg, sqRepoTreeManifest) 
+    ["Study Questions", `${languageId}_sq`, sqRepoTreeStatus || sqBookErrorMsg, 
+      applyIcon(`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest) 
     ],
-    ["Study Notes", `${languageId}_sn`, snRepoTreeErrorMessage || snBookErrorMsg, 
-      applyIcon(`${languageId}_sn`,snRepoTreeErrorMessage,snBookErrorMsg, snRepoTreeManifest) 
+    ["Study Notes", `${languageId}_sn`, snRepoTreeStatus || snBookErrorMsg, 
+      applyIcon(`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest) 
     ],
   ]
 
