@@ -36,7 +36,7 @@ function AddBookButton({ active, server, owner, repo, manifest, sha, bookId, onR
       const tokenid = authentication.token.sha1;
       const resourceId = dcsApis.getResourceIdFromRepo(repo)
       const res = await dcsApis.manifestAddBook({server: server, username: owner, repository: repo, manifest: manifest, sha: sha, bookId: bookId, tokenid: tokenid})
-      if ( res.status === 201 ) {
+      if ( res.status === 200 ) {
         console.log("Book added to manifest. Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         onRefresh(resourceId)
       } else {

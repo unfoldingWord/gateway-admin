@@ -99,7 +99,7 @@ export async function manifestAddBook({server, username, repository, manifest, s
     // skip adding book to project section
     _manifest = manifest
   } else {
-    _manifest = addProject( { fullResourceId, manifest, bookId })
+    _manifest = addProject( { resourceId, manifest, bookId })
   }
   console.log("new manifest:",_manifest)
   const content = base64.encode(utf8.encode(_manifest));
