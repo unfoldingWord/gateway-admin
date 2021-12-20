@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WAITING, WORKING } from '@common/constants';
+import { ALL, WAITING, WORKING, OBS_TWL } from '@common/constants';
 
 export default function useObsTwlRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{obsTwlRepoTree, 
@@ -18,10 +18,10 @@ export default function useObsTwlRepoValidation({authentication, owner, server, 
       setValues({obsTwlRepoTree: _tree, obsTwlRepoTreeManifest: _manifest, obsTwlRepoTreeStatus: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === OBS_TWL || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 

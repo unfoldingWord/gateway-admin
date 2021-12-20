@@ -52,4 +52,25 @@ export const NO_MANIFEST_FOUND = "No manifest found"
 export const UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
 export const UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
 
+// States for hook refreshing
+export const ALL = "ALL" // do all of them
+export const LT = "lt"
+export const OBS = "obs"
+export const OBS_SN = "obs-sn"
+export const OBS_SQ = "obs-sq"
+export const OBS_TA = "obs-ta"
+export const OBS_TN = "obs-tn"
+export const OBS_TQ = "obs-tq"
+export const OBS_TWL = "obs-twl"
+export const OBS_TW = "obs-tw"
+export const SN = "sn"
+export const SQ = "sq"
+export const ST = "st"
+export const TA = "ta"
+export const TN = "tn"
+export const TQ = "tq"
+export const TWL = "twl"
+export const TW = "tw"
+
+
 export const apiPath  = 'api/v1'
