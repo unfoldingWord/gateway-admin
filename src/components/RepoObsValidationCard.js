@@ -56,27 +56,35 @@ export default function RepoObsValidationCard({
     state: {
       obsRepoTree, 
       obsRepoTreeManifest,
+      obsManifestSha,
       obsRepoTreeStatus,
       obsTnRepoTree,
       obsTnRepoTreeManifest,
+      obsTnManifestSha,
       obsTnRepoTreeStatus,
       obsTwlRepoTree,
       obsTwlRepoTreeManifest,
+      obsTwlManifestSha,
       obsTwlRepoTreeStatus,
       obsTqRepoTree,
       obsTqRepoTreeManifest,
+      obsTqManifestSha,
       obsTqRepoTreeStatus,
       obsTaRepoTree,
       obsTaRepoTreeManifest,
+      obsTaManifestSha,
       obsTaRepoTreeStatus,
       obsTwRepoTree,
       obsTwRepoTreeManifest,
+      obsTwManifestSha,
       obsTwRepoTreeStatus,
       obsSnRepoTree,
       obsSnRepoTreeManifest,
+      obsSnManifestSha,
       obsSnRepoTreeStatus,
       obsSqRepoTree,
       obsSqRepoTreeManifest,
+      obsSqManifestSha,
       obsSqRepoTreeStatus,
       refresh,
     },
@@ -226,11 +234,12 @@ export default function RepoObsValidationCard({
     checkManifestBook(obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
   }, [obsSqRepoTree, obsSqRepoTreeManifest])
 
-  const applyIcon = (repo,repoErr,bookErr, manifest) => {
+  const applyIcon = (repo,repoErr,bookErr,manifest,manifestSha) => {
     // console.log("applyIcon() parameters:",`repo:${repo}
     //   repoErr:${repoErr}
     //   bookErr:${bookErr}
     //   manifest:${manifest}
+    //   manifestSha:${manifestSha}
     // `)
     if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
       if ( repoErr === null && bookErr === WORKING ) {
@@ -263,13 +272,15 @@ export default function RepoObsValidationCard({
         <DoneIcon />
       )
     }
-/* not working yet... problem with PUT to update file, error 422 (not helpful)
+
     if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
       return (
-        <AddBookToManifest active={true} server={server} owner={owner} repo={repo} refresh={refresh} manifest={manifest} bookId={bookId} onRefresh={setRefresh} />
+        <AddBookToManifest 
+          active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
+          manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh} 
+        />
       )
     }
-*/
 
     if ( bookErr !== null ) {
       if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
@@ -286,28 +297,28 @@ export default function RepoObsValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
-      applyIcon(`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest) 
+      applyIcon(`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha) 
     ],
     ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
-      applyIcon(`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest) 
+      applyIcon(`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha) 
     ],
     ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeStatus || obsTwlBookErrorMsg, 
-      applyIcon(`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest) 
+      applyIcon(`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest, obsTwlManifestSha) 
     ],
     ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeStatus || obsTqBookErrorMsg, 
-      applyIcon(`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest) 
+      applyIcon(`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha) 
     ],
     ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeStatus || obsTaErrorMsg, 
-      applyIcon(`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest) 
+      applyIcon(`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha) 
     ],
     ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeStatus || obsTwErrorMsg, 
-      applyIcon(`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest) 
+      applyIcon(`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha) 
     ],
     ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeStatus || obsSnBookErrorMsg, 
-      applyIcon(`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest) 
+      applyIcon(`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha) 
     ],
     ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeStatus || obsSqBookErrorMsg, 
-      applyIcon(`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest) 
+      applyIcon(`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest, obsSqManifestSha) 
     ],
   ]
 

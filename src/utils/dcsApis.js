@@ -9,6 +9,16 @@ import getResourceManifest from '@common/manifests'
 import getResourceManifestProject from '@common/manifestProjects'
 import {ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT} from '@common/BooksOfTheBible'
 
+export function getResourceIdFromRepo(repo) {
+  let resourceId = repo.split('_')[1];
+  if ( resourceId === 'glt' || resourceId === 'ult' ) {
+    resourceId = 'lt'
+  } else if ( resourceId === 'gst' || resourceId === 'ust' ) {
+    resourceId = 'st'
+  }
+  return resourceId
+}
+
 export async function repoCreate({server, username, repository, tokenid}) {
   const uri = Path.join(server,apiPath,'orgs',username,'repos') ;
   const res = await fetch(uri+'?token='+tokenid, {
@@ -41,7 +51,7 @@ function addProject( { resourceId, manifest, bookId }) {
   projectTemplate.identifier = bookId
   projectTemplate.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
 
-  if ( resourceId === 'glt' || resourceId === 'ult' || resourceId === 'gst' || resourceId === 'ust' ) {
+  if ( resourceId === 'lt' || resourceId === 'st' ) {
     projectTemplate.path = "./" + BIBLES_ABBRV_INDEX[bookId] + "-" + bookId.toUpperCase() + ".usfm"
   } else if ( resourceId === 'twl' ) {
     projectTemplate.path = "./twl_" + bookId.toUpperCase() + ".tsv"
@@ -79,24 +89,24 @@ function addProject( { resourceId, manifest, bookId }) {
   return __manifest
 }
 
-export async function manifestAddBook({server, username, repository, manifest, bookId, tokenid}) {
-  // console.log("manifestAddBook() with parms:",`${server}, ${username}, ${repository}, ${bookId}, and manifest is:`)
-  // console.log(manifest)
+export async function manifestAddBook({server, username, repository, manifest, sha, bookId, tokenid}) {
+  console.log("manifestAddBook() with parms:",`${server}, ${username}, ${repository}, ${bookId}, ${sha} and manifest is:`)
+  console.log(manifest)
   const resourceId = repository.split('_')[1];
   // only applies to scripture oriented resources, skip tw and ta
-  let _manifest
+  let _manifest 
   if ( resourceId === 'ta' || resourceId === 'tw' ) {
     // skip adding book to project section
     _manifest = manifest
   } else {
-    _manifest = addProject( { resourceId, manifest, bookId })
+    _manifest = addProject( { fullResourceId, manifest, bookId })
   }
-  //console.log("new manifest:",_manifest)
+  console.log("new manifest:",_manifest)
   const content = base64.encode(utf8.encode(_manifest));
   const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());
   const dateString = date.toISOString();
-  //console.log("manifestAddBook() uri=", uri)
+  console.log("manifestAddBook() uri=", uri)
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' }, 
@@ -116,9 +126,9 @@ export async function manifestAddBook({server, username, repository, manifest, b
         "committer": "${dateString}"
       },
       "from_path": "manifest.yaml",
-      "message": "Add Book to Manifest",
+      "message": "Add Book ${bookId} to Manifest",
       "new_branch": "master",
-      "sha": "",
+      "sha": "${sha}",
       "signoff": true
     }`
   })
@@ -135,15 +145,10 @@ export async function manifestAddBook({server, username, repository, manifest, b
 //
 export async function manifestCreate({server, username, repository, bookId, tokenid}) {
   console.log("manifestCreate() with parms:",`${server}, ${username}, ${repository}, ${bookId}`)
-  const resourceId = repository.split('_')[1];
+  //const resourceId = getResourceIdFromRepo(repository)
+  const resourceId = repository.split("_")[1]
   const manifestYaml = getResourceManifest( {resourceId} );
-  // let _manifest // version to be posted to repo
-  // if ( resourceId === 'ta' || resourceId === 'tw' ) {
-  //   _manifest = manifestYaml // no changes required!
-  // } else {
-  //   const manifest = YAML.safeLoad(manifestYaml)
-  //   _manifest = addProject( { resourceId, manifest, bookId })
-  // }
+
   const content = base64.encode(utf8.encode(manifestYaml));
   const uri = Path.join(server,apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());

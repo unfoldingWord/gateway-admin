@@ -65,30 +65,39 @@ export default function RepoValidationCard({
     state: {
       tnRepoTree, 
       tnRepoTreeManifest,
+      tnManifestSha,
       tnRepoTreeStatus,
       twlRepoTree,
       twlRepoTreeManifest,
+      twlManifestSha,
       twlRepoTreeStatus,
       ltRepoTree,
       ltRepoTreeManifest,
+      ltManifestSha,
       ltRepoTreeStatus,
       stRepoTree,
       stRepoTreeManifest,
+      stManifestSha,
       stRepoTreeStatus,
       tqRepoTree,
       tqRepoTreeManifest,
+      tqManifestSha,
       tqRepoTreeStatus,
       sqRepoTree,
       sqRepoTreeManifest,
+      sqManifestSha,
       sqRepoTreeStatus,
       snRepoTree,
       snRepoTreeManifest,
+      snManifestSha,
       snRepoTreeStatus,
       taRepoTree,
       taRepoTreeManifest,
+      taManifestSha,
       taRepoTreeStatus,
       twRepoTree,
       twRepoTreeManifest,
+      twManifestSha,
       twRepoTreeStatus,
       refresh,
     },
@@ -251,11 +260,12 @@ export default function RepoValidationCard({
     _ltRepo += "_glt"
     _stRepo += "_gst"
   }
-  const applyIcon = (repo,repoErr,bookErr, manifest) => {
+  const applyIcon = (repo,repoErr,bookErr,manifest,manifestSha) => {
     // console.log("applyIcon() parameters:",`repo:${repo}
     //   repoErr:${repoErr}
     //   bookErr:${bookErr}
     //   manifest:${manifest}
+    //   manifestSha:${manifestSha}
     // `)
     if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
       if ( repoErr === null && bookErr === WORKING ) {
@@ -288,13 +298,15 @@ export default function RepoValidationCard({
         <DoneIcon />
       )
     }
-/* not working yet... problem with PUT to update file, error 422 (not helpful)
+
     if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
       return (
-        <AddBookToManifest active={true} server={server} owner={owner} repo={repo} refresh={refresh} manifest={manifest} bookId={bookId} onRefresh={setRefresh} />
+        <AddBookToManifest 
+          active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
+          manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh} 
+        />
       )
     }
-*/
 
     if ( bookErr !== null ) {
       if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
@@ -311,31 +323,31 @@ export default function RepoValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Literal Translation", `${_ltRepo}`, ltRepoTreeStatus || ltBookErrorMsg, 
-      applyIcon(_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest) 
+      applyIcon(_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha) 
     ],
     ["Simplified Translation", `${_stRepo}`, stRepoTreeStatus || stBookErrorMsg, 
-      applyIcon(_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest) 
+      applyIcon(_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha) 
     ],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeStatus || tnBookErrorMsg, 
-      applyIcon(`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest) 
+      applyIcon(`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest, tnManifestSha) 
     ],
     ["Translation Word List", `${languageId}_twl`, twlRepoTreeStatus || twlBookErrorMsg, 
-      applyIcon(`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest) 
+      applyIcon(`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest, twlManifestSha) 
     ],
     ["Translation Words", `${languageId}_tw`, twRepoTreeStatus || twErrorMsg, 
-      applyIcon(`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest) 
+      applyIcon(`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest, twManifestSha) 
     ],
     ["Translation Academy", `${languageId}_ta`, taRepoTreeStatus || taErrorMsg, 
-      applyIcon(`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest) 
+      applyIcon(`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest, taManifestSha) 
     ],
     ["Translation Questions", `${languageId}_tq`, tqRepoTreeStatus || tqBookErrorMsg, 
-      applyIcon(`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest) 
+      applyIcon(`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest, tqManifestSha) 
     ],
     ["Study Questions", `${languageId}_sq`, sqRepoTreeStatus || sqBookErrorMsg, 
-      applyIcon(`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest) 
+      applyIcon(`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest, sqManifestSha) 
     ],
     ["Study Notes", `${languageId}_sn`, snRepoTreeStatus || snBookErrorMsg, 
-      applyIcon(`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest) 
+      applyIcon(`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest, snManifestSha) 
     ],
   ]
 

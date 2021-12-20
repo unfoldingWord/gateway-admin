@@ -5,9 +5,10 @@ import { ALL, WORKING, WAITING, LT } from '@common/constants'
 export default function useLtRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{ltRepoTree, 
     ltRepoTreeManifest, 
+    ltManifestSha,
     ltRepoTreeStatus}, 
     setValues
-  ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltRepoTreeStatus:WAITING})
+  ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltManifestSha:null, ltRepoTreeStatus:WAITING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_lt/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -20,11 +21,12 @@ export default function useLtRepoValidation({authentication, owner, server, lang
         _repo += "_glt"
       }
       const url = `${server}/api/v1/repos/${owner}/${_repo}/git/trees/master?recursive=false&per_page=999999`
-      const {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
-      setValues({ltRepoTree: _tree, ltRepoTreeManifest: _manifest, ltRepoTreeStatus: _errorMesage})
+      const {RepoTree: _tree, Manifest: _manifest, ManifestSha: _manifestSha, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
+      setValues({ltRepoTree: _tree, ltRepoTreeManifest: _manifest, ltManifestSha: _manifestSha, ltRepoTreeStatus: _errorMesage})
     }
 
     if (authentication && owner && server && languageId) {
+      console.log("useLtRepoValidation() refresh value:",refresh)
       if ( refresh === LT || refresh === ALL ) {
         getReposTrees()
       }
@@ -35,6 +37,7 @@ export default function useLtRepoValidation({authentication, owner, server, lang
     state: {
       ltRepoTree,
       ltRepoTreeManifest,
+      ltManifestSha,
       ltRepoTreeStatus,
     },
   }

@@ -5,9 +5,10 @@ import { WORKING, WAITING, OBS, ALL } from '@common/constants'
 export default function useObsRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{obsRepoTree, 
     obsRepoTreeManifest, 
+    obsManifestSha,
     obsRepoTreeStatus}, 
     setValues
-  ] = useState({obsRepoTree:null, obsRepoTreeManifest:null, obsRepoTreeStatus:WAITING})
+  ] = useState({obsRepoTree:null, obsRepoTreeManifest:null, obsManifestSha:null,obsRepoTreeStatus:WAITING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_lt/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -16,8 +17,8 @@ export default function useObsRepoValidation({authentication, owner, server, lan
       let _repo = languageId + "_obs"
 
       const url = `${server}/api/v1/repos/${owner}/${_repo}/git/trees/master?recursive=false&per_page=999999`
-      const {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
-      setValues({obsRepoTree: _tree, obsRepoTreeManifest: _manifest, obsRepoTreeStatus: _errorMesage})
+      const {RepoTree: _tree, Manifest: _manifest, ManifestSha: _manifestSha, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
+      setValues({obsRepoTree: _tree, obsRepoTreeManifest: _manifest, obsManifestSha: _manifestSha, obsRepoTreeStatus: _errorMesage})
     }
 
     if (authentication && owner && server && languageId) {
@@ -31,6 +32,7 @@ export default function useObsRepoValidation({authentication, owner, server, lan
     state: {
       obsRepoTree,
       obsRepoTreeManifest,
+      obsManifestSha,
       obsRepoTreeStatus,
     },
   }

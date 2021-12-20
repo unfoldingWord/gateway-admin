@@ -41,6 +41,7 @@ export default function SelectBookPopup(
         onClose={handleClickClose}
         classes={{
           dragIndicator: 'draggable-dialog-title',
+          root: 'w-96'
         }}
       >
         <Autocomplete
