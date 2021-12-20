@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WAITING, WORKING } from '@common/constants';
+import { ALL, SQ, WAITING, WORKING } from '@common/constants';
 
 export default function useSqRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{sqRepoTree, 
@@ -18,10 +18,10 @@ export default function useSqRepoValidation({authentication, owner, server, lang
       setValues({sqRepoTree: _tree, sqRepoTreeManifest: _manifest, sqRepoTreeStatus: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === SQ || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 

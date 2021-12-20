@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WORKING, WAITING } from '@common/constants'
+import { ALL, WORKING, WAITING, LT } from '@common/constants'
 
 export default function useLtRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{ltRepoTree, 
     ltRepoTreeManifest, 
     ltRepoTreeStatus}, 
     setValues
-  ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltRepoTreeStatus:WORKING})
+  ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltRepoTreeStatus:WAITING})
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_lt/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -24,10 +24,10 @@ export default function useLtRepoValidation({authentication, owner, server, lang
       setValues({ltRepoTree: _tree, ltRepoTreeManifest: _manifest, ltRepoTreeStatus: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === LT || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 

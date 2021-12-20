@@ -46,7 +46,6 @@ function AddBookButton({ active, server, owner, repo, manifest, bookId, refresh,
         `,manifest)
         setSubmitAddBook(false)
       }
-      //onRefresh(refresh+1)    
     }
     doSubmitAddBook()
   }, [submitAddBook, server, owner, repo, manifest, bookId, refresh, onRefresh])

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WAITING, WORKING } from '@common/constants';
+import { ALL, TQ, WAITING, WORKING } from '@common/constants';
 
 export default function useTqRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{tqRepoTree, 
@@ -18,10 +18,10 @@ export default function useTqRepoValidation({authentication, owner, server, lang
       setValues({tqRepoTree: _tree, tqRepoTreeManifest: _manifest, tqRepoTreeStatus: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === TQ || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 

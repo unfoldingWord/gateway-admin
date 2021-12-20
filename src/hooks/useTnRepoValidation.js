@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WAITING, WORKING } from '@common/constants';
+import { ALL, TN, WAITING, WORKING } from '@common/constants';
 
 export default function useTnRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{tnRepoTree, 
@@ -17,10 +17,10 @@ export default function useTnRepoValidation({authentication, owner, server, lang
       const {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
       setValues({tnRepoTree: _tree, tnRepoTreeManifest: _manifest, tnRepoTreeStatus: _errorMesage})
     }
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === TN || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 

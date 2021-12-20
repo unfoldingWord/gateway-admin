@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WORKING, WAITING } from '@common/constants';
+import { WORKING, WAITING, TW, ALL } from '@common/constants';
 
 export default function useTwRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{twRepoTree, 
@@ -17,10 +17,10 @@ export default function useTwRepoValidation({authentication, owner, server, lang
       const {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
       setValues({twRepoTree: _tree, twRepoTreeManifest: _manifest, twRepoTreeStatus: _errorMesage})
     }
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === TW || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 

@@ -21,6 +21,8 @@ import useObsSnRepoValidation from '@hooks/useObsSnRepoValidation'
 import useObsSqRepoValidation from '@hooks/useObsSqRepoValidation'
 import useLocalStorage from '@hooks/useLocalStorage'
 
+import {ALL} from '@common/constants'
+
 export const AdminContext = React.createContext({});
 
 export default function AdminContextProvider({
@@ -29,11 +31,17 @@ export default function AdminContextProvider({
 
   const [books, setBooks] = useLocalStorage('books',[])
 
-  // The refresh state is a simple integer, which is incremented
-  // when the user creates a repo from the UI. This state
-  // is monitored by all the repo hooks and when changed
-  // will re-evaluate the repo data.
-  const [refresh, setRefresh] = useState(1)
+  // The refresh state is a string which will be a resourceId or an empty string ("").
+  // If the string is empty, then the hook should run; and thus all of them
+  // will run in this case.
+  // If the string has a resourceId, then only that hook will run and all
+  // others will pass, not running.
+  // The refresh state will be updated by certain actions. For example,
+  // if the user clicks the create repo button for OBS, then the state will
+  // be set to "obs". In which case, only the `useObsRepoValidation` hook 
+  // will run.
+  // Of course, the initial state will be to run them all.
+  const [refresh, setRefresh] = useState(ALL)
 
   const {
     state: {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {getTreesManifest} from '@utils/getTreesManifest'
-import { WORKING, WAITING } from '@common/constants'
+import { WORKING, WAITING, OBS, ALL } from '@common/constants'
 
 export default function useObsRepoValidation({authentication, owner, server, languageId, refresh}) {
   const [{obsRepoTree, 
@@ -20,10 +20,10 @@ export default function useObsRepoValidation({authentication, owner, server, lan
       setValues({obsRepoTree: _tree, obsRepoTreeManifest: _manifest, obsRepoTreeStatus: _errorMesage})
     }
 
-    if (authentication && owner && server && languageId && refresh) {
-      getReposTrees()
-    } else {
-      //console.warn(`AdminContext - reached, but not logged in`)
+    if (authentication && owner && server && languageId) {
+      if ( refresh === OBS || refresh === ALL ) {
+        getReposTrees()
+      }
     }
   }, [authentication, owner, server, languageId, refresh])
 
