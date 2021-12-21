@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function AddBookButton({ active, server, owner, repo, manifest, bookId, refresh, onRefresh }) {
+function AddBookButton({ active, server, owner, repo, manifest, sha, bookId, onRefresh }) {
   const {
     state: {
       authentication,
@@ -34,21 +34,23 @@ function AddBookButton({ active, server, owner, repo, manifest, bookId, refresh,
 
     async function doSubmitAddBook() {
       const tokenid = authentication.token.sha1;
-      const res = await dcsApis.manifestAddBook({server: server, username: owner, repository: repo, manifest: manifest, bookId: bookId, tokenid: tokenid})
-      if ( res.status === 201 ) {
+      const resourceId = dcsApis.getResourceIdFromRepo(repo)
+      const res = await dcsApis.manifestAddBook({server: server, username: owner, repository: repo, manifest: manifest, sha: sha, bookId: bookId, tokenid: tokenid})
+      if ( res.status === 200 ) {
         console.log("Book added to manifest. Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
-        onRefresh(refresh+1)
+        onRefresh(resourceId)
       } else {
         console.log('Add Book to Manifest Error:', res)
-        console.log("Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}
-          bookId:${bookId}
+        console.log("Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo},
+          bookId:${bookId},
+          manifestSha:${sha},
           manifest:
         `,manifest)
-        setSubmitAddBook(false)
       }
+      setSubmitAddBook(false)
     }
     doSubmitAddBook()
-  }, [submitAddBook, server, owner, repo, manifest, bookId, refresh, onRefresh])
+  }, [submitAddBook, server, owner, repo, manifest, bookId, onRefresh])
     
   const classes = useStyles({ active })
   return (

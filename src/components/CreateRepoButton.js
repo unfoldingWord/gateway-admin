@@ -34,7 +34,7 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
 
     async function doSubmitCreate() {
       const tokenid = authentication.token.sha1;
-      const resourceId = repo.split('_')[1];
+      const resourceId = dcsApis.getResourceIdFromRepo(repo)
 
       const res = await dcsApis.repoCreate({server: server, username: owner, repository: repo, tokenid})
     
@@ -55,9 +55,11 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
       } else {
           console.log('Repo Create Error:', res)
           console.log("Repo Failed! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
-        }
+      }
+      console.log("CreateRepoButton() useEffect() set new refresh value to:",resourceId)
       onRefresh(resourceId)    
     }
+    console.log("CreateRepoButton() useEffect() current refresh value:",refresh)
     doSubmitCreate()
   }, [submitCreate, server, owner, repo, onRefresh])
     

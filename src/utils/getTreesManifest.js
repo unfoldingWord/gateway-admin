@@ -19,6 +19,7 @@ export async function getTreesManifest(authentication, url) {
   let errorCode = 0
   let _tree = null
   let _manifest = null
+  let _manifestSha = null
   let _errorMessage = null
   try {
     const trees = await doFetch(url,
@@ -63,6 +64,7 @@ export async function getTreesManifest(authentication, url) {
             const _content = decodeBase64ToUtf8(__manifest.content)
             const manifestObj = YAML.safeLoad(_content)
             _manifest = manifestObj
+            _manifestSha = __manifest.sha
           } else {
             _errorMessage = UNABLE_TO_DECODE_MANIFEST
           }
@@ -91,5 +93,5 @@ export async function getTreesManifest(authentication, url) {
     Error Message: ${_errorMessage}
   `)
   */
-  return {RepoTree: _tree, Manifest: _manifest, RepoTreeStatus: _errorMessage}
+  return {RepoTree: _tree, Manifest: _manifest, ManifestSha: _manifestSha, RepoTreeStatus: _errorMessage}
 }
