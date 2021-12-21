@@ -65,25 +65,36 @@ function addProject( { resourceId, manifest, bookId }) {
     projectTemplate.path = "./sq_" + bookId.toUpperCase() + ".tsv"
   }
 
-
   if ( isNT(bookId) ) {
     projectTemplate.categories = [ 'bible-nt' ]
   } else {
     projectTemplate.categories = [ 'bible-ot' ]
   }
-  
-  let _manifest
-  if ( currentProjects[0] === null ) {
-    _manifest = {
-      ...manifest,
-      projects: [projectTemplate],
+
+  // sort the projects using sort attribute
+  let _projects = [...currentProjects, projectTemplate]
+  console.log("projects before sort:",_projects)
+  _projects.sort(
+    (a,b) => {
+      return a.sort - b.sort
     }
-  } else {
-    _manifest = {
-      ...manifest,
-      projects: [...currentProjects, projectTemplate],
-    }
+  )
+  console.log("projects after sort:",_projects)
+  let _manifest = {
+    ...manifest,
+    projects: [..._projects]
   }
+  // if ( currentProjects[0] === null ) {
+  //   _manifest = {
+  //     ...manifest,
+  //     projects: [projectTemplate],
+  //   }
+  // } else {
+  //   _manifest = {
+  //     ...manifest,
+  //     projects: [...currentProjects, projectTemplate],
+  //   }
+  // }
   const __manifest = YAML.safeDump(_manifest)
 
   return __manifest
