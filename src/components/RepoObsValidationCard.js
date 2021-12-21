@@ -13,7 +13,7 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
@@ -172,7 +172,7 @@ export default function RepoObsValidationCard({
     // OK, repo is there as is manifest, but we won't be using the manifest for TA
     // Now check to see if there is twlRepo error
     if ( obsTnRepoTreeStatus !== null ) {
-      setObsTaErrorMsg("No TN Repo")
+      setObsTaErrorMsg(NO_TN_REPO)
       return
     }
     // OK, now check whether the tn book file is present
@@ -183,7 +183,7 @@ export default function RepoObsValidationCard({
         getTaWords()
       }
     } else {
-      setObsTaErrorMsg("See TN error")
+      setObsTaErrorMsg(SEE_TN_ERROR)
     }
   }, [obsTaRepoTree, obsTaRepoTreeStatus, obsTnRepoTree, obsTnRepoTreeStatus, obsTnBookErrorMsg, OK])
 
@@ -211,7 +211,7 @@ export default function RepoObsValidationCard({
     // OK repo is there as is manifest, but we won't be using the manifest for TW
     // Now check to see if there is twlRepo error
     if ( obsTwlRepoTreeStatus !== null ) {
-      setObsTwErrorMsg("No TWL Repo")
+      setObsTwErrorMsg(NO_TWL_REPO)
       return
     }
     // OK, now check whether the twl book file is present
@@ -222,7 +222,7 @@ export default function RepoObsValidationCard({
         getTwWords()
       }
     } else {
-      setObsTwErrorMsg("See TWL error")
+      setObsTwErrorMsg(SEE_TWL_ERROR)
     }
   }, [obsTwRepoTree, obsTwRepoTreeStatus, obsTwlRepoTree, obsTwlRepoTreeStatus, obsTwlBookErrorMsg, OK])
 

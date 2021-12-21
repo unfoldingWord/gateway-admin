@@ -13,7 +13,7 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_TWL_REPO, SEE_TWL_ERROR, NO_TN_REPO, SEE_TN_ERROR } from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
@@ -169,7 +169,7 @@ export default function RepoValidationCard({
     // OK repo is there as is manifest, but we won't be using the manifest for TW
     // Now check to see if there is twlRepo error
     if ( twlRepoTreeStatus !== null ) {
-      setTwErrorMsg("No TWL Repo")
+      setTwErrorMsg(NO_TWL_REPO)
       return
     }
     // OK, now check whether the twl book file is present
@@ -180,7 +180,7 @@ export default function RepoValidationCard({
         getTwWords()
       }
     } else {
-      setTwErrorMsg("See TWL error")
+      setTwErrorMsg(SEE_TWL_ERROR)
     }
   }, [twRepoTree, twRepoTreeStatus, twlRepoTree, twlRepoTreeStatus, twlBookErrorMsg, OK])
 
@@ -208,7 +208,7 @@ export default function RepoValidationCard({
     // OK, repo is there as is manifest, but we won't be using the manifest for TA
     // Now check to see if there is twlRepo error
     if ( tnRepoTreeStatus !== null ) {
-      setTaErrorMsg("No TN Repo")
+      setTaErrorMsg(NO_TN_REPO)
       return
     }
     // OK, now check whether the tn book file is present
@@ -219,7 +219,7 @@ export default function RepoValidationCard({
         getTaWords()
       }
     } else {
-      setTaErrorMsg("See TN error")
+      setTaErrorMsg(SEE_TN_ERROR)
     }
   }, [taRepoTree, taRepoTreeStatus, tnRepoTree, tnRepoTreeStatus, tnBookErrorMsg, OK])
 
