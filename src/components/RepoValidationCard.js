@@ -22,6 +22,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
 import DenseTable from './DenseTable'
+import ViewListButton from './ViewListButton'
 
 export default function RepoValidationCard({
   bookId,
@@ -34,8 +35,10 @@ export default function RepoValidationCard({
   const [twlBookErrorMsg, setTwlBookErrorMsg] = useState(null)
   // TW
   const [twErrorMsg, setTwErrorMsg] = useState(WORKING)
+  const [twMissing, setTwMissing]   = useState([])
   // TA
   const [taErrorMsg, setTaErrorMsg] = useState(WORKING)
+  const [taMissing, setTaMissing]   = useState([])
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   // ST (GST or UST)
@@ -144,6 +147,11 @@ export default function RepoValidationCard({
     }
   }
 
+  /*
+  -- 
+  -- TW
+  -- 
+  */
   useEffect(() => {
     if ( twlBookErrorMsg === null ) {
       return // wait until we know the result
@@ -155,6 +163,7 @@ export default function RepoValidationCard({
       setTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
         console.log("bookId, Missing TW:",bookId,rc.Absent)
+        setTwMissing(rc.Absent)
       } 
     }
 
@@ -184,6 +193,11 @@ export default function RepoValidationCard({
     }
   }, [twRepoTree, twRepoTreeStatus, twlRepoTree, twlRepoTreeStatus, twlBookErrorMsg, OK])
 
+  /*
+  -- 
+  -- TA
+  -- 
+  */
   useEffect(() => {
     if ( tnBookErrorMsg === null ) {
       return // wait until we know the result
@@ -194,6 +208,7 @@ export default function RepoValidationCard({
       setTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
         console.log("bookId, Missing TA:",bookId,rc.Absent)
+        setTaMissing(rc.Absent)
       } 
     }
 
@@ -223,30 +238,65 @@ export default function RepoValidationCard({
     }
   }, [taRepoTree, taRepoTreeStatus, tnRepoTree, tnRepoTreeStatus, tnBookErrorMsg, OK])
 
+  /*
+  -- 
+  -- TN
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
   }, [tnRepoTree, tnRepoTreeManifest])
 
+  /*
+  -- 
+  -- TWL
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(twlRepoTreeManifest, twlRepoTree, setTwlBookErrorMsg)
   }, [twlRepoTree, twlRepoTreeManifest])
 
+  /*
+  -- 
+  -- LT (ult or glt)
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(ltRepoTreeManifest, ltRepoTree, setLtBookErrorMsg)
   }, [ltRepoTree, ltRepoTreeManifest])
 
+  /*
+  -- 
+  -- ST (ust or gst)
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(stRepoTreeManifest, stRepoTree, setStBookErrorMsg)
   }, [stRepoTree, stRepoTreeManifest])
 
+  /*
+  -- 
+  -- TQ
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(tqRepoTreeManifest, tqRepoTree, setTqBookErrorMsg)
   }, [tqRepoTree, tqRepoTreeManifest])
 
+  /*
+  -- 
+  -- SQ
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(sqRepoTreeManifest, sqRepoTree, setSqBookErrorMsg)
   }, [sqRepoTree, sqRepoTreeManifest])
 
+  /*
+  -- 
+  -- SN
+  -- 
+  */
   useEffect(() => {
     checkManifestBook(snRepoTreeManifest, snRepoTree, setSnBookErrorMsg)
   }, [snRepoTree, snRepoTreeManifest])
@@ -306,6 +356,21 @@ export default function RepoValidationCard({
           manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh} 
         />
       )
+    }
+
+    if ( bookErr.endsWith('Missing') ) {
+      if ( repo.endsWith("_tw") ) {
+        const title = "Translation Word Articles Missing"
+        return (
+          <ViewListButton title={title} value={twMissing} />
+        )
+      } else {
+        const title = "Translation Academy Articles Missing"
+        return (
+          <ViewListButton title={title} value={taMissing} />
+        )
+      }
+
     }
 
     if ( bookErr !== null ) {
