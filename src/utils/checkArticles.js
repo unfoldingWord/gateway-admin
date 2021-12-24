@@ -10,7 +10,8 @@ import {
   reloadApp,
 } from '@utils/network'
 import * as tsvparser from 'uw-tsv-parser'
-import { OK } from '@common/constants'
+import { OK,USE_NEW_TN_FORMAT_BRANCH } from '@common/constants'
+import { TN_FILENAMES } from '@common/BooksOfTheBible'
 
 export async function checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree) {
   let errorCode
@@ -97,8 +98,21 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
   let _absent = []
   let _present = []
   let processed = []
+  let tnBranch
+  let tnFilename 
+  let tnColumn
+  if ( USE_NEW_TN_FORMAT_BRANCH ) {
+    tnBranch = "newFormat"
+    tnFilename = `tn_${bookId.toUpperCase()}.tsv`
+    tnColumn = 3
+  } else {
+    tnBranch = "master"
+    tnFilename = `${languageId}${TN_FILENAMES[bookId]}.tsv`
+    tnColumn = 4
+  }
+  
   // sample: https://git.door43.org/unfoldingWord/en_tn/raw/branch/master/twl_1TI.tsv
-  let url = `${server}/${owner}/${languageId}_tn/raw/branch/newFormat/tn_${bookId.toUpperCase()}.tsv`
+  let url = `${server}/${owner}/${languageId}_tn/raw/branch/${tnBranch}/${tnFilename}`
   if ( bookId === 'obs' ) {
     url = `${server}/${owner}/${languageId}_obs-tn/raw/branch/master/tn_OBS.tsv`
   }
@@ -139,9 +153,11 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
   if ( tntsv ) {
     const tsvObject = tsvparser.tsvStringToTable(tntsv);
     const tnTable  = tsvObject.data;
-    // the rc link is in the last column
+    // the rc in in column 3 for the 7 column format (zero based)
+    // and in column 4 for the 9 column format. 
+    // Note that in 9 the value is not an rc link, but just the bare articel name
     for (let i=0; i<tnTable.length; i++) {
-      let rclink = tnTable[i][3].trim()
+      let rclink = tnTable[i][tnColumn].trim()
       if ( rclink === "" ) { continue }
       if ( processed.includes(rclink) ) { continue }
       processed.push(rclink)
@@ -152,9 +168,14 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
         console.warn("malformed rc link to TA:", _rclink)
         _absent.push(_rclink)
       } else {
+        if ( _rclink.startsWith("translate/") ) {
+          // do nothing... already there
+        } else {
+          _rclink = "translate/" + _rclink
+        }
         const query = `@ | filter path == "${_rclink}"`
         results = mistql.query(query, taRepoTree);
-        if ( results.length === 0 ) {
+        if ( results.length === 0 ) { 
           _absent.push(_rclink)
         } else {
           _present.push(_rclink)
