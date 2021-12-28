@@ -3,6 +3,8 @@ import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
+import { Tooltip } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -380,7 +382,12 @@ export default function RepoValidationCard({
         )
       }
       return (
-        <CreateIcon/>
+        <Tooltip title="Use tC Create to create file">
+          <IconButton className={classes.iconButton} aria-label="Use-tc-create">
+            <CreateIcon/>
+          </IconButton>
+        </Tooltip>
+
       )
     }
 

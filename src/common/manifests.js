@@ -1,9 +1,3 @@
-/*
-    This file contains a single manifest for a TA resource repo.
-    It must be modified once created in order for it to reflect
-    the lanugage, contributors, and etc.
-*/
-
 
 /**
  * Resource types and their names:
@@ -373,6 +367,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Ephesians'
     versification: 'ufw'
     identifier: 'eph'
@@ -395,7 +391,7 @@ projects:
     sort: 64
     path: './sq_3JN.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const sn_manifest = `
 dublin_core:
@@ -433,13 +429,15 @@ checking:
 
 projects:
   -
+`
+/*  
     title: 'Titus'
     versification: 'ufw'
     identifier: 'tit'
     sort: 56
     path: './sn_TIT.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const tq_manifest = `
 ---
@@ -479,6 +477,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -1005,7 +1005,7 @@ projects:
     sort: 66
     path: './tq_REV.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const twl_manifest = `
 dublin_core:
@@ -1042,6 +1042,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -1568,7 +1570,7 @@ projects:
     sort: 66
     path: './twl_REV.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const tw_manifest = `
 dublin_core:
@@ -1664,6 +1666,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -2190,7 +2194,7 @@ projects:
     sort: 66
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const lt_manifest = `
 ---
@@ -2239,6 +2243,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Front Matter'
     versification: 'ufw'
     identifier: 'frt'
@@ -2773,7 +2779,7 @@ projects:
     sort: 66
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const tn_manifest = `
 dublin_core:
@@ -2811,6 +2817,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -3337,7 +3345,7 @@ projects:
     sort: 66
     path: './tn_REV.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const ta_manifest = 
 `
