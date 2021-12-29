@@ -13,7 +13,10 @@ import AddBookToManifest from './AddBookToManifest'
 import ViewListButton from './ViewListButton'
 
 
-export function applyIcon(repo,repoErr,bookErr,manifest,manifestSha) {
+export function applyIcon(server,owner,bookId,
+  refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
+  missingList,
+) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
   //   bookErr:${bookErr}
@@ -66,12 +69,12 @@ export function applyIcon(repo,repoErr,bookErr,manifest,manifestSha) {
     if ( repo.endsWith("_tw") ) {
       const title = "Translation Word Articles Missing"
       return (
-        <ViewListButton title={title} value={twMissing} />
+        <ViewListButton title={title} value={missingList} />
       )
     } else {
       const title = "Translation Academy Articles Missing"
       return (
-        <ViewListButton title={title} value={taMissing} />
+        <ViewListButton title={title} value={missingList} />
       )
     }
   }
@@ -80,7 +83,7 @@ export function applyIcon(repo,repoErr,bookErr,manifest,manifestSha) {
     if ( repo.endsWith("_tw") ) {
       return (
         <Tooltip title="Use tC Create to create translation word list">
-          <IconButton className={classes.iconButton} aria-label="Use-tc-create-tw">
+          <IconButton aria-label="Use-tc-create-tw">
             <BlockIcon />
           </IconButton>
         </Tooltip>
@@ -89,7 +92,7 @@ export function applyIcon(repo,repoErr,bookErr,manifest,manifestSha) {
     if ( repo.endsWith("_ta") ) {
       return (
         <Tooltip title="Use tC Create to create translation notes">
-          <IconButton className={classes.iconButton} aria-label="Use-tc-create-ta">
+          <IconButton aria-label="Use-tc-create-ta">
             <BlockIcon />
           </IconButton>
         </Tooltip>
@@ -97,7 +100,7 @@ export function applyIcon(repo,repoErr,bookErr,manifest,manifestSha) {
     }
     return (
       <Tooltip title="Use tC Create to create file">
-        <IconButton className={classes.iconButton} aria-label="Use-tc-create">
+        <IconButton aria-label="Use-tc-create">
           <CreateIcon/>
         </IconButton>
       </Tooltip>

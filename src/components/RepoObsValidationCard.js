@@ -3,8 +3,6 @@ import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
-import { Tooltip } from '@material-ui/core'
-import { IconButton } from '@material-ui/core'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -15,18 +13,12 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } 
+import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } 
 from '@common/constants'
 
-import CreateIcon from '@material-ui/icons/Create'
-import DoneIcon from '@material-ui/icons/Done'
-import VisibilityIcon from '@material-ui/icons/Visibility'
-import BlockIcon from '@material-ui/icons/Block'
-
-import CreateRepoButton from './CreateRepoButton'
-import AddBookToManifest from './AddBookToManifest'
 import DenseTable from './DenseTable'
 import { checkManifestBook } from '@common/manifests'
+import { applyIcon } from './iconHelper'
 
 export default function RepoObsValidationCard({
   bookId,
@@ -202,124 +194,32 @@ export default function RepoObsValidationCard({
     checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
   }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
 
-  const applyIcon = (repo,repoErr,bookErr,manifest,manifestSha) => {
-    // console.log("applyIcon() parameters:",`repo:${repo}
-    //   repoErr:${repoErr}
-    //   bookErr:${bookErr}
-    //   manifest:${manifest}
-    //   manifestSha:${manifestSha}
-    // `)
-    if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
-      if ( repoErr === null && bookErr === WORKING ) {
-        return (
-          <p>{WORKING}</p>
-        )
-      }
-    }
 
-    if ( repoErr === null && bookErr === null ) {
-      return (
-        <p>{WORKING}</p>
-      )
-    }
-
-    if ( repoErr === REPO_NOT_FOUND ) {
-      return (
-        <CreateRepoButton active={true} server={server} owner={owner} 
-        repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
-      )
-    }
-
-    if ( repoErr !== null ) {
-      return (
-        <p>{repoErr}</p>
-      )
-    }
-
-    if ( bookErr === OK ) {
-      return (
-        <DoneIcon />
-      )
-    }
-
-    if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
-      return (
-        <AddBookToManifest 
-          active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
-          manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh} 
-        />
-      )
-    }
-
-    if ( bookErr.endsWith('Missing') ) {
-      if ( repo.endsWith("_tw") ) {
-        const title = "Translation Word Articles Missing"
-        return (
-          <ViewListButton title={title} value={twMissing} />
-        )
-      } else {
-        const title = "Translation Academy Articles Missing"
-        return (
-          <ViewListButton title={title} value={taMissing} />
-        )
-      }
-    }
-    
-    if ( bookErr !== null ) {
-      if ( repo.endsWith("_tw") ) {
-        return (
-          <Tooltip title="Use tC Create to create translation word list">
-            <IconButton className={classes.iconButton} aria-label="Use-tc-create-tw">
-              <BlockIcon />
-            </IconButton>
-          </Tooltip>
-        )
-      }
-      if ( repo.endsWith("_ta") ) {
-        return (
-          <Tooltip title="Use tC Create to create translation notes">
-            <IconButton className={classes.iconButton} aria-label="Use-tc-create-ta">
-              <BlockIcon />
-            </IconButton>
-          </Tooltip>
-        )
-      }
-      return (
-        <Tooltip title="Use tC Create to create file">
-          <IconButton className={classes.iconButton} aria-label="Use-tc-create">
-            <CreateIcon/>
-          </IconButton>
-        </Tooltip>
-
-      )
-    }
-
-  }
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
-      applyIcon(`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha) 
     ],
     ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
-      applyIcon(`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha) 
     ],
     ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeStatus || obsTwlBookErrorMsg, 
-      applyIcon(`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest, obsTwlManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest, obsTwlManifestSha) 
     ],
     ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeStatus || obsTqBookErrorMsg, 
-      applyIcon(`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha) 
     ],
     ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeStatus || obsTaErrorMsg, 
-      applyIcon(`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha, obsTaMissing) 
     ],
     ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeStatus || obsTwErrorMsg, 
-      applyIcon(`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha, obsTwMissing) 
     ],
     ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeStatus || obsSnBookErrorMsg, 
-      applyIcon(`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha) 
     ],
     ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeStatus || obsSqBookErrorMsg, 
-      applyIcon(`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest, obsSqManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest, obsSqManifestSha) 
     ],
   ]
 
