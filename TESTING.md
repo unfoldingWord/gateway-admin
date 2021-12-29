@@ -83,17 +83,40 @@ Expected result on client:
 - The view action tooltip will state Use tC Create to
 
 ## Test 8 - Add a missing manifest
-To one of the repos, 
-- delete the manifest.
-- create the manifest.
+- On one of the repos, (manually) delete the manifest in QA DCS. 
+
+Expected result on client:
+- status will state that manifest is missing
+- the action will offer to create the manifest
+
+- Click the action.
 
 Expected result on server:
 - manifest will be created with no books in the projects
 
 Expected result on client:
-- status will state that manifest is missing
-- action offered will be to create the manifest
+- for OBS, will show "File not found"
+- otherwise, will show "Add book to manifest"
 
+## Test 9 - Undecodable manifest
+- On one of the repos, update the manifest to be an invalid YAML file, 
+for instance, by just making the file one line saying "I am not a YAML file".
+
+Expected result on client:
+- status will state that manifest cannot be decoded
+- the action will offer to create a new the manifest
+
+- Click the action.
+
+Expected result on client:
+- A dialog will be shown with a message to replace the existing manifest file.
+- There will be two buttons on the dialog:
+  - Cancel: this will close the dialog without taking any action
+  - Replace: this will replace the manifest on the server
+
+Expected result on server:
+- in case of "cancel", the file remains unchanged
+- in case of "replace", the file will now be a valid manifest for that resource
 
 
 
