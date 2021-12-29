@@ -6,6 +6,7 @@ import { IconButton } from '@material-ui/core'
 
 import { AuthContext } from '@context/AuthContext'
 import * as dcsApis from '@utils/dcsApis'
+import { BIBLE_AND_OBS } from '@common/BooksOfTheBible'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -57,7 +58,7 @@ function AddBookButton({ active, server, owner, repo, manifest, sha, bookId, onR
     
   const classes = useStyles({ active })
   return (
-      <Tooltip title="Add Book">
+      <Tooltip title={`Add ${BIBLE_AND_OBS[bookId]} to manifest`}>
         <IconButton className={classes.iconButton} onClick={() => setSubmitAddBook(true)} aria-label="Add Book">
           <AddCircleIcon />
         </IconButton>

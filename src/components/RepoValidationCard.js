@@ -15,11 +15,13 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_TWL_REPO, SEE_TWL_ERROR, NO_TN_REPO, SEE_TN_ERROR } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_TWL_REPO, SEE_TWL_ERROR, NO_TN_REPO, SEE_TN_ERROR } 
+from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
 import VisibilityIcon from '@material-ui/icons/Visibility'
+import BlockIcon from '@material-ui/icons/Block'
 
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
@@ -376,9 +378,22 @@ export default function RepoValidationCard({
     }
 
     if ( bookErr !== null ) {
-      if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+      if ( repo.endsWith("_tw") ) {
         return (
-          <VisibilityIcon />
+          <Tooltip title="Use tC Create to create translation word list">
+            <IconButton className={classes.iconButton} aria-label="Use-tc-create-tw">
+              <BlockIcon />
+            </IconButton>
+          </Tooltip>
+        )
+      }
+      if ( repo.endsWith("_ta") ) {
+        return (
+          <Tooltip title="Use tC Create to create translation notes">
+            <IconButton className={classes.iconButton} aria-label="Use-tc-create-ta">
+              <BlockIcon />
+            </IconButton>
+          </Tooltip>
         )
       }
       return (
