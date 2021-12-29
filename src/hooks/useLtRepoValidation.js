@@ -9,6 +9,7 @@ export default function useLtRepoValidation({authentication, owner, server, lang
     ltRepoTreeStatus}, 
     setValues
   ] = useState({ltRepoTree:null, ltRepoTreeManifest:null, ltManifestSha:null, ltRepoTreeStatus:WAITING})
+
   // Translation Notes Hook
   // Example: https://qa.door43.org/api/v1/repos/vi_gl/vi_lt/git/trees/master?recursive=true&per_page=99999
   useEffect(() => {
@@ -26,7 +27,6 @@ export default function useLtRepoValidation({authentication, owner, server, lang
     }
 
     if (authentication && owner && server && languageId) {
-      console.log("useLtRepoValidation() refresh value:",refresh)
       if ( refresh === LT || refresh === ALL ) {
         getReposTrees()
       }

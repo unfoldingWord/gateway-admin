@@ -1,8 +1,43 @@
-/*
-    This file contains a single manifest for a TA resource repo.
-    It must be modified once created in order for it to reflect
-    the lanugage, contributors, and etc.
-*/
+import { OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST } from '@common/constants'
+
+
+export function checkManifestBook(bookId, manifest, repoTree, setError) {
+  let projects = []
+  if (manifest && manifest.projects) {
+    projects = manifest.projects
+  } else {
+    return
+  }
+  let isBookIdInManfest = false
+  let pathToBook;
+  for (let i=0; i < projects.length; i++) {
+    if ( projects[i]?.identifier === bookId ) {
+      isBookIdInManfest = true
+      pathToBook = projects[i].path
+      break
+    }
+  }
+
+  // if project id exists, then does the file actually exist?
+  if ( isBookIdInManfest ) {
+    let _fileExists = false
+    for (let i=0; i < repoTree.length; i++) {
+      let _path = repoTree[i].path
+      let _manifestpath = pathToBook.replace(/^\.\//,'')
+      if ( _manifestpath === _path ) {
+        _fileExists = true
+        break
+      }
+    }
+    if ( _fileExists ) {
+      setError(OK)
+    } else {
+      setError(FILE_NOT_FOUND)
+    }
+  } else {
+    setError(BOOK_NOT_IN_MANIFEST)
+  }
+}
 
 
 /**
@@ -373,6 +408,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Ephesians'
     versification: 'ufw'
     identifier: 'eph'
@@ -395,7 +432,7 @@ projects:
     sort: 64
     path: './sq_3JN.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const sn_manifest = `
 dublin_core:
@@ -433,13 +470,15 @@ checking:
 
 projects:
   -
+`
+/*  
     title: 'Titus'
     versification: 'ufw'
     identifier: 'tit'
     sort: 56
     path: './sn_TIT.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const tq_manifest = `
 ---
@@ -479,6 +518,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -1005,7 +1046,7 @@ projects:
     sort: 66
     path: './tq_REV.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const twl_manifest = `
 dublin_core:
@@ -1042,6 +1083,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -1568,7 +1611,7 @@ projects:
     sort: 66
     path: './twl_REV.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const tw_manifest = `
 dublin_core:
@@ -1664,6 +1707,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -2190,7 +2235,7 @@ projects:
     sort: 66
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const lt_manifest = `
 ---
@@ -2239,6 +2284,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Front Matter'
     versification: 'ufw'
     identifier: 'frt'
@@ -2773,7 +2820,7 @@ projects:
     sort: 66
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const tn_manifest = `
 dublin_core:
@@ -2811,6 +2858,8 @@ checking:
 
 projects:
   -
+`
+/*
     title: 'Genesis'
     versification: 'ufw'
     identifier: 'gen'
@@ -3337,7 +3386,7 @@ projects:
     sort: 66
     path: './tn_REV.tsv'
     categories: [ 'bible-nt' ]
-`
+*/
 
 const ta_manifest = 
 `

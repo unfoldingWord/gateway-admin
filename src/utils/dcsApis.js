@@ -72,13 +72,20 @@ function addProject( { resourceId, manifest, bookId }) {
   }
 
   // sort the projects using sort attribute
-  let _projects = [...currentProjects, projectTemplate]
+  let _projects
+  if ( currentProjects === undefined || currentProjects[0] === null ) {
+    _projects = [projectTemplate]
+  } else {
+    _projects = [...currentProjects, projectTemplate]
+  }
   console.log("projects before sort:",_projects)
-  _projects.sort(
-    (a,b) => {
-      return a.sort - b.sort
-    }
-  )
+  if ( _projects.length > 1 ) {
+    _projects.sort(
+      (a,b) => {
+        return a.sort - b.sort
+      }
+    )
+  }
   console.log("projects after sort:",_projects)
   let _manifest = {
     ...manifest,

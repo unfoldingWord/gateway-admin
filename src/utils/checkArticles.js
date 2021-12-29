@@ -101,7 +101,11 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
   let tnBranch
   let tnFilename 
   let tnColumn
-  if ( USE_NEW_TN_FORMAT_BRANCH ) {
+  if ( bookId.toUpperCase() === 'OBS' ) {
+    tnBranch = "master"
+    tnFilename = `tn_${bookId.toUpperCase()}.tsv`
+    tnColumn = 3
+  } else if ( USE_NEW_TN_FORMAT_BRANCH ) {
     tnBranch = "newFormat"
     tnFilename = `tn_${bookId.toUpperCase()}.tsv`
     tnColumn = 3

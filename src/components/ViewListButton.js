@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
-import { Typography } from '@material-ui/core'
 
 import DraggableModal from 'translation-helps-rcl/dist/components/DraggableModal'
 import Card from 'translation-helps-rcl/dist/components/Card'

@@ -13,16 +13,12 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_TWL_REPO, SEE_TWL_ERROR, NO_TN_REPO, SEE_TN_ERROR } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_TWL_REPO, SEE_TWL_ERROR, NO_TN_REPO, SEE_TN_ERROR } 
+from '@common/constants'
 
-import CreateIcon from '@material-ui/icons/Create'
-import DoneIcon from '@material-ui/icons/Done'
-import VisibilityIcon from '@material-ui/icons/Visibility'
-
-import CreateRepoButton from './CreateRepoButton'
-import AddBookToManifest from './AddBookToManifest'
 import DenseTable from './DenseTable'
-import ViewListButton from './ViewListButton'
+import { checkManifestBook } from '@common/manifests'
+import { applyIcon } from './iconHelper'
 
 export default function RepoValidationCard({
   bookId,
@@ -109,44 +105,6 @@ export default function RepoValidationCard({
     }
   } = useContext(AdminContext)
 
-  function checkManifestBook(manifest, repoTree, setError) {
-    let projects = []
-    if (manifest && manifest.projects) {
-      projects = manifest.projects
-    } else {
-      return
-    }
-    let isBookIdInManfest = false
-    let pathToBook;
-    for (let i=0; i < projects.length; i++) {
-      if ( projects[i]?.identifier === bookId ) {
-        isBookIdInManfest = true
-        pathToBook = projects[i].path
-        break
-      }
-    }
-
-    // if project id exists, then does the file actually exist?
-    if ( isBookIdInManfest ) {
-      let _fileExists = false
-      for (let i=0; i < repoTree.length; i++) {
-        let _path = repoTree[i].path
-        let _manifestpath = pathToBook.replace(/^\.\//,'')
-        if ( _manifestpath === _path ) {
-          _fileExists = true
-          break
-        }
-      }
-      if ( _fileExists ) {
-        setError(OK)
-      } else {
-        setError(FILE_NOT_FOUND)
-      }
-    } else {
-      setError(BOOK_NOT_IN_MANIFEST)
-    }
-  }
-
   /*
   -- 
   -- TW
@@ -162,7 +120,6 @@ export default function RepoValidationCard({
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TW:",bookId,rc.Absent)
         setTwMissing(rc.Absent)
       } 
     }
@@ -207,7 +164,6 @@ export default function RepoValidationCard({
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TA:",bookId,rc.Absent)
         setTaMissing(rc.Absent)
       } 
     }
@@ -244,8 +200,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
-  }, [tnRepoTree, tnRepoTreeManifest])
+    checkManifestBook(bookId, tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg)
+  }, [bookId, tnRepoTree, tnRepoTreeManifest])
 
   /*
   -- 
@@ -253,8 +209,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(twlRepoTreeManifest, twlRepoTree, setTwlBookErrorMsg)
-  }, [twlRepoTree, twlRepoTreeManifest])
+    checkManifestBook(bookId, twlRepoTreeManifest, twlRepoTree, setTwlBookErrorMsg)
+  }, [bookId, twlRepoTree, twlRepoTreeManifest])
 
   /*
   -- 
@@ -262,8 +218,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(ltRepoTreeManifest, ltRepoTree, setLtBookErrorMsg)
-  }, [ltRepoTree, ltRepoTreeManifest])
+    checkManifestBook(bookId, ltRepoTreeManifest, ltRepoTree, setLtBookErrorMsg)
+  }, [bookId, ltRepoTree, ltRepoTreeManifest])
 
   /*
   -- 
@@ -271,8 +227,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(stRepoTreeManifest, stRepoTree, setStBookErrorMsg)
-  }, [stRepoTree, stRepoTreeManifest])
+    checkManifestBook(bookId, stRepoTreeManifest, stRepoTree, setStBookErrorMsg)
+  }, [bookId, stRepoTree, stRepoTreeManifest])
 
   /*
   -- 
@@ -280,8 +236,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(tqRepoTreeManifest, tqRepoTree, setTqBookErrorMsg)
-  }, [tqRepoTree, tqRepoTreeManifest])
+    checkManifestBook(bookId, tqRepoTreeManifest, tqRepoTree, setTqBookErrorMsg)
+  }, [bookId, tqRepoTree, tqRepoTreeManifest])
 
   /*
   -- 
@@ -289,8 +245,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(sqRepoTreeManifest, sqRepoTree, setSqBookErrorMsg)
-  }, [sqRepoTree, sqRepoTreeManifest])
+    checkManifestBook(bookId, sqRepoTreeManifest, sqRepoTree, setSqBookErrorMsg)
+  }, [bookId, sqRepoTree, sqRepoTreeManifest])
 
   /*
   -- 
@@ -298,8 +254,8 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(snRepoTreeManifest, snRepoTree, setSnBookErrorMsg)
-  }, [snRepoTree, snRepoTreeManifest])
+    checkManifestBook(bookId, snRepoTreeManifest, snRepoTree, setSnBookErrorMsg)
+  }, [bookId, snRepoTree, snRepoTreeManifest])
 
   let _ltRepo = languageId
   let _stRepo = languageId
@@ -310,109 +266,34 @@ export default function RepoValidationCard({
     _ltRepo += "_glt"
     _stRepo += "_gst"
   }
-  const applyIcon = (repo,repoErr,bookErr,manifest,manifestSha) => {
-    // console.log("applyIcon() parameters:",`repo:${repo}
-    //   repoErr:${repoErr}
-    //   bookErr:${bookErr}
-    //   manifest:${manifest}
-    //   manifestSha:${manifestSha}
-    // `)
-    if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
-      if ( repoErr === null && bookErr === WORKING ) {
-        return (
-          <p>{WORKING}</p>
-        )
-      }
-    }
-
-    if ( repoErr === null && bookErr === null ) {
-      return (
-        <p>{WORKING}</p>
-      )
-    }
-
-    if ( repoErr === REPO_NOT_FOUND ) {
-      return (
-        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
-      )
-    }
-
-    if ( repoErr !== null ) {
-      return (
-        <p>{repoErr}</p>
-      )
-    }
-
-    if ( bookErr === OK ) {
-      return (
-        <DoneIcon />
-      )
-    }
-
-    if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
-      return (
-        <AddBookToManifest 
-          active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
-          manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh} 
-        />
-      )
-    }
-
-    if ( bookErr.endsWith('Missing') ) {
-      if ( repo.endsWith("_tw") ) {
-        const title = "Translation Word Articles Missing"
-        return (
-          <ViewListButton title={title} value={twMissing} />
-        )
-      } else {
-        const title = "Translation Academy Articles Missing"
-        return (
-          <ViewListButton title={title} value={taMissing} />
-        )
-      }
-
-    }
-
-    if ( bookErr !== null ) {
-      if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
-        return (
-          <VisibilityIcon />
-        )
-      }
-      return (
-        <CreateIcon/>
-      )
-    }
-
-  }
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Literal Translation", `${_ltRepo}`, ltRepoTreeStatus || ltBookErrorMsg, 
-      applyIcon(_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha) 
     ],
     ["Simplified Translation", `${_stRepo}`, stRepoTreeStatus || stBookErrorMsg, 
-      applyIcon(_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha) 
     ],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeStatus || tnBookErrorMsg, 
-      applyIcon(`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest, tnManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest, tnManifestSha) 
     ],
     ["Translation Word List", `${languageId}_twl`, twlRepoTreeStatus || twlBookErrorMsg, 
-      applyIcon(`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest, twlManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest, twlManifestSha) 
     ],
     ["Translation Words", `${languageId}_tw`, twRepoTreeStatus || twErrorMsg, 
-      applyIcon(`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest, twManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest, twManifestSha, twMissing) 
     ],
     ["Translation Academy", `${languageId}_ta`, taRepoTreeStatus || taErrorMsg, 
-      applyIcon(`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest, taManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest, taManifestSha, taMissing) 
     ],
     ["Translation Questions", `${languageId}_tq`, tqRepoTreeStatus || tqBookErrorMsg, 
-      applyIcon(`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest, tqManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest, tqManifestSha) 
     ],
     ["Study Questions", `${languageId}_sq`, sqRepoTreeStatus || sqBookErrorMsg, 
-      applyIcon(`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest, sqManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest, sqManifestSha) 
     ],
     ["Study Notes", `${languageId}_sn`, snRepoTreeStatus || snBookErrorMsg, 
-      applyIcon(`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest, snManifestSha) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest, snManifestSha) 
     ],
   ]
 

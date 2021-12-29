@@ -6,6 +6,7 @@ import { IconButton } from '@material-ui/core'
 
 import { AuthContext } from '@context/AuthContext'
 import * as dcsApis from '@utils/dcsApis'
+import { BIBLE_AND_OBS } from '@common/BooksOfTheBible'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +39,10 @@ function AddBookButton({ active, server, owner, repo, manifest, sha, bookId, onR
       const res = await dcsApis.manifestAddBook({server: server, username: owner, repository: repo, manifest: manifest, sha: sha, bookId: bookId, tokenid: tokenid})
       if ( res.status === 200 ) {
         console.log("Book added to manifest. Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
-        onRefresh(resourceId)
+        console.log("Refreshing:",resourceId)
+        onRefresh(null) // note: this resets it in case the prior value was the same as the new value
+        // now wait a bit and set the refresh value to what we really need
+        setTimeout( () => onRefresh(resourceId), 1);
       } else {
         console.log('Add Book to Manifest Error:', res)
         console.log("Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo},
@@ -54,7 +58,7 @@ function AddBookButton({ active, server, owner, repo, manifest, sha, bookId, onR
     
   const classes = useStyles({ active })
   return (
-      <Tooltip title="Add Book">
+      <Tooltip title={`Add ${BIBLE_AND_OBS[bookId]} to manifest`}>
         <IconButton className={classes.iconButton} onClick={() => setSubmitAddBook(true)} aria-label="Add Book">
           <AddCircleIcon />
         </IconButton>
