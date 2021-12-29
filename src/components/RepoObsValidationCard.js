@@ -3,6 +3,8 @@ import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
+import { Tooltip } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -13,15 +15,18 @@ import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } from '@common/constants'
+import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } 
+from '@common/constants'
 
 import CreateIcon from '@material-ui/icons/Create'
 import DoneIcon from '@material-ui/icons/Done'
 import VisibilityIcon from '@material-ui/icons/Visibility'
+import BlockIcon from '@material-ui/icons/Block'
 
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
 import DenseTable from './DenseTable'
+import { checkManifestBook } from '@common/manifests'
 
 export default function RepoObsValidationCard({
   bookId,
@@ -34,7 +39,9 @@ export default function RepoObsValidationCard({
   const [obsTwlBookErrorMsg, setObsTwlBookErrorMsg] = useState(null)
   const [obsTqBookErrorMsg, setObsTqBookErrorMsg] = useState(null)
   const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
+  const [obsTaMissing, setTaMissing] = useState([])
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
+  const [obsTwMissing, setTwMissing] = useState([])
   const [obsSnBookErrorMsg, setObsSnBookErrorMsg] = useState(null)
   const [obsSqBookErrorMsg, setObsSqBookErrorMsg] = useState(null)
 
@@ -93,60 +100,21 @@ export default function RepoObsValidationCard({
     }
   } = useContext(AdminContext)
 
-  function checkManifestBook(manifest, repoTree, setError) {
-    let projects = []
-    if (manifest && manifest.projects) {
-      projects = manifest.projects
-    } else {
-      return
-    }
-    let isBookIdInManfest = false
-    let pathToBook;
-    for (let i=0; i < projects.length; i++) {
-      if ( projects[i]?.identifier === bookId ) {
-        isBookIdInManfest = true
-        pathToBook = projects[i].path
-        break
-      }
-    }
-
-    // if project id exists, then does the file actually exist?
-    if ( isBookIdInManfest ) {
-      let _fileExists = false
-      for (let i=0; i < repoTree.length; i++) {
-        let _path = repoTree[i].path
-        let _manifestpath = pathToBook.replace(/^\.\//,'')
-        if ( _manifestpath === _path ) {
-          _fileExists = true
-          break
-        }
-      }
-      if ( _fileExists ) {
-        setError(OK)
-      } else {
-        setError(FILE_NOT_FOUND)
-      }
-    } else {
-      setError(BOOK_NOT_IN_MANIFEST)
-    }
-  }
-
+  useEffect(() => {
+    checkManifestBook(bookId, obsRepoTreeManifest, obsRepoTree, setObsBookErrorMsg)
+  }, [bookId, obsRepoTree, obsRepoTreeManifest])
 
   useEffect(() => {
-    checkManifestBook(obsRepoTreeManifest, obsRepoTree, setObsBookErrorMsg)
-  }, [obsRepoTree, obsRepoTreeManifest])
+    checkManifestBook(bookId, obsTnRepoTreeManifest, obsTnRepoTree, setObsTnBookErrorMsg)
+  }, [bookId, obsTnRepoTree, obsTnRepoTreeManifest])
 
   useEffect(() => {
-    checkManifestBook(obsTnRepoTreeManifest, obsTnRepoTree, setObsTnBookErrorMsg)
-  }, [obsTnRepoTree, obsTnRepoTreeManifest])
+    checkManifestBook(bookId, obsTwlRepoTreeManifest, obsTwlRepoTree, setObsTwlBookErrorMsg)
+  }, [bookId, obsTwlRepoTree, obsTwlRepoTreeManifest])
 
   useEffect(() => {
-    checkManifestBook(obsTwlRepoTreeManifest, obsTwlRepoTree, setObsTwlBookErrorMsg)
-  }, [obsTwlRepoTree, obsTwlRepoTreeManifest])
-
-  useEffect(() => {
-    checkManifestBook(obsTqRepoTreeManifest, obsTqRepoTree, setObsTqBookErrorMsg)
-  }, [obsTqRepoTree, obsTqRepoTreeManifest])
+    checkManifestBook(bookId, obsTqRepoTreeManifest, obsTqRepoTree, setObsTqBookErrorMsg)
+  }, [bookId, obsTqRepoTree, obsTqRepoTreeManifest])
 
   useEffect(() => {
     if ( obsTnBookErrorMsg === null ) {
@@ -227,12 +195,12 @@ export default function RepoObsValidationCard({
   }, [obsTwRepoTree, obsTwRepoTreeStatus, obsTwlRepoTree, obsTwlRepoTreeStatus, obsTwlBookErrorMsg, OK])
 
   useEffect(() => {
-    checkManifestBook(obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg)
-  }, [obsSnRepoTree, obsSnRepoTreeManifest])
+    checkManifestBook(bookId, obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg)
+  }, [bookId, obsSnRepoTree, obsSnRepoTreeManifest])
 
   useEffect(() => {
-    checkManifestBook(obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
-  }, [obsSqRepoTree, obsSqRepoTreeManifest])
+    checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
+  }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
 
   const applyIcon = (repo,repoErr,bookErr,manifest,manifestSha) => {
     // console.log("applyIcon() parameters:",`repo:${repo}
@@ -257,7 +225,8 @@ export default function RepoObsValidationCard({
 
     if ( repoErr === REPO_NOT_FOUND ) {
       return (
-        <CreateRepoButton active={true} server={server} owner={owner} repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
+        <CreateRepoButton active={true} server={server} owner={owner} 
+        repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
       )
     }
 
@@ -282,14 +251,46 @@ export default function RepoObsValidationCard({
       )
     }
 
-    if ( bookErr !== null ) {
-      if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+    if ( bookErr.endsWith('Missing') ) {
+      if ( repo.endsWith("_tw") ) {
+        const title = "Translation Word Articles Missing"
         return (
-          <VisibilityIcon />
+          <ViewListButton title={title} value={twMissing} />
+        )
+      } else {
+        const title = "Translation Academy Articles Missing"
+        return (
+          <ViewListButton title={title} value={taMissing} />
+        )
+      }
+    }
+    
+    if ( bookErr !== null ) {
+      if ( repo.endsWith("_tw") ) {
+        return (
+          <Tooltip title="Use tC Create to create translation word list">
+            <IconButton className={classes.iconButton} aria-label="Use-tc-create-tw">
+              <BlockIcon />
+            </IconButton>
+          </Tooltip>
+        )
+      }
+      if ( repo.endsWith("_ta") ) {
+        return (
+          <Tooltip title="Use tC Create to create translation notes">
+            <IconButton className={classes.iconButton} aria-label="Use-tc-create-ta">
+              <BlockIcon />
+            </IconButton>
+          </Tooltip>
         )
       }
       return (
-        <CreateIcon/>
+        <Tooltip title="Use tC Create to create file">
+          <IconButton className={classes.iconButton} aria-label="Use-tc-create">
+            <CreateIcon/>
+          </IconButton>
+        </Tooltip>
+
       )
     }
 

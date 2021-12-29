@@ -1,3 +1,44 @@
+import { OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST } from '@common/constants'
+
+
+export function checkManifestBook(bookId, manifest, repoTree, setError) {
+  let projects = []
+  if (manifest && manifest.projects) {
+    projects = manifest.projects
+  } else {
+    return
+  }
+  let isBookIdInManfest = false
+  let pathToBook;
+  for (let i=0; i < projects.length; i++) {
+    if ( projects[i]?.identifier === bookId ) {
+      isBookIdInManfest = true
+      pathToBook = projects[i].path
+      break
+    }
+  }
+
+  // if project id exists, then does the file actually exist?
+  if ( isBookIdInManfest ) {
+    let _fileExists = false
+    for (let i=0; i < repoTree.length; i++) {
+      let _path = repoTree[i].path
+      let _manifestpath = pathToBook.replace(/^\.\//,'')
+      if ( _manifestpath === _path ) {
+        _fileExists = true
+        break
+      }
+    }
+    if ( _fileExists ) {
+      setError(OK)
+    } else {
+      setError(FILE_NOT_FOUND)
+    }
+  } else {
+    setError(BOOK_NOT_IN_MANIFEST)
+  }
+}
+
 
 /**
  * Resource types and their names:
