@@ -31,9 +31,9 @@ export default function RepoObsValidationCard({
   const [obsTwlBookErrorMsg, setObsTwlBookErrorMsg] = useState(null)
   const [obsTqBookErrorMsg, setObsTqBookErrorMsg] = useState(null)
   const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
-  const [obsTaMissing, setTaMissing] = useState([])
+  const [obsTaMissing, setObsTaMissing] = useState([])
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
-  const [obsTwMissing, setTwMissing] = useState([])
+  const [obsTwMissing, setObsTwMissing] = useState([])
   const [obsSnBookErrorMsg, setObsSnBookErrorMsg] = useState(null)
   const [obsSqBookErrorMsg, setObsSqBookErrorMsg] = useState(null)
 
@@ -117,7 +117,7 @@ export default function RepoObsValidationCard({
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, obsTaRepoTree)
       setObsTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TA:",bookId,rc.Absent)
+        setObsTaMissing(rc.Absent)
       } 
     }
 
@@ -156,7 +156,7 @@ export default function RepoObsValidationCard({
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, obsTwRepoTree)
       setObsTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TW:",bookId,rc.Absent)
+        setObsTwMissing(rc.Absent)
       } 
     }
 

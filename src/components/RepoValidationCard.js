@@ -120,7 +120,6 @@ export default function RepoValidationCard({
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TW:",bookId,rc.Absent)
         setTwMissing(rc.Absent)
       } 
     }
@@ -165,7 +164,6 @@ export default function RepoValidationCard({
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
-        console.log("bookId, Missing TA:",bookId,rc.Absent)
         setTaMissing(rc.Absent)
       } 
     }
