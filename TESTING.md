@@ -118,5 +118,46 @@ Expected result on server:
 - in case of "cancel", the file remains unchanged
 - in case of "replace", the file will now be a valid manifest for that resource
 
+**NOTE** In Github terms, replacing a file is much different than adding a new one.
+A replace is essentially an update and requires the SHA value of the existing, old file
+and a commit message.
 
 
+# To Do
+
+The below is a complete list (as of this writing) of every possible thing that can go wrong.
+This list was taken from issue https://github.com/unfoldingWord/gateway-admin/issues/40.
+
+The below may differ from the original source above and is preferred over the original.
+
+### REPO_NOT_FOUND = 'Repo not found'
+Action is to create the repo. **DONE**
+
+### FILE_NOT_FOUND = 'File not found'
+No action required. Tooltip will indicate that tc-create should be used to create the file. **DONE**
+
+### BOOK_NOT_IN_MANIFEST = 'Book not in manifest'
+Action is to add the selected book to the manifest. **DONE**
+
+### NO_FILES_IN_REPO = "No files in repo"
+Action is to create the manifest.
+
+### NO_MANIFEST_FOUND = "No manifest found"
+Action is to create the manifest. (same as preceding)
+
+### UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
+This will happen when the manifest is not syntactically correct YAML (or not even a YAML file at all). 
+Action is to replace the manifest file with a valid one.
+
+### UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
+This is likely a network or access error. Propose that the admin be informed to try again later or fix possible access permissions.
+
+### "xxx missing"
+This status is shown for TW and TA resources (Bible and OBS). 
+Action will show the user the items that are missing. **DONE**
+
+### "No TWL repo" and "See TWL error"
+These two statuses are possible for the TW resource. Since the TW resources for a book cannot be determined with the TWL, these are possible outcomes. There is no action to be taken for TW, since the action must be taken for TWL instead. Tooltip will provide a fuller explanation of the status.
+
+### "No TN repo" and "See TN error"
+This is same as preceding but for the TA resource.
