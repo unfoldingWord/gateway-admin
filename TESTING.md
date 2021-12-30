@@ -139,6 +139,18 @@ No action required. Tooltip will indicate that tc-create should be used to creat
 ### BOOK_NOT_IN_MANIFEST = 'Book not in manifest'
 Action is to add the selected book to the manifest. **DONE**
 
+### "xxx missing"
+This status is shown for TW and TA resources (Bible and OBS). 
+Action will show the user the items that are missing. **DONE**
+
+### "No TWL repo" and "See TWL error"
+These two statuses are possible for the TW resource. Since the TW resources for a book cannot be determined with the TWL, these are possible outcomes. There is no action to be taken for TW, since the action must be taken for TWL instead. 
+
+Tooltip will provide a fuller explanation of the status. **DONE**
+
+### "No TN repo" and "See TN error"
+This is same as preceding but for the TA resource. **DONE**
+
 ### NO_FILES_IN_REPO = "No files in repo"
 Action is to create the manifest.
 
@@ -151,13 +163,3 @@ Action is to replace the manifest file with a valid one.
 
 ### UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
 This is likely a network or access error. Propose that the admin be informed to try again later or fix possible access permissions.
-
-### "xxx missing"
-This status is shown for TW and TA resources (Bible and OBS). 
-Action will show the user the items that are missing. **DONE**
-
-### "No TWL repo" and "See TWL error"
-These two statuses are possible for the TW resource. Since the TW resources for a book cannot be determined with the TWL, these are possible outcomes. There is no action to be taken for TW, since the action must be taken for TWL instead. Tooltip will provide a fuller explanation of the status.
-
-### "No TN repo" and "See TN error"
-This is same as preceding but for the TA resource.
