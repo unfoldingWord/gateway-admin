@@ -5,7 +5,7 @@ This document is intended to describe a comprehensive test for gateway-admin.
 
 First, a new, and empty, organization must be created in QA DCS, say, `ga_test`.
 
-## Test 1 - Add Books 
+## Test 1 - Add Books (DONE)
 Next, login to QA DCS and go to Settings to use the organization you have created.
 
 After clicking "save and continue", you should see an empty page.
@@ -14,7 +14,7 @@ Click the "Add Book" button and add two books, one OT and one NT (say Ruth and T
 
 Expected results: all repos for both books should show the "+" icon under the action column.
 
-## Test 2 - Add a repo
+## Test 2 - Add a repo (DONE)
 From the Ruth card, click the add repo button to create the en_glt repo.
 
 Expected result on the server:
@@ -27,7 +27,7 @@ Expected results on the client:
 - the action will be a plus sign having the tooltip "add book"
 - the above will be on all the cards, not just the one used to create the repo
 
-## Test 3 - Add a book to the manifest
+## Test 3 - Add a book to the manifest (DONE)
 On the Ruth card, click the Add Book action.
 
 Expected result on server:
@@ -39,7 +39,7 @@ Expected result on client:
 - The tooltip will say "Use tC Create to create file"; but no action will be done if clicked.
 - the status on the other card(s) will remain as "Book not in manifest".
 
-## Test 4 - Add more books to the manifest
+## Test 4 - Add more books to the manifest (DONE)
 On the Titus card, click the Add book action.
 
 Add another book, say, Psalms; click to add it to the manifest.
@@ -50,7 +50,7 @@ Expected result on server:
 Expected result on client:
 - all three cards will show "File not found" and the action tooltip saying "Use tC Create to create file".
 
-## Test 5 - All scripture resources and manifests
+## Test 5 - All scripture resources and manifests (DONE)
 In this test, create all repos for all scripture resource types and add at least one book to the manifest. 
 
 Expected result on server:
@@ -60,7 +60,7 @@ Expected result on server:
 Expected result on client:
 - Statuses and actions are appropriate, namely, book missing in the manifest or file not found (depending on whether a book was added)
 
-## Test 6 - TA and TW resources and manifests
+## Test 6 - TA and TW resources and manifests (DONE)
 In this test, create repos for Translation Academy and Translation Words. 
 
 Expected result on server:
@@ -72,7 +72,7 @@ Expected result on client:
 - The tooltip will read either "Use tC Create to create translation word list" for TWL or "Use tC Create to create translation notes" for TA.
 
 
-## Test 7 - All OBS resources and manifests
+## Test 7 - All OBS resources and manifests (DONE)
 In this test, create OBS repos for all resource types. Since OBS resources only have a single file, the manifest will be created with that single file.
 
 Expected result on server:
