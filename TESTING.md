@@ -95,7 +95,7 @@ Expected result on server:
 - manifest will be created with no books in the projects
 
 Expected result on client:
-- for OBS, will show "File not found"
+- Non-scripture resources (OBS resources, TA, and TW) will show "File not found"
 - otherwise, will show "Add book to manifest"
 
 ## Test 9 - Undecodable manifest
