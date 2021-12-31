@@ -1,4 +1,4 @@
-import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,OK}
+import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,OK, NO_MANIFEST_FOUND}
 from '@common/constants'
 
 import { Tooltip } from '@material-ui/core'
@@ -9,6 +9,7 @@ import BlockIcon from '@material-ui/icons/Block'
 
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
+import AddManifest from './AddManifest'
 
 import ViewListButton from './ViewListButton'
 
@@ -41,6 +42,13 @@ export function applyIcon(server,owner,bookId,
     return (
       <CreateRepoButton active={true} server={server} owner={owner} 
       repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
+    )
+  }
+
+  if ( repoErr === NO_MANIFEST_FOUND || repoErr === NO_FILES_IN_REPO ) {
+    return (
+      <AddManifest active={true} server={server} owner={owner} 
+      repo={repo} refresh={refresh} onRefresh={setRefresh} />
     )
   }
 
