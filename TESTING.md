@@ -98,7 +98,11 @@ Expected result on client:
 - Non-scripture resources (OBS resources, TA, and TW) will show "File not found"
 - otherwise, will show "Add book to manifest"
 
-## Test 9 - Undecodable manifest
+## Test 9a - Undecodable manifest
+**NOTE** there is no know way of handling this problem. Plus it may never happen.
+The issue here is whether the Gitea API encodes the content using base64. At present,
+there is no other known encoding known or supported.
+
 - On one of the repos, update the manifest to be an invalid YAML file, 
 for instance, by just making the file one line saying "I am not a YAML file".
 
@@ -117,6 +121,31 @@ Expected result on client:
 Expected result on server:
 - in case of "cancel", the file remains unchanged
 - in case of "replace", the file will now be a valid manifest for that resource
+
+**NOTE** In Github terms, replacing a file is much different than adding a new one.
+A replace is essentially an update and requires the SHA value of the existing, old file
+and a commit message.
+
+## Test 9 - Manifest is not a YAML file
+In this case, when the file is converted to JSON, it will be a JavaScript object.
+The result is tested to see if it is an object or not. If not, then this status is
+will be shown to the user.
+
+- On one of the repos, update the manifest to be an invalid YAML file, 
+for instance, by just making the file one line saying "I am not a YAML file".
+
+Expected result on client:
+- status will state that manifest is not a YAML file.
+- the action will offer to replace the file with a new, appropriate manifest
+
+- Click the action.
+
+Expected result on client:
+- The status will be "Book not in manifest" for scripture resources and "File not found" for OBS resources.
+- The action will add to add a book to the projects section.
+
+Expected result on server:
+- Manifest file overwritten with a manifest without any projects.
 
 **NOTE** In Github terms, replacing a file is much different than adding a new one.
 A replace is essentially an update and requires the SHA value of the existing, old file
@@ -158,8 +187,10 @@ Action is to create the manifest.
 Action is to create the manifest. (same as preceding)
 
 ### UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
-This will happen when the manifest is not syntactically correct YAML (or not even a YAML file at all). 
-Action is to replace the manifest file with a valid one.
+This will happen when the manifest content is not encoded using base64. This may never happen.
+
+### MANIFEST_NOT_YAML
+If the file is not a proper resource manifest file, then this status is returned.
 
 ### UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
 This is likely a network or access error. Propose that the admin be informed to try again later or fix possible access permissions.
