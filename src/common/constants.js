@@ -50,6 +50,7 @@ export const BOOK_NOT_IN_MANIFEST = 'Book not in manifest'
 export const NO_FILES_IN_REPO = "No files in repo"
 export const NO_MANIFEST_FOUND = "No manifest found"
 export const UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
+export const MANIFEST_NOT_YAML = "Manifest not a YAML file"
 export const UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
 export const NO_TWL_REPO = "No TWL Repo"
 export const SEE_TWL_ERROR = "See TWL error"
