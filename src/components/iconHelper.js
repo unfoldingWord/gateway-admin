@@ -1,5 +1,5 @@
 import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,
-  OK, NO_MANIFEST_FOUND, NO_FILES_IN_REPO,
+  OK, NO_MANIFEST_FOUND, NO_FILES_IN_REPO, MANIFEST_NOT_YAML,
 }
 from '@common/constants'
 
@@ -12,6 +12,7 @@ import BlockIcon from '@material-ui/icons/Block'
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
 import AddManifest from './AddManifest'
+import ReplaceManifest from './ReplaceManifest'
 
 import ViewListButton from './ViewListButton'
 
@@ -51,6 +52,15 @@ export function applyIcon(server,owner,bookId,
     return (
       <AddManifest active={true} server={server} owner={owner} 
       repo={repo} refresh={refresh} onRefresh={setRefresh} />
+    )
+  }
+
+  if ( repoErr === MANIFEST_NOT_YAML ) {
+    return (
+      <ReplaceManifest 
+        active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
+        sha={manifestSha} onRefresh={setRefresh} 
+      />
     )
   }
 

@@ -5,6 +5,7 @@ import {
   NO_MANIFEST_FOUND,
   UNABLE_TO_DECODE_MANIFEST,
   UNABLE_TO_RETRIEVE_MANIFEST,
+  MANIFEST_NOT_YAML,
 } from '@common/constants'
 import {
   doFetch,
@@ -62,12 +63,11 @@ export async function getTreesManifest(authentication, url) {
         } else {
           if (__manifest.content && (__manifest.encoding === 'base64')) {
             const _content = decodeBase64ToUtf8(__manifest.content)
-            try { 
-              const manifestObj = YAML.safeLoad(_content)
-              _manifest = manifestObj
-              _manifestSha = __manifest.sha
-            } catch {
-              _errorMessage = UNABLE_TO_DECODE_MANIFEST
+            const manifestObj = YAML.safeLoad(_content)
+            _manifest = manifestObj
+            _manifestSha = __manifest.sha
+            if ( typeof(manifestObj) !== "object" ) {
+              _errorMessage = MANIFEST_NOT_YAML
             }
           } else {
             _errorMessage = UNABLE_TO_DECODE_MANIFEST

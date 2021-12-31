@@ -196,3 +196,41 @@ export async function manifestCreate({server, username, repository, bookId, toke
 
   return res
 }
+
+export async function manifestReplace({server, username, repository, sha, tokenid}) {
+  console.log("manifestReplace() with parms:",`${server}, ${username}, ${repository}, ${sha}`)
+  const resourceId = repository.split('_')[1];
+  const manifestYaml = getResourceManifest( {resourceId} );
+  const content = base64.encode(utf8.encode(manifestYaml));
+  const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
+  const date = new Date(Date.now());
+  const dateString = date.toISOString();
+  console.log("manifestReplace() uri=", uri)
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' }, 
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "manifest.yaml",
+      "message": "Replace Manifest with valid YAML file",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`
+  })
+
+  return res
+}
