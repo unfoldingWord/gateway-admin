@@ -62,9 +62,13 @@ export async function getTreesManifest(authentication, url) {
         } else {
           if (__manifest.content && (__manifest.encoding === 'base64')) {
             const _content = decodeBase64ToUtf8(__manifest.content)
-            const manifestObj = YAML.safeLoad(_content)
-            _manifest = manifestObj
-            _manifestSha = __manifest.sha
+            try { 
+              const manifestObj = YAML.safeLoad(_content)
+              _manifest = manifestObj
+              _manifestSha = __manifest.sha
+            } catch {
+              _errorMessage = UNABLE_TO_DECODE_MANIFEST
+            }
           } else {
             _errorMessage = UNABLE_TO_DECODE_MANIFEST
           }

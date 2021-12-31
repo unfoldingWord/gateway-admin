@@ -1,4 +1,6 @@
-import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,OK, NO_MANIFEST_FOUND}
+import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,
+  OK, NO_MANIFEST_FOUND, NO_FILES_IN_REPO,
+}
 from '@common/constants'
 
 import { Tooltip } from '@material-ui/core'

@@ -53,9 +53,9 @@ function ViewListButton({ active=true, title, value }) {
           <p>The filepaths/files missing are:</p>
           <ul>
           {
-            value.map( (item) => {
+            value.map( (item,index) => {
               return (
-                <li>
+                <li id={index}>
                   {item}
                 </li>
               )
