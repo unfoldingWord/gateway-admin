@@ -45,7 +45,7 @@ export function applyIcon(server,owner,bookId,
     )
   }
 
-  if ( repoErr === NO_MANIFEST_FOUND ) {
+  if ( repoErr === NO_MANIFEST_FOUND || repoErr === NO_FILES_IN_REPO ) {
     return (
       <AddManifest active={true} server={server} owner={owner} 
       repo={repo} refresh={refresh} onRefresh={setRefresh} />
