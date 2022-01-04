@@ -116,7 +116,7 @@ export default function RepoValidationCard({
     }
 
     async function getTwWords() {
-      setTwErrorMsg('Checking TW list')
+      setTwErrorMsg('Checking TWL')
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
@@ -161,6 +161,7 @@ export default function RepoValidationCard({
     }
 
     async function getTaWords() {
+      setTaErrorMsg('Checking TA')
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.Status ? rc.Status : null)
       if ( rc.Absent.length > 0 ) {
@@ -172,14 +173,14 @@ export default function RepoValidationCard({
     if ( tnRepoTreeStatus === WORKING ) {
       return
     }
-    // check ta repo first
-    if ( taRepoTreeStatus === WORKING ) {
+    // OK, repo is there as is manifest, but we won't be using the manifest for TA
+    // Now check to see if there is tnRepo error
+    if ( tnRepoTreeStatus !== null ) {
+      setTaErrorMsg(SEE_TN_ERROR)
       return
     }
-    // OK, repo is there as is manifest, but we won't be using the manifest for TA
-    // Now check to see if there is twlRepo error
-    if ( tnRepoTreeStatus !== null ) {
-      setTaErrorMsg(NO_TN_REPO)
+    // check ta repo to make sure its ready
+    if ( taRepoTreeStatus === WORKING ) {
       return
     }
     // OK, now check whether the tn book file is present
