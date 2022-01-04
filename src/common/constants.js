@@ -49,6 +49,7 @@ export const FILE_NOT_FOUND = 'File not found'
 export const BOOK_NOT_IN_MANIFEST = 'Book not in manifest'
 export const NO_FILES_IN_REPO = "No files in repo"
 export const NO_MANIFEST_FOUND = "No manifest found"
+export const NO_PROJECTS_IN_MANIFEST = "No projects in manifest"
 export const UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
 export const MANIFEST_NOT_YAML = "Manifest not a YAML file"
 export const UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"

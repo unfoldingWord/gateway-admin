@@ -1,11 +1,18 @@
-import { OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST } from '@common/constants'
+import { OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_MANIFEST_FOUND } 
+from '@common/constants'
 
 
 export function checkManifestBook(bookId, manifest, repoTree, setError) {
   let projects = []
-  if (manifest && manifest.projects) {
-    projects = manifest.projects
+  if ( manifest ) {
+    if ( manifest.projects ) {
+      projects = manifest.projects
+    } else {
+      setError(NO_PROJECTS_IN_MANIFEST)
+      return
+    }
   } else {
+    setError(NO_MANIFEST_FOUND) 
     return
   }
   let isBookIdInManfest = false
