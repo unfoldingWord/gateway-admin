@@ -1,5 +1,16 @@
 # Comprehensive Test Document
 This document is intended to describe a comprehensive test for gateway-admin.
+Each level 1 heading covers a specific are of functionality.
+
+As of this writing (2022-01-05), repo initialization and Cypress testing notes 
+are the two areas covered in this document.
+
+# Repo Initialization
+This covers creating repos, manifests, adding books to manifests, checking
+for file existence, and for TA and TW, using TN and TWL respectively to 
+identify which are present and which are absent.
+
+The tests here are all manual in nature.
 
 ## Test Pre-requisites
 
@@ -181,16 +192,74 @@ Tooltip will provide a fuller explanation of the status. **DONE**
 This is same as preceding but for the TA resource. **DONE**
 
 ### NO_FILES_IN_REPO = "No files in repo"
-Action is to create the manifest.
+Action is to create the manifest. **DONE**
 
 ### NO_MANIFEST_FOUND = "No manifest found"
-Action is to create the manifest. (same as preceding)
+Action is to create the manifest. (same as preceding) **DONE**
 
-### UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest"
+### UNABLE_TO_DECODE_MANIFEST = "Unable to decode manifest" **IGNORE**
 This will happen when the manifest content is not encoded using base64. This may never happen.
 
-### MANIFEST_NOT_YAML
+### MANIFEST_NOT_YAML **DONE**
 If the file is not a proper resource manifest file, then this status is returned.
 
-### UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest"
+### UNABLE_TO_RETRIEVE_MANIFEST = "Unable to retrieve manifest" **DONE**
 This is likely a network or access error. Propose that the admin be informed to try again later or fix possible access permissions.
+
+
+# Cypress Tests
+
+_Table of Contents_
+- Initial Installation and Setup
+- Running Tests
+- Creating Tests
+
+## Initial Installation and Setup
+### First Time Setup
+Follow directions in the [Cypress docs](https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements). 
+
+**Steps**:
+- The first step is: `yarn add cypress --dev`
+- Add these lines to package.json scripts:
+```json
+    "cypress:run": "NODE_ENV=test cypress run",
+    "cypress": "NODE_ENV=test cypress open"
+```
+- Make sure cypress is fully installed by running the following. The second command will create `cypress.json` and will create the cypress folder. Be sure to add the folder and JSON file to your repository. The cypress folder will contain a number of examples. It will open the cypress window and it will remain open. Just close it to continue.
+```
+yarn
+yarn run cypress install
+```
+- Create test config file `cypress.env.json` in root folder with the following contents (substitute your username in password). Add this file to `.gitignore`.
+```
+{
+  "TEST_USERNAME": "<user>",
+  "TEST_PASSWORD": "<password>"
+}
+```
+- The account used will need to be part of unfoldingWord organization for the test to complete.
+- In the `cypress/integration` folder, remove all content.
+- Copy the test `01-app-init.spec.js` from gateway-edit into this folder.
+- Modify it as needed.
+
+At this point, you have the first test ready to run. Try it.
+
+- In first terminal, start the app and wait until Next.js has compiled the pages.
+```
+yarn dev
+```
+- Then in second terminal, to run cypress interactively do:
+```
+yarn run cypress open
+```
+- or to run headless: in second terminal, run cypress by:
+```
+`yarn cypress:run`
+```
+
+
+## Running Tests
+
+
+## Creating Tests
+ 
