@@ -7,7 +7,9 @@
     "start": "bash -c \"source ./scripts/set-env.sh && next start\"",
     "export": "next export",
     "postinstall": "husky install",
-    "increment-build": "bash scripts/increment-build.sh && git add -A"
+    "increment-build": "bash scripts/increment-build.sh && git add -A",
+    "cypress:run": "bash -c \"source ./scripts/set-env.sh && cypress run\"",
+    "cypress": "bash -c \"source ./scripts/set-env.sh && cypress open\""
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -18,11 +20,11 @@
     "core-js": "^3.8.3",
     "deep-equal": "^2.0.5",
     "gitea-react-toolkit": "1.11.0",
+    "js-yaml-parser": "1.0.0",
     "localforage": "^1.9.0",
     "markdown-translatable": "^2.0.0",
     "mistql": "0.4.3",
     "next": "10.2.0",
-    "js-yaml-parser": "1.0.0",
     "postcss": "^8.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -39,6 +41,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
+    "cypress": "^9.2.0",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-config-react-app": "^6.0.0",
