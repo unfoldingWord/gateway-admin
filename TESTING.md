@@ -247,6 +247,10 @@ Add this file to `.gitignore` so that the user account is not made public.
 - Copy the test `01-app-init.spec.js` from gateway-edit into this folder.
 - Modify it as needed.
 
+NOTE: the test script `./cypress/integration/01-login-select-org-lang.js` contains
+significant modifications of the original from gateway-edit.
+
+## Running Tests
 At this point, you have the first test ready to run. Try it.
 
 - In first terminal, start the app and wait until Next.js has compiled the pages.
@@ -261,9 +265,6 @@ yarn cypress
 ```
 yarn cypress:run
 ```
-
-
-## Running Tests
 
 
 ## Creating Tests
