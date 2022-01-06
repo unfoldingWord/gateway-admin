@@ -230,7 +230,10 @@ Follow directions in the [Cypress docs](https://docs.cypress.io/guides/getting-s
 yarn
 yarn run cypress install
 ```
-- Create test config file `cypress.env.json` in root folder with the following contents (substitute your username in password). Add this file to `.gitignore`.
+- Create test config file `cypress.env.json` in root folder with the following contents (substitute your username in password). 
+In the below, it is set to point to the QA DCS server. To point to production, use "https://git.door43.org" and "localhost:3000",
+for TEST_SERVER and TEST_VISIT respectively.
+Add this file to `.gitignore` so that the user account is not made public.
 ```
 {
   "TEST_USERNAME": "<user>",
