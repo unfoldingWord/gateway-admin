@@ -8,8 +8,8 @@
     "export": "next export",
     "postinstall": "husky install",
     "increment-build": "bash scripts/increment-build.sh && git add -A",
-    "cypress:run": "NODE_ENV=test cypress run",
-    "cypress": "NODE_ENV=test cypress open"
+    "cypress:run": "bash -c \"source ./scripts/set-env.sh && cypress run\"",
+    "cypress": "bash -c \"source ./scripts/set-env.sh && cypress open\""
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",

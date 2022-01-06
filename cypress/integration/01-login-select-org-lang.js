@@ -1,7 +1,7 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
 describe('App login & initial setup', () => {
   before(() => {
-    cy.visit('localhost:3000/')
+    cy.visit(Cypress.env('TEST_VISIT'))
   })
 
   it('Should log in & get to the resource workspace screen successfully', () => {
@@ -9,14 +9,15 @@ describe('App login & initial setup', () => {
 
     const USERNAME = Cypress.env('TEST_USERNAME')
     const PASSWORD = Cypress.env('TEST_PASSWORD')
+    const SERVER   = Cypress.env('TEST_SERVER')
 
     cy.get('input[name="username"]').should('be.visible').type(USERNAME)
     cy.get('input[type="password"]').should('be.visible').type(PASSWORD)
     cy.get('[data-test="submit-button"]').click()
 
-    cy.intercept('GET', `https://git.door43.org/api/v1/users/${USERNAME}?noCache=**`).as('getUser')
-    cy.intercept('GET', `https://git.door43.org/api/v1/users/${USERNAME}/tokens?noCache=**`).as('getToken')
-    cy.intercept('GET', 'https://git.door43.org/api/v1/user/orgs?noCache=**').as('getOrgs')
+    cy.intercept('GET', `${SERVER}/api/v1/users/${USERNAME}?noCache=**`).as('getUser')
+    cy.intercept('GET', `${SERVER}/api/v1/users/${USERNAME}/tokens?noCache=**`).as('getToken')
+    cy.intercept('GET', `${SERVER}/api/v1/user/orgs?noCache=**`).as('getOrgs')
 
     cy.wait('@getUser', { requestTimeout: 15000 })
     cy.wait('@getToken', { requestTimeout: 15000 })
@@ -29,7 +30,7 @@ describe('App login & initial setup', () => {
     cy.wait(6000)
     cy.get('[id="organization-select-outlined"]').click()
     cy.wait(1000)
-    cy.get('[data-value="ga_test"]').should('have.text', 'ga_test').click()
+    cy.get('[data-value="unfoldingWord"]').should('have.text', 'unfoldingWord').click()
 
     // Select language
     cy.get('[id="primary-language-select-outlined"]').click()
