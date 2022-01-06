@@ -8,7 +8,7 @@ yalc.lock
 # testing
 /coverage
 cypress.env.json
-cypress/videos/
+cypress/videos/**
 
 # production
 /build
