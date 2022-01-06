@@ -215,7 +215,6 @@ _Table of Contents_
 - Creating Tests
 
 ## Initial Installation and Setup
-### First Time Setup
 Follow directions in the [Cypress docs](https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements). 
 
 **Steps**:
