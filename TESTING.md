@@ -235,6 +235,8 @@ yarn run cypress install
 {
   "TEST_USERNAME": "<user>",
   "TEST_PASSWORD": "<password>"
+  "TEST_SERVER": "https://qa.door43.org",
+  "TEST_VISIT": "localhost:3000/?server=qa"
 }
 ```
 - The account used will need to be part of unfoldingWord organization for the test to complete.
@@ -250,11 +252,11 @@ yarn dev
 ```
 - Then in second terminal, to run cypress interactively do:
 ```
-yarn run cypress open
+yarn cypress 
 ```
 - or to run headless: in second terminal, run cypress by:
 ```
-`yarn cypress:run`
+yarn cypress:run
 ```
 
 
