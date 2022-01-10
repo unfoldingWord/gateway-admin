@@ -20,7 +20,7 @@ export function getResourceIdFromRepo(repo) {
 }
 
 export async function repoCreate({server, username, repository, tokenid}) {
-  const uri = Path.join(server,apiPath,'orgs',username,'repos') ;
+  const uri = server + "/" + Path.join(apiPath,'orgs',username,'repos') ;
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -168,7 +168,7 @@ export async function manifestCreate({server, username, repository, bookId, toke
   const manifestYaml = getResourceManifest( {resourceId} );
 
   const content = base64.encode(utf8.encode(manifestYaml));
-  const uri = Path.join(server,apiPath,'repos',username,repository,'contents','manifest.yaml') ;
+  const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());
   const dateString = date.toISOString();
   const res = await fetch(uri+'?token='+tokenid, {
