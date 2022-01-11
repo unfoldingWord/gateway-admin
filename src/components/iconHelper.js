@@ -6,7 +6,6 @@ from '@common/constants'
 import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
-import DoneIcon from '@material-ui/icons/Done'
 import BlockIcon from '@material-ui/icons/Block'
 
 import CreateRepoButton from './CreateRepoButton'
@@ -15,11 +14,12 @@ import AddManifest from './AddManifest'
 import ReplaceManifest from './ReplaceManifest'
 
 import ViewListButton from './ViewListButton'
+import ValidateContent from './ValidateContent'
 
 
 export function applyIcon(server,owner,bookId,
   refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
-  missingList,
+  missingList,filename,
 ) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
@@ -71,8 +71,15 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr === OK ) {
+    // return (
+    //   <DoneIcon />
+    // )
     return (
-      <DoneIcon />
+      <ValidateContent 
+        active={true} server={server} owner={owner} 
+        repo={repo} refresh={refresh} 
+        filename={filename} bookId={bookId} onRefresh={setRefresh} 
+      />
     )
   }
 
