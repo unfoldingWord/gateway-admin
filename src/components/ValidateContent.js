@@ -84,7 +84,7 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
 
       if (content) {
         // do the validation
-        console.log("CV Content:", content)
+        //console.log("CV Content:", content)
         onContentValidation && onContentValidation(null) // set to null first
         const data = await contentValidate(owner, repo, bookId.toUpperCase(), filename, content)
         // now loop thru the results and determine the status
@@ -105,16 +105,14 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
           setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: yellow[500] }} />)
         } else {
           console.log("set to green")
-          setTimeout( () => setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: green[500] }} />), 1)
+          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: green[500] }} />)
         }
-        //setTimeout( () => setCvStatus(_status), 1);
         onContentValidation && onContentValidation(data) // set to results
         console.log("CV Status,Results:",_status,data)
         console.log("colors red, yellow, green, grey", red[500], yellow[500], green[500], grey[900])
       }
       
       setSubmitValidateContent(false)
-      onRefresh(getResourceIdFromRepo(repo))    
     }
     doSubmitValidateContent()
   }, [submitValidateContent, server, owner, repo, filename, bookId, onRefresh])
