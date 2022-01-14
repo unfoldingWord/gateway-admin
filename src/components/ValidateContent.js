@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function ValidateContent({ active, server, owner, repo, bookId, filename, onRefresh, onContentValidation }) {
-  const [cvStatus, setCvStatus] = useState(grey[900])
+  const [cvStatus, setCvStatus] = useState(false)
   const [cvIstatus, setCvIstatus] = useState(<DoneOutlineOutlinedIcon />)
   const {
     state: {
@@ -107,6 +107,7 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
           console.log("set to green")
           setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: green[500] }} />)
         }
+        setCvStatus(true)
         onContentValidation && onContentValidation(data) // set to results
         console.log("CV Status,Results:",_status,data)
         console.log("colors red, yellow, green, grey", red[500], yellow[500], green[500], grey[900])
@@ -116,10 +117,11 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
     }
     doSubmitValidateContent()
   }, [submitValidateContent, server, owner, repo, filename, bookId, onRefresh])
-    
+  
+
   const classes = useStyles({ active })
   return (
-      <Tooltip title={`Validate Content for ${filename}`}>
+      <Tooltip title={cvStatus ? `Download Content Validation Results` : `Validate Content for ${filename}` }>
         <IconButton className={classes.iconButton} 
           onClick={() => setSubmitValidateContent(true)} 
           aria-label="Validate Content">
