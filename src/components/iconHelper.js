@@ -19,7 +19,7 @@ import ValidateContent from './ValidateContent'
 
 export function applyIcon(server,owner,bookId,
   refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
-  missingList,filename,
+  missingList,filename,setContentValidation,
 ) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
@@ -79,6 +79,7 @@ export function applyIcon(server,owner,bookId,
         active={true} server={server} owner={owner} 
         repo={repo} refresh={refresh} 
         filename={filename} bookId={bookId} onRefresh={setRefresh} 
+        onContentValidation={setContentValidation}
       />
     )
   }
