@@ -7,6 +7,7 @@ import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
 import BlockIcon from '@material-ui/icons/Block'
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
@@ -19,7 +20,7 @@ import ValidateContent from './ValidateContent'
 
 export function applyIcon(server,owner,bookId,
   refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
-  missingList,filename,setContentValidation,
+  missingList,filename,setContentValidation,validationResults,
 ) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
@@ -34,6 +35,16 @@ export function applyIcon(server,owner,bookId,
       )
     }
   }
+
+  let _validationResults = true
+  if ( validationResults === null || validationResults === undefined ) { _validationResults = false }
+  if ( _validationResults ) {
+    return (
+      <Tooltip title="Download all content validation results">
+        <GetAppIcon aria-label="Download CV results" />
+      </Tooltip>
+    )
+}
 
   if ( repoErr === null && bookErr === null ) {
     return (
