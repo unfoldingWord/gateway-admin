@@ -2,17 +2,19 @@ import { OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_MANIFEST_FOUND }
 from '@common/constants'
 
 
-export function checkManifestBook(bookId, manifest, repoTree, setError) {
+export function checkManifestBook(bookId, manifest, repoTree, setError, setFilename) {
   let projects = []
   if ( manifest ) {
     if ( manifest.projects ) {
       projects = manifest.projects
     } else {
       setError(NO_PROJECTS_IN_MANIFEST)
+      setFilename(null)
       return
     }
   } else {
     setError(NO_MANIFEST_FOUND) 
+    setFilename(null)
     return
   }
   let isBookIdInManfest = false
@@ -28,21 +30,26 @@ export function checkManifestBook(bookId, manifest, repoTree, setError) {
   // if project id exists, then does the file actually exist?
   if ( isBookIdInManfest ) {
     let _fileExists = false
+    let _filename = null
     for (let i=0; i < repoTree.length; i++) {
       let _path = repoTree[i].path
       let _manifestpath = pathToBook.replace(/^\.\//,'')
       if ( _manifestpath === _path ) {
         _fileExists = true
+        _filename = _path
         break
       }
     }
     if ( _fileExists ) {
       setError(OK)
+      setFilename(_filename)
     } else {
       setError(FILE_NOT_FOUND)
+      setFilename(null)
     }
   } else {
     setError(BOOK_NOT_IN_MANIFEST)
+    setFilename(null)
   }
 }
 
