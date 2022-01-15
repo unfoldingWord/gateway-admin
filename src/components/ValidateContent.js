@@ -1,7 +1,6 @@
 import {useState, useEffect, useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import DoneOutlineOutlinedIcon from '@material-ui/icons/DoneOutlineOutlined'
-import { green, red, yellow, grey } from '@material-ui/core/colors'
+import DoneIcon from '@material-ui/icons/Done';
 import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 
@@ -30,8 +29,6 @@ const useStyles = makeStyles(theme => ({
 
 
 function ValidateContent({ active, server, owner, repo, bookId, filename, onRefresh, onContentValidation }) {
-  const [cvStatus, setCvStatus] = useState(false)
-  const [cvIstatus, setCvIstatus] = useState(<DoneOutlineOutlinedIcon />)
   const {
     state: {
       authentication,
@@ -87,30 +84,8 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
         //console.log("CV Content:", content)
         onContentValidation && onContentValidation(null) // set to null first
         const data = await contentValidate(owner, repo, bookId.toUpperCase(), filename, content)
-        // now loop thru the results and determine the status
-        let _status = grey[900]
-        // setCvStatus(_status) // reset it
-        for (let i=1; i < data.length; i++) {
-          if ( parseInt(data[i][0]) >= 800 ) {
-            _status = red[500]
-            break // stop looking
-          }
-          if ( parseInt(data[i][0]) >= 600 ) {
-            _status = yellow[500] // keep looking, don't break
-          }
-        }
-        if ( _status === red[500] ) { 
-          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: red[500] }} />)
-        } else if ( _status === yellow[500]  ) {
-          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: yellow[500] }} />)
-        } else {
-          console.log("set to green")
-          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: green[500] }} />)
-        }
-        setCvStatus(true)
         onContentValidation && onContentValidation(data) // set to results
-        console.log("CV Status,Results:",_status,data)
-        console.log("colors red, yellow, green, grey", red[500], yellow[500], green[500], grey[900])
+        console.log("CV Results:",data)
       }
       
       setSubmitValidateContent(false)
@@ -121,11 +96,11 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
 
   const classes = useStyles({ active })
   return (
-      <Tooltip title={cvStatus ? `Download Content Validation Results` : `Validate Content for ${filename}` }>
+      <Tooltip title={ `Validate Content for ${filename}` }>
         <IconButton className={classes.iconButton} 
           onClick={() => setSubmitValidateContent(true)} 
           aria-label="Validate Content">
-          {cvIstatus}
+          <DoneIcon />
         </IconButton>
       </Tooltip>
   )

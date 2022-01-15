@@ -16,11 +16,12 @@ import ReplaceManifest from './ReplaceManifest'
 
 import ViewListButton from './ViewListButton'
 import ValidateContent from './ValidateContent'
+import DownloadCvResults from './DownloadCvResults'
 
 
 export function applyIcon(server,owner,bookId,
   refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
-  missingList,filename,setContentValidation,validationResults,
+  missingList,filename,setContentValidation,validationResults,getAllValidationResults,
 ) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
@@ -40,9 +41,14 @@ export function applyIcon(server,owner,bookId,
   if ( validationResults === null || validationResults === undefined ) { _validationResults = false }
   if ( _validationResults ) {
     return (
-      <Tooltip title="Download all content validation results">
-        <GetAppIcon aria-label="Download CV results" />
-      </Tooltip>
+      // <Tooltip title="Download all content validation results">
+      //   <GetAppIcon aria-label="Download CV results" />
+      // </Tooltip>
+      <DownloadCvResults active={true} 
+        validationResults={validationResults}
+        getAllValidationResults={getAllValidationResults}
+        bookId={bookId}
+      />
     )
 }
 
