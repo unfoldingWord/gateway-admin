@@ -284,6 +284,42 @@ export default function RepoValidationCard({
         )
       }
     }
+    if ( twlCv ) {
+      for(let i=1; i < twlCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'TWL',twlCv[i][0],twlCv[i][1],twlCv[i][2],twlCv[i][3],twlCv[i][4],twlCv[i][5],twlCv[i][6],twlCv[i][7],twlCv[i][8],twlCv[i][9],
+          ]
+        )
+      }
+    }
+    if ( tqCv ) {
+      for(let i=1; i < tqCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'TQ',tqCv[i][0],tqCv[i][1],tqCv[i][2],tqCv[i][3],tqCv[i][4],tqCv[i][5],tqCv[i][6],tqCv[i][7],tqCv[i][8],tqCv[i][9],
+          ]
+        )
+      }
+    }
+    if ( sqCv ) {
+      for(let i=1; i < sqCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'SQ',sqCv[i][0],sqCv[i][1],sqCv[i][2],sqCv[i][3],sqCv[i][4],sqCv[i][5],sqCv[i][6],sqCv[i][7],sqCv[i][8],sqCv[i][9],
+          ]
+        )
+      }
+    }
+    if ( snCv ) {
+      for(let i=1; i < snCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'SN',snCv[i][0],snCv[i][1],snCv[i][2],snCv[i][3],snCv[i][4],snCv[i][5],snCv[i][6],snCv[i][7],snCv[i][8],snCv[i][9],
+          ]
+        )
+      }
+    }
     return csv.toCSV(data)
   }
 
