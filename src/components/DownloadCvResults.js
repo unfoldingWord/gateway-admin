@@ -2,10 +2,8 @@ import {useState, useEffect, useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { green, red, yellow, grey } from '@material-ui/core/colors'
-import { Tooltip } from '@material-ui/core'
+import { CircularProgress, Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
-
-import { AuthContext } from '@context/AuthContext'
 import * as cvs from '@utils/csvMaker'
 
 const useStyles = makeStyles(theme => ({
@@ -21,15 +19,33 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function DownloadCvResults({ active, bookId, getAllValidationResults }) {
+function DownloadCvResults({ active, bookId, validationResults, getAllValidationResults }) {
   const [submitDownloadCvResults, setSubmitDownloadCvResults] = useState(false)
+  const [cvStatus, setCvStatus] = useState(<CircularProgress/>)
    
   useEffect(() => {
-    console.log("useEffect() in DownloadCvResults()")
+    // determine status of validation 
+    let _status
+    for (let i=1; i < validationResults.length; i++) {
+      if ( parseInt(validationResults[i][0]) >= 800 ) {
+        _status = red[500]
+        break // stop looking
+      }
+      if ( parseInt(validationResults[i][0]) >= 600 ) {
+        _status = yellow[500] // keep looking, don't break
+      }
+    }
+    if ( _status === red[500] ) { 
+      setCvStatus(<GetAppIcon style={{ color: red[500] }} aria-label="Download CV results" />)
+    } else if ( _status === yellow[500]  ) {
+      setCvStatus(<GetAppIcon style={{ color: yellow[500] }} aria-label="Download CV results" />)
+    } else {
+      setCvStatus(<GetAppIcon style={{ color: green[500] }} aria-label="Download CV results" />)
+    }
+
     if ( !submitDownloadCvResults ) return;
 
     async function doSubmitDownloadCvResults() {
-      console.log("doSubmitDownloadCvResults()")
       const results = getAllValidationResults()
       let ts = new Date().toISOString();
       let fn = 'gaValidationResults-' + bookId + '-' + ts + '.csv';
@@ -45,10 +61,39 @@ function DownloadCvResults({ active, bookId, getAllValidationResults }) {
   return (
     <Tooltip title="Download all content validation results">
       <IconButton className={classes.iconButton} onClick={() => setSubmitDownloadCvResults(true)} aria-label="Download CV Results">
-        <GetAppIcon aria-label="Download CV results" />
+        {cvStatus}
       </IconButton>
     </Tooltip>
   )
 }
 
 export default DownloadCvResults
+
+/*
+
+        <GetAppIcon aria-label="Download CV results" />
+
+
+        // now loop thru the results and determine the status
+        let _status = grey[900]
+        // setCvStatus(_status) // reset it
+        for (let i=1; i < data.length; i++) {
+          if ( parseInt(data[i][0]) >= 800 ) {
+            _status = red[500]
+            break // stop looking
+          }
+          if ( parseInt(data[i][0]) >= 600 ) {
+            _status = yellow[500] // keep looking, don't break
+          }
+        }
+        if ( _status === red[500] ) { 
+          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: red[500] }} />)
+        } else if ( _status === yellow[500]  ) {
+          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: yellow[500] }} />)
+        } else {
+          console.log("set to green")
+          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: green[500] }} />)
+        }
+        setCvStatus(true)
+
+*/
