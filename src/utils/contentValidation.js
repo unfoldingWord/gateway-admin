@@ -28,9 +28,8 @@ function processNoticeList( notices ) {
 }
 
 function selectCvFunction(resourceCode) {
-  const _rid = resourceCode.toUpperCase()
   let cvFunction
-  switch (_rid) {
+  switch (resourceCode) {
     case 'TN':
       return cvFunction = cv.checkDeprecatedTN_TSV9Table
     case 'SN':
@@ -49,22 +48,35 @@ function selectCvFunction(resourceCode) {
     case 'TW':
       return cvFunction = cv.checkTW_markdownArticle
     default:
-      console.log(`Resource Id not yet supported ${_rid}.`);
+      console.log(`Resource Id not yet supported ${resourceCode}.`);
   }
   
 }
 
 export async function contentValidate(username, repo, bookID, filename, filecontent) {
   const langId = repo.split("_")[0]
-  const resourceCode = repo.split("_")[1]
+  const resourceCode = repo.split("_")[1].toUpperCase()
   const cvFunction = selectCvFunction(resourceCode)
+  const usfmCodes = ['GLT', 'GST', 'ULT', 'UST']
 
   const options = {
     disableAllLinkFetchingFlag : true,
   }
+  console.log("langId, resourceCode=",langId, resourceCode)
+  let nl
+  if ( usfmCodes.includes(resourceCode) ) { 
+    console.log("CV for USFM:",resourceCode)
+    const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options);
+    nl = rawResults.noticeList;
+  } else {
+    const rawResults = await cvFunction(username, langId, bookID, filename, filecontent, options)
+    nl = rawResults.noticeList;
+  }
 
-  const rawResults = await cvFunction(username, langId, bookID, filename, filecontent, options)
-  const nl = rawResults.noticeList;
   let data = processNoticeList(nl);
   return data;
 }
+
+/*
+ const rawResults = await checkUSFMText(username, languageCode, repoCode, bookID, filename, USFMText, givenLocation, checkingOptions);
+*/

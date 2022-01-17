@@ -35,9 +35,11 @@ export default function RepoValidationCard({
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   const [ltFilename, setLtFilename] = useState(null)
+  const [ltCv, setLtCv] = useState(null)
   // ST (GST or UST)
   const [stBookErrorMsg, setStBookErrorMsg] = useState(null)
   const [stFilename, setStFilename] = useState(null)
+  const [stCv, setStCv] = useState(null)
   // TN
   const [tnBookErrorMsg, setTnBookErrorMsg] = useState(null)
   const [tnFilename, setTnFilename] = useState(null)
@@ -275,6 +277,24 @@ export default function RepoValidationCard({
     let hdrs =  ['ResourceId','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
     data.push(hdrs);
+    if ( ltCv ) {
+      for(let i=1; i < ltCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'LT',ltCv[i][0],ltCv[i][1],ltCv[i][2],ltCv[i][3],ltCv[i][4],ltCv[i][5],ltCv[i][6],ltCv[i][7],ltCv[i][8],ltCv[i][9],
+          ]
+        )
+      }
+    }
+    if ( stCv ) {
+      for(let i=1; i < stCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'LT',stCv[i][0],stCv[i][1],stCv[i][2],stCv[i][3],stCv[i][4],stCv[i][5],stCv[i][6],stCv[i][7],stCv[i][8],stCv[i][9],
+          ]
+        )
+      }
+    }
     if ( tnCv ) {
       for(let i=1; i < tnCv.length; i++) {
         csv.addRow( data, 
@@ -335,10 +355,10 @@ export default function RepoValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Literal Translation", `${_ltRepo}`, ltRepoTreeStatus || ltBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha, null, ltFilename, null) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha, null, ltFilename, setLtCv, ltCv, getAllValidationResults) 
     ],
     ["Simplified Translation", `${_stRepo}`, stRepoTreeStatus || stBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha, null, stFilename, null) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha, null, stFilename, setStCv, stCv, getAllValidationResults) 
     ],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeStatus || tnBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest, tnManifestSha, null, tnFilename, setTnCv, tnCv, getAllValidationResults) 

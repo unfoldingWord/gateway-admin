@@ -8,12 +8,8 @@ import { AuthContext } from '@context/AuthContext'
 import {
   doFetch,
   isServerDisconnected,
-  onNetworkActionButton,
-  processNetworkError,
-  reloadApp,
 } from '@utils/network'
 import { contentValidate } from '@utils/contentValidation'
-import { getResourceIdFromRepo } from '@utils/dcsApis'
 
 const useStyles = makeStyles(theme => ({
   root: {

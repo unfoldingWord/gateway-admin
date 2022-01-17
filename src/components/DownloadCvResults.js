@@ -68,32 +68,3 @@ function DownloadCvResults({ active, bookId, validationResults, getAllValidation
 }
 
 export default DownloadCvResults
-
-/*
-
-        <GetAppIcon aria-label="Download CV results" />
-
-
-        // now loop thru the results and determine the status
-        let _status = grey[900]
-        // setCvStatus(_status) // reset it
-        for (let i=1; i < data.length; i++) {
-          if ( parseInt(data[i][0]) >= 800 ) {
-            _status = red[500]
-            break // stop looking
-          }
-          if ( parseInt(data[i][0]) >= 600 ) {
-            _status = yellow[500] // keep looking, don't break
-          }
-        }
-        if ( _status === red[500] ) { 
-          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: red[500] }} />)
-        } else if ( _status === yellow[500]  ) {
-          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: yellow[500] }} />)
-        } else {
-          console.log("set to green")
-          setCvIstatus(<DoneOutlineOutlinedIcon style={{ color: green[500] }} />)
-        }
-        setCvStatus(true)
-
-*/
