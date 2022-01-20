@@ -30,8 +30,9 @@ function processNoticeList( notices ) {
 function selectCvFunction(resourceCode) {
   let cvFunction
   switch (resourceCode) {
-    case 'TN':
+    case 'TN9':
       return cvFunction = cv.checkDeprecatedTN_TSV9Table
+    case 'TN':
     case 'OBS-TN':
       return cvFunction = cv.checkTN_TSV7Table
     case 'SN':
@@ -59,6 +60,9 @@ function selectCvFunction(resourceCode) {
 export async function contentValidate(username, repo, bookID, filename, filecontent) {
   const langId = repo.split("_")[0]
   const resourceCode = repo.split("_")[1].toUpperCase()
+  if ( resourceCode === 'TN' && !filename.startsWith('tn_') ) {
+    resourceCode = TN9
+  }
   const cvFunction = selectCvFunction(resourceCode)
   const usfmCodes = ['GLT', 'GST', 'ULT', 'UST']
 
