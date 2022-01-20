@@ -89,10 +89,15 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
     doSubmitValidateContent()
   }, [submitValidateContent, server, owner, repo, filename, bookId, onRefresh])
   
-
+  let articleList
+  if ( repo.endsWith('ta') ) {
+    articleList = "Translation Academy Articles"
+  } else if ( repo.endsWith('tw') ) {
+    articleList = "Translation Word Articles"
+  }
   const classes = useStyles({ active })
   return (
-      <Tooltip title={ `Validate Content for ${filename}` }>
+      <Tooltip title={ `Validate Content for ${filename || articleList}` }>
         <IconButton className={classes.iconButton} 
           onClick={() => setSubmitValidateContent(true)} 
           aria-label="Validate Content">

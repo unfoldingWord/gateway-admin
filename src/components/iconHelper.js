@@ -111,6 +111,7 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr.endsWith('Missing') ) {
+    console.log("missingList:", missingList)
     if ( repo.endsWith("_tw") ) {
       const title = "Translation Word Articles Missing"
       return (
