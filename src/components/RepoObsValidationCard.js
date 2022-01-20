@@ -28,10 +28,10 @@ export default function RepoObsValidationCard({
 }) {
   // obs tw
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
-  const [obsTwMissing, setObsTwMissing] = useState([])
+  const [obsTwMissing, setObsTwMissing] = useState({})
   // obs ta
   const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
-  const [obsTaMissing, setObsTaMissing] = useState([])
+  const [obsTaMissing, setObsTaMissing] = useState({})
   // OBS
   const [obsBookErrorMsg, setObsBookErrorMsg] = useState(null)
   // obs tn
@@ -129,8 +129,9 @@ export default function RepoObsValidationCard({
     async function getTaWords() {
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, obsTaRepoTree)
       setObsTaErrorMsg(rc.Status ? rc.Status : null)
+      const lists = { Present: rc.Present, Absent: rc.Absent}
       if ( rc.Absent.length > 0 ) {
-        setObsTaMissing(rc.Absent)
+        setObsTaMissing(lists)
       } 
     }
 
@@ -168,8 +169,9 @@ export default function RepoObsValidationCard({
     async function getTwWords() {
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, obsTwRepoTree)
       setObsTwErrorMsg(rc.Status ? rc.Status : null)
+      const lists = { Present: rc.Present, Absent: rc.Absent}
       if ( rc.Absent.length > 0 ) {
-        setObsTwMissing(rc.Absent)
+        setObsTwMissing(lists)
       } 
     }
 

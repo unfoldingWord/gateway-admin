@@ -4,6 +4,11 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 
+import TreeView from '@material-ui/lab/TreeView'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import TreeItem from '@material-ui/lab/TreeItem'
+
 import DraggableModal from 'translation-helps-rcl/dist/components/DraggableModal'
 import Card from 'translation-helps-rcl/dist/components/Card'
 
@@ -50,6 +55,48 @@ function ViewListButton({ active=true, title, value }) {
           }}
         >
           <div>
+          <TreeView aria-label="ViewList"
+            defaultCollapseIcon={<ExpandMoreIcon />}
+            defaultExpandIcon={<ChevronRightIcon />}
+          >
+            <TreeItem nodeId="1" label="Files Missing">
+              <ul>
+              {
+                value.Absent.map( (item,index) => {
+                  return (
+                    <li id={index}>
+                      {item}
+                    </li>
+                  )
+                })
+              }
+              </ul>
+            </TreeItem>
+            <TreeItem nodeId="2" label="Files Present">
+              <ul>
+              {
+                value.Present.map( (item,index) => {
+                  return (
+                    <li id={index}>
+                      {item}
+                    </li>
+                  )
+                })
+              }
+              </ul>
+            </TreeItem>
+          </TreeView>
+
+          </div>
+        </Card>
+      </DraggableModal>
+    </>
+  )
+}
+
+export default ViewListButton
+/*
+
           <p>The filepaths/files missing are:</p>
           <ul>
           {
@@ -62,11 +109,4 @@ function ViewListButton({ active=true, title, value }) {
             })
           }
           </ul>
-          </div>
-        </Card>
-      </DraggableModal>
-    </>
-  )
-}
-
-export default ViewListButton
+*/

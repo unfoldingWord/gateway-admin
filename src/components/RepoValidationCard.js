@@ -28,10 +28,10 @@ export default function RepoValidationCard({
 }) {
   // TW
   const [twErrorMsg, setTwErrorMsg] = useState(WORKING)
-  const [twMissing, setTwMissing]   = useState([])
+  const [twMissing, setTwMissing]   = useState({})
   // TA
   const [taErrorMsg, setTaErrorMsg] = useState(WORKING)
-  const [taMissing, setTaMissing]   = useState([])
+  const [taMissing, setTaMissing]   = useState({})
   // LT (GLT or ULT)
   const [ltBookErrorMsg, setLtBookErrorMsg] = useState(null)
   const [ltFilename, setLtFilename] = useState(null)
@@ -134,8 +134,9 @@ export default function RepoValidationCard({
       setTwErrorMsg('Checking TWL')
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.Status ? rc.Status : null)
+      const lists = { Present: rc.Present, Absent: rc.Absent}
       if ( rc.Absent.length > 0 ) {
-        setTwMissing(rc.Absent)
+        setTwMissing(lists)
       } 
     }
 
@@ -179,8 +180,9 @@ export default function RepoValidationCard({
       setTaErrorMsg('Checking TA')
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.Status ? rc.Status : null)
+      const lists = { Present: rc.Present, Absent: rc.Absent}
       if ( rc.Absent.length > 0 ) {
-        setTaMissing(rc.Absent)
+        setTaMissing(lists)
       } 
     }
 
