@@ -9,12 +9,12 @@ export function checkManifestBook(bookId, manifest, repoTree, setError, setFilen
       projects = manifest.projects
     } else {
       setError(NO_PROJECTS_IN_MANIFEST)
-      setFilename(null)
+      setFilename && setFilename(null)
       return
     }
   } else {
     setError(NO_MANIFEST_FOUND) 
-    setFilename(null)
+    setFilename && setFilename(null)
     return
   }
   let isBookIdInManfest = false
@@ -42,14 +42,14 @@ export function checkManifestBook(bookId, manifest, repoTree, setError, setFilen
     }
     if ( _fileExists ) {
       setError(OK)
-      setFilename(_filename)
+      setFilename && setFilename(_filename)
     } else {
       setError(FILE_NOT_FOUND)
-      setFilename(null)
+      setFilename && setFilename(null)
     }
   } else {
     setError(BOOK_NOT_IN_MANIFEST)
-    setFilename(null)
+    setFilename && setFilename(null)
   }
 }
 
