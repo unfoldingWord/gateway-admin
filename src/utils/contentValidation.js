@@ -32,10 +32,13 @@ function selectCvFunction(resourceCode) {
   switch (resourceCode) {
     case 'TN':
       return cvFunction = cv.checkDeprecatedTN_TSV9Table
+    case 'OBS-TN':
+      return cvFunction = cv.checkTN_TSV7Table
     case 'SN':
     case 'OBS-SN':
       return cvFunction = cv.checkSN_TSV7Table
     case 'TQ':
+    case 'OBS-TQ':
       return cvFunction = cv.checkTQ_TSV7Table
     case 'SQ':
     case 'OBS-SQ':

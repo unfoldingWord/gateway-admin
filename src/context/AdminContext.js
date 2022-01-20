@@ -60,6 +60,10 @@ export default function AdminContextProvider({
     }
   } = useContext(StoreContext)
 
+  // when org (owner) and language change, everthing needs to be re-done
+  useEffect(() => {
+    setRefresh(ALL)
+  }, [owner, languageId])
 
   const {
     state: {
@@ -228,7 +232,7 @@ export default function AdminContextProvider({
       obsRepoTreeStatus,
       obsTnRepoTree,
       obsTnRepoTreeManifest,
-      obsTaManifestSha,
+      obsTnManifestSha,
       obsTnRepoTreeStatus,
       obsTwlRepoTree,
       obsTwlRepoTreeManifest,
