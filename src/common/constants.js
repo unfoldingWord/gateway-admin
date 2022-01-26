@@ -43,6 +43,7 @@ export const CLOSE = 'Close'
 export const LOADING = 'Loading...'
 export const WAITING = 'Waiting...'
 export const WORKING = 'Working...'
+export const RETRIEVING = 'Retrieving...'
 export const REPO_NOT_FOUND = 'Repo not found'
 export const OK = 'OK'
 export const FILE_NOT_FOUND = 'File not found'
@@ -57,6 +58,7 @@ export const NO_TWL_REPO = "No TWL Repo"
 export const SEE_TWL_ERROR = "See TWL error"
 export const NO_TN_REPO = "No TN Repo"
 export const SEE_TN_ERROR = "See TN error"
+export const ALL_PRESENT = "All Present"
 
 // States for hook refreshing
 export const ALL = "ALL" // do all of them

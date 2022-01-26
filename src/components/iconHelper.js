@@ -1,5 +1,6 @@
 import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,
   OK, NO_MANIFEST_FOUND, NO_FILES_IN_REPO, MANIFEST_NOT_YAML,
+  ALL_PRESENT, RETRIEVING,
 }
 from '@common/constants'
 
@@ -7,7 +8,7 @@ import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
 import BlockIcon from '@material-ui/icons/Block'
-import GetAppIcon from '@material-ui/icons/GetApp';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
@@ -16,6 +17,7 @@ import ReplaceManifest from './ReplaceManifest'
 
 import ViewListButton from './ViewListButton'
 import ValidateContent from './ValidateContent'
+import MultiValidateContent from './MultiValidateContent'
 import DownloadCvResults from './DownloadCvResults'
 
 
@@ -41,9 +43,6 @@ export function applyIcon(server,owner,bookId,
   if ( validationResults === null || validationResults === undefined ) { _validationResults = false }
   if ( _validationResults ) {
     return (
-      // <Tooltip title="Download all content validation results">
-      //   <GetAppIcon aria-label="Download CV results" />
-      // </Tooltip>
       <DownloadCvResults active={true} 
         validationResults={validationResults}
         getAllValidationResults={getAllValidationResults}
@@ -54,7 +53,14 @@ export function applyIcon(server,owner,bookId,
 
   if ( repoErr === null && bookErr === null ) {
     return (
-      <p>{WORKING}</p>
+      //<p>{WORKING}</p>
+      <CircularProgress />
+    )
+  }
+
+  if ( bookErr === RETRIEVING ) {
+    return (
+      <CircularProgress />
     )
   }
 
@@ -88,14 +94,25 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr === OK ) {
-    // return (
-    //   <DoneIcon />
-    // )
     return (
       <ValidateContent 
         active={true} server={server} owner={owner} 
         repo={repo} refresh={refresh} 
         filename={filename} bookId={bookId} onRefresh={setRefresh} 
+        onContentValidation={setContentValidation}
+      />
+    )
+  }
+
+  if ( bookErr === ALL_PRESENT ) {
+    // Note: the content to be validated will be
+    // the value for missingList.Content, which is an object
+    // where the key is the path and the value is the file content
+    return (
+      <MultiValidateContent 
+        active={true} server={server} owner={owner} 
+        repo={repo} refresh={refresh} 
+        list={missingList} bookId={bookId} onRefresh={setRefresh} 
         onContentValidation={setContentValidation}
       />
     )
@@ -111,14 +128,18 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr.endsWith('Missing') ) {
-    console.log("missingList:", missingList)
     if ( repo.endsWith("_tw") ) {
       const title = "Translation Word Articles Missing"
       return (
         <ViewListButton title={title} value={missingList} />
       )
-    } else {
+    } else if ( repo.endsWith("_ta") ) {
       const title = "Translation Academy Articles Missing"
+      return (
+        <ViewListButton title={title} value={missingList} />
+      )
+    } else {
+      const title = "OBS Files Missing"
       return (
         <ViewListButton title={title} value={missingList} />
       )

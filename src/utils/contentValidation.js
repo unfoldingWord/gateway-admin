@@ -21,7 +21,7 @@ function processNoticeList( notices ) {
       String(rowData.excerpt || ""),
       String(rowData.message),
       String(rowData.location),
-    ])
+      ])
   });
 
   return data;
@@ -30,6 +30,8 @@ function processNoticeList( notices ) {
 function selectCvFunction(resourceCode) {
   let cvFunction
   switch (resourceCode) {
+    case 'OBS':
+      return cvFunction = cv.checkMarkdownText
     case 'TN9':
       return cvFunction = cv.checkDeprecatedTN_TSV9Table
     case 'TN':
@@ -59,9 +61,9 @@ function selectCvFunction(resourceCode) {
 
 export async function contentValidate(username, repo, bookID, filename, filecontent) {
   const langId = repo.split("_")[0]
-  const resourceCode = repo.split("_")[1].toUpperCase()
+  let resourceCode = repo.split("_")[1].toUpperCase()
   if ( resourceCode === 'TN' && !filename.startsWith('tn_') ) {
-    resourceCode = TN9
+    resourceCode = 'TN9'
   }
   const cvFunction = selectCvFunction(resourceCode)
   const usfmCodes = ['GLT', 'GST', 'ULT', 'UST']
@@ -69,11 +71,14 @@ export async function contentValidate(username, repo, bookID, filename, filecont
   const options = {
     disableAllLinkFetchingFlag : true,
   }
-  console.log("langId, resourceCode=",langId, resourceCode)
+
+  // checkMarkdownText(username, languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
   let nl
   if ( usfmCodes.includes(resourceCode) ) { 
-    console.log("CV for USFM:",resourceCode)
-    const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options);
+    const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options)
+    nl = rawResults.noticeList;
+  } else if ( resourceCode === 'OBS' ) {
+    const rawResults = await cvFunction(username, langId, resourceCode, filename, filecontent, '', options)
     nl = rawResults.noticeList;
   } else {
     const rawResults = await cvFunction(username, langId, bookID, filename, filecontent, options)

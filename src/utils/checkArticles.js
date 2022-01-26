@@ -10,8 +10,8 @@ import {
   reloadApp,
 } from '@utils/network'
 import * as tsvparser from 'uw-tsv-parser'
-import { OK,USE_NEW_TN_FORMAT_BRANCH } from '@common/constants'
-import { TN_FILENAMES } from '@common/BooksOfTheBible'
+import { OK,USE_NEW_TN_FORMAT_BRANCH, ALL_PRESENT } from '@common/constants'
+import { TN_FILENAMES, OBS_FILENAMES } from '@common/BooksOfTheBible'
 
 export async function checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree) {
   let errorCode
@@ -193,4 +193,76 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     }
   }
   return {Book: bookId, Present: _present, Absent: _absent, Status: _errorMessage}
+}
+
+export async function checkObsForFiles(authentication, languageId, owner, server) {
+  let errorCode
+  let _errorMessage = null
+  let _absent = []
+  let _present = []
+  let _content = {}
+  
+  // sample: https://git.door43.org/unfoldingWord/en_obs/raw/branch/master/content/01.md
+  const baseUrl = `${server}/${owner}/${languageId}_obs/raw/branch/master/content/`
+  const keys = Object.keys(OBS_FILENAMES)
+  for (let i=0; i<keys.length; i++) {
+    // using key to form full url to obs filename
+    const fpath = OBS_FILENAMES[keys[i]]
+    const url = baseUrl + fpath
+    // fetch it
+    let fetchError = true
+    let obsfile = null
+    try {
+      obsfile = await doFetch(url, authentication)
+        .then(response => {
+          if (response?.status !== 200) {
+            errorCode = response?.status
+            console.warn(`checkObsForFiles - error fetching ${fpath},
+              status code ${errorCode},
+              URL=${url},
+              response:`,response)
+            fetchError = true
+            return null
+          }
+          fetchError = false
+          return response?.data
+      })
+      if (fetchError) { // if no file
+        _errorMessage = `Fetch error`
+        obsfile = null // just to be sure...
+      } 
+    } catch (e) {
+      const message = e?.message
+      const disconnected = isServerDisconnected(e)
+      console.warn(`checkObsForFiles - error fetching ${fpath},
+        message '${message}',
+        disconnected=${disconnected},
+        URL=${url},
+        error message:`, 
+        e)
+      _errorMessage = "Network error"
+      obsfile = null // just to be sure...
+    }
+    if (fetchError) {
+      _absent.push(fpath)
+    } else {
+      _present.push(fpath)
+      _content[fpath] = obsfile
+    }
+
+  }
+
+
+  if ( _absent.length > 0 ) {
+    _errorMessage = `${_absent.length} Missing`
+  } else {
+    _errorMessage = ALL_PRESENT
+  }
+  return {
+    Book: "OBS", 
+    Present: _present, 
+    Absent: _absent, 
+    Status: _errorMessage,
+    Content: _content,
+  }
 }

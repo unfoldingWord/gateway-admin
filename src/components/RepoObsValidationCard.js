@@ -11,9 +11,8 @@ import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import React from 'react';
-//import { makeStyles } from '@material-ui/core/styles';
-import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
-import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } 
+import { checkTwForBook, checkTaForBook, checkObsForFiles } from '@utils/checkArticles'
+import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING } 
 from '@common/constants'
 import * as csv from '@utils/csvMaker'
 
@@ -26,14 +25,16 @@ export default function RepoObsValidationCard({
   classes,
   onClose: removeBook,
 }) {
+  // OBS
+  const [obsBookErrorMsg, setObsBookErrorMsg] = useState(null)
+  const [obsMissing, setObsMissing] = useState({})
+  const [obsCv, setObsCv] = useState(null)
   // obs tw
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
   const [obsTwMissing, setObsTwMissing] = useState({})
   // obs ta
   const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
   const [obsTaMissing, setObsTaMissing] = useState({})
-  // OBS
-  const [obsBookErrorMsg, setObsBookErrorMsg] = useState(null)
   // obs tn
   const [obsTnBookErrorMsg, setObsTnBookErrorMsg] = useState(null)
   const [obsTnCv, setObsTnCv] = useState(null)
@@ -105,22 +106,65 @@ export default function RepoObsValidationCard({
     }
   } = useContext(AdminContext)
 
+  /*
+  -- OBS (50+ files)
+  */
   useEffect(() => {
+    // check manifiest first
     checkManifestBook(bookId, obsRepoTreeManifest, obsRepoTree, setObsBookErrorMsg)
   }, [bookId, obsRepoTree, obsRepoTreeManifest])
+  /*
+  -- OBS: if manifest OK, then check on the files
+  -- Note that the below useEffect() is sort of chained to the above.
+     The above sets the obs status and the below watches for it.
+  */
+  useEffect(() => {
+        
+    async function checkObs() {
+      setObsBookErrorMsg(RETRIEVING)
+      const rc = await checkObsForFiles(authentication, languageId, owner, server)
+      setObsBookErrorMsg(rc.Status)
+      // observe that obs files are retrieved and are in the Content
+      const lists = { 
+        Present: rc.Present, 
+        Absent: rc.Absent, 
+        Content: rc.Content,
+        Status: rc.Status,
+      }
+      setObsMissing(lists)
+    }
 
+    if ( obsBookErrorMsg === OK ) {
+      // If manifest ok, then check the files next
+      checkObs()
+    }
+
+  }, [obsBookErrorMsg, OK])
+
+  /*
+  -- OBS TN
+  */
   useEffect(() => {
     checkManifestBook(bookId, obsTnRepoTreeManifest, obsTnRepoTree, setObsTnBookErrorMsg)
   }, [bookId, obsTnRepoTree, obsTnRepoTreeManifest])
 
+  /*
+  -- OBS TWL
+  */
   useEffect(() => {
     checkManifestBook(bookId, obsTwlRepoTreeManifest, obsTwlRepoTree, setObsTwlBookErrorMsg)
   }, [bookId, obsTwlRepoTree, obsTwlRepoTreeManifest])
 
+  /*
+  -- OBS TQ
+  */
   useEffect(() => {
     checkManifestBook(bookId, obsTqRepoTreeManifest, obsTqRepoTree, setObsTqBookErrorMsg)
   }, [bookId, obsTqRepoTree, obsTqRepoTreeManifest])
 
+  /*
+  -- OBS TA
+  */
   useEffect(() => {
     if ( obsTnBookErrorMsg === null ) {
       return // wait until we know the result
@@ -161,6 +205,9 @@ export default function RepoObsValidationCard({
     }
   }, [obsTaRepoTree, obsTaRepoTreeStatus, obsTnRepoTree, obsTnRepoTreeStatus, obsTnBookErrorMsg, OK])
 
+  /*
+  -- OBS TW
+  */
   useEffect(() => {
     if ( obsTwlBookErrorMsg === null ) {
       return // wait until we know the result
@@ -201,10 +248,16 @@ export default function RepoObsValidationCard({
     }
   }, [obsTwRepoTree, obsTwRepoTreeStatus, obsTwlRepoTree, obsTwlRepoTreeStatus, obsTwlBookErrorMsg, OK])
 
+  /*
+  -- OBS SN
+  */
   useEffect(() => {
     checkManifestBook(bookId, obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg)
   }, [bookId, obsSnRepoTree, obsSnRepoTreeManifest])
 
+  /*
+  -- OBS SQ
+  */
   useEffect(() => {
     checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
   }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
@@ -213,6 +266,15 @@ export default function RepoObsValidationCard({
     let hdrs =  ['ResourceId','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
     data.push(hdrs);
+    if ( obsCv ) {
+      for(let i=1; i < obsCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'OBS',obsCv[i][0],obsCv[i][1],obsCv[i][2],obsCv[i][3],obsCv[i][4],obsCv[i][5],obsCv[i][6],obsCv[i][7],obsCv[i][8],obsCv[i][9],
+          ]
+        )
+      }
+    }
     if ( obsTnCv ) {
       for(let i=1; i < obsTnCv.length; i++) {
         csv.addRow( data, 
@@ -264,7 +326,7 @@ export default function RepoObsValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, null, null) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, obsMissing, null, setObsCv, obsCv, getAllValidationResults) 
     ],
     ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha, null, 'tn_OBS.tsv', setObsTnCv, obsTnCv, getAllValidationResults) 
@@ -313,3 +375,5 @@ RepoObsValidationCard.propTypes = {
   classes: PropTypes.object,
 }
 
+/*
+*/
