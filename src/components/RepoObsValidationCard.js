@@ -268,6 +268,7 @@ export default function RepoObsValidationCard({
     let data = [];
     data.push(hdrs);
     if ( obsCv ) {
+      console.log("getAllValidationResults() obsCv=",obsCv)
       for(let i=1; i < obsCv.length; i++) {
         csv.addRow( data, 
           [

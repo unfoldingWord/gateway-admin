@@ -48,9 +48,11 @@ function MultiValidateContent({ active, server, owner, repo, bookId, list, onRef
         const data = await contentValidate(owner, repo, bookId.toUpperCase(), filename, content)
         if ( data.length < 2 ) continue
         if ( results.length === 0 ) {
-          results.push(data)
+          //for (let i=0; i<data.length; i++) { results.push( data[i] )}
+          results.push( ...data )
         } else {
-          results.push(data.slice(1))
+          //for (let i=1; i<data.length; i++) { results.push( data[i] )}
+          results.push( ...data.slice(1))
         }
       }
       
