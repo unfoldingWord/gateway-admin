@@ -1,6 +1,6 @@
 import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,
   OK, NO_MANIFEST_FOUND, NO_FILES_IN_REPO, MANIFEST_NOT_YAML,
-  ALL_PRESENT,
+  ALL_PRESENT, RETRIEVING,
 }
 from '@common/constants'
 
@@ -8,6 +8,7 @@ import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
 import BlockIcon from '@material-ui/icons/Block'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import CreateRepoButton from './CreateRepoButton'
 import AddBookToManifest from './AddBookToManifest'
@@ -52,7 +53,14 @@ export function applyIcon(server,owner,bookId,
 
   if ( repoErr === null && bookErr === null ) {
     return (
-      <p>{WORKING}</p>
+      //<p>{WORKING}</p>
+      <CircularProgress />
+    )
+  }
+
+  if ( bookErr === RETRIEVING ) {
+    return (
+      <CircularProgress />
     )
   }
 

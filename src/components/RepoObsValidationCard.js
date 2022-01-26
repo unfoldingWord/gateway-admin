@@ -12,7 +12,7 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 import { checkTwForBook, checkTaForBook, checkObsForFiles } from '@utils/checkArticles'
-import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } 
+import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING } 
 from '@common/constants'
 import * as csv from '@utils/csvMaker'
 
@@ -121,7 +121,7 @@ export default function RepoObsValidationCard({
   useEffect(() => {
         
     async function checkObs() {
-      setObsBookErrorMsg("Checking OBS files")
+      setObsBookErrorMsg(RETRIEVING)
       const rc = await checkObsForFiles(authentication, languageId, owner, server)
       setObsBookErrorMsg(rc.Status)
       // observe that obs files are retrieved and are in the Content
