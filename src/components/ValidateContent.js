@@ -77,11 +77,9 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
 
       if (content) {
         // do the validation
-        //console.log("CV Content:", content)
         onContentValidation && onContentValidation(null) // set to null first
         const data = await contentValidate(owner, repo, bookId.toUpperCase(), filename, content)
         onContentValidation && onContentValidation(data) // set to results
-        console.log("CV Results:",data)
       }
       
       setSubmitValidateContent(false)

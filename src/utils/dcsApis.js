@@ -78,7 +78,6 @@ function addProject( { resourceId, manifest, bookId }) {
   } else {
     _projects = [...currentProjects, projectTemplate]
   }
-  console.log("projects before sort:",_projects)
   if ( _projects.length > 1 ) {
     _projects.sort(
       (a,b) => {
@@ -86,7 +85,6 @@ function addProject( { resourceId, manifest, bookId }) {
       }
     )
   }
-  console.log("projects after sort:",_projects)
   let _manifest = {
     ...manifest,
     projects: [..._projects]
@@ -108,8 +106,6 @@ function addProject( { resourceId, manifest, bookId }) {
 }
 
 export async function manifestAddBook({server, username, repository, manifest, sha, bookId, tokenid}) {
-  console.log("manifestAddBook() with parms:",`${server}, ${username}, ${repository}, ${bookId}, ${sha} and manifest is:`)
-  console.log(manifest)
   const resourceId = repository.split('_')[1];
   // only applies to scripture oriented resources, skip tw and ta
   let _manifest 
@@ -119,12 +115,10 @@ export async function manifestAddBook({server, username, repository, manifest, s
   } else {
     _manifest = addProject( { resourceId, manifest, bookId })
   }
-  console.log("new manifest:",_manifest)
   const content = base64.encode(utf8.encode(_manifest));
   const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());
   const dateString = date.toISOString();
-  console.log("manifestAddBook() uri=", uri)
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' }, 
@@ -162,7 +156,6 @@ export async function manifestAddBook({server, username, repository, manifest, s
 // selected by the user.
 //
 export async function manifestCreate({server, username, repository, bookId, tokenid}) {
-  console.log("manifestCreate() with parms:",`${server}, ${username}, ${repository}, ${bookId}`)
   //const resourceId = getResourceIdFromRepo(repository)
   const resourceId = repository.split("_")[1]
   const manifestYaml = getResourceManifest( {resourceId} );
@@ -198,14 +191,12 @@ export async function manifestCreate({server, username, repository, bookId, toke
 }
 
 export async function manifestReplace({server, username, repository, sha, tokenid}) {
-  console.log("manifestReplace() with parms:",`${server}, ${username}, ${repository}, ${sha}`)
   const resourceId = repository.split('_')[1];
   const manifestYaml = getResourceManifest( {resourceId} );
   const content = base64.encode(utf8.encode(manifestYaml));
   const uri = server + "/" + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml') ;
   const date = new Date(Date.now());
   const dateString = date.toISOString();
-  console.log("manifestReplace() uri=", uri)
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' }, 

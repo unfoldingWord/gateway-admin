@@ -30,9 +30,6 @@ export function addRow( csvdata, csvrow) {
     //    a line break will mean a carriage return (CR) or line feed (LF)
     for (let i=0; i < csvrow.length; i++) {
         let cell = csvrow[i];
-        if ( cell === undefined ) {
-            console.log("undefined cell?!:", i, csvrow)
-        }
         if ( cell.includes('"') ) {
             // double the quotes
             cell = cell.replace(/"/g,'""');

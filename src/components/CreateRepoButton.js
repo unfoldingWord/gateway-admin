@@ -56,10 +56,8 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
           console.log('Repo Create Error:', res)
           console.log("Repo Failed! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
       }
-      console.log("CreateRepoButton() useEffect() set new refresh value to:",resourceId)
       onRefresh(resourceId)    
     }
-    console.log("CreateRepoButton() useEffect() current refresh value:",refresh)
     doSubmitCreate()
   }, [submitCreate, server, owner, repo, onRefresh])
     

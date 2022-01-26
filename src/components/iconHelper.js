@@ -41,7 +41,6 @@ export function applyIcon(server,owner,bookId,
   let _validationResults = true
   if ( validationResults === null || validationResults === undefined ) { _validationResults = false }
   if ( _validationResults ) {
-    console.log("validation results passed to download:",validationResults)
     return (
       <DownloadCvResults active={true} 
         validationResults={validationResults}
@@ -121,7 +120,6 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr.endsWith('Missing') ) {
-    console.log("missingList:", missingList)
     if ( repo.endsWith("_tw") ) {
       const title = "Translation Word Articles Missing"
       return (

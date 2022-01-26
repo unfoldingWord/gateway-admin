@@ -32,7 +32,6 @@ function ViewListButton({ active=true, title, value }) {
   const handleClickClose = () => {
     setShowModal(false)
   }
-  console.log("ViewListButton() value:",value)
   const classes = useStyles({ active })
   return (
     <>

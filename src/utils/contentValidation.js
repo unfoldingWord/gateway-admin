@@ -10,20 +10,18 @@ function processNoticeList( notices ) {
   data.push(hdrs);
   Object.keys(notices).forEach ( key => {
     const rowData = notices[key];
-    if ( rowData ) {
-      csv.addRow( data, [
-        String(rowData.priority),
-        String(rowData.C || ""),
-        String(rowData.V || ""),
-        String(rowData.lineNumber || ""),
-        String(rowData.rowID || ""),
-        String(rowData.fieldName || ""),
-        String(rowData.characterIndex || ""),
-        String(rowData.excerpt || ""),
-        String(rowData.message),
-        String(rowData.location),
+    csv.addRow( data, [
+      String(rowData.priority),
+      String(rowData.C || ""),
+      String(rowData.V || ""),
+      String(rowData.lineNumber || ""),
+      String(rowData.rowID || ""),
+      String(rowData.fieldName || ""),
+      String(rowData.characterIndex || ""),
+      String(rowData.excerpt || ""),
+      String(rowData.message),
+      String(rowData.location),
       ])
-    }
   });
 
   return data;
@@ -63,9 +61,9 @@ function selectCvFunction(resourceCode) {
 
 export async function contentValidate(username, repo, bookID, filename, filecontent) {
   const langId = repo.split("_")[0]
-  const resourceCode = repo.split("_")[1].toUpperCase()
+  let resourceCode = repo.split("_")[1].toUpperCase()
   if ( resourceCode === 'TN' && !filename.startsWith('tn_') ) {
-    resourceCode = TN9
+    resourceCode = 'TN9'
   }
   const cvFunction = selectCvFunction(resourceCode)
   const usfmCodes = ['GLT', 'GST', 'ULT', 'UST']
@@ -73,12 +71,10 @@ export async function contentValidate(username, repo, bookID, filename, filecont
   const options = {
     disableAllLinkFetchingFlag : true,
   }
-  console.log("langId, resourceCode=",langId, resourceCode)
 
   // checkMarkdownText(username, languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
   let nl
   if ( usfmCodes.includes(resourceCode) ) { 
-    console.log("CV for USFM:",resourceCode)
     const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options)
     nl = rawResults.noticeList;
   } else if ( resourceCode === 'OBS' ) {

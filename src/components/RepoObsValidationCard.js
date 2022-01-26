@@ -132,7 +132,6 @@ export default function RepoObsValidationCard({
         Status: rc.Status,
       }
       setObsMissing(lists)
-      console.log("OBS lists:", lists)
     }
 
     if ( obsBookErrorMsg === OK ) {
@@ -268,7 +267,6 @@ export default function RepoObsValidationCard({
     let data = [];
     data.push(hdrs);
     if ( obsCv ) {
-      console.log("getAllValidationResults() obsCv=",obsCv)
       for(let i=1; i < obsCv.length; i++) {
         csv.addRow( data, 
           [

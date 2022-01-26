@@ -38,8 +38,8 @@ function AddBookButton({ active, server, owner, repo, manifest, sha, bookId, onR
       const resourceId = dcsApis.getResourceIdFromRepo(repo)
       const res = await dcsApis.manifestAddBook({server: server, username: owner, repository: repo, manifest: manifest, sha: sha, bookId: bookId, tokenid: tokenid})
       if ( res.status === 200 ) {
-        console.log("Book added to manifest. Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
-        console.log("Refreshing:",resourceId)
+        // console.log("Book added to manifest. Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
+        // console.log("Refreshing:",resourceId)
         onRefresh(null) // note: this resets it in case the prior value was the same as the new value
         // now wait a bit and set the refresh value to what we really need
         setTimeout( () => onRefresh(resourceId), 1);
