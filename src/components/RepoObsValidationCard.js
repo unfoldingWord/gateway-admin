@@ -11,7 +11,6 @@ import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import React from 'react';
-//import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook, checkObsForFiles } from '@utils/checkArticles'
 import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO } 
 from '@common/constants'
@@ -29,6 +28,7 @@ export default function RepoObsValidationCard({
   // OBS
   const [obsBookErrorMsg, setObsBookErrorMsg] = useState(null)
   const [obsMissing, setObsMissing] = useState({})
+  const [obsCv, setObsCv] = useState(null)
   // obs tw
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
   const [obsTwMissing, setObsTwMissing] = useState({})
@@ -267,6 +267,15 @@ export default function RepoObsValidationCard({
     let hdrs =  ['ResourceId','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
     data.push(hdrs);
+    if ( obsCv ) {
+      for(let i=1; i < obsCv.length; i++) {
+        csv.addRow( data, 
+          [
+            'OBS',obsCv[i][0],obsCv[i][1],obsCv[i][2],obsCv[i][3],obsCv[i][4],obsCv[i][5],obsCv[i][6],obsCv[i][7],obsCv[i][8],obsCv[i][9],
+          ]
+        )
+      }
+    }
     if ( obsTnCv ) {
       for(let i=1; i < obsTnCv.length; i++) {
         csv.addRow( data, 
@@ -318,7 +327,7 @@ export default function RepoObsValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, null, null) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, obsMissing, null, setObsCv, obsCv, getAllValidationResults) 
     ],
     ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha, null, 'tn_OBS.tsv', setObsTnCv, obsTnCv, getAllValidationResults) 
@@ -367,3 +376,5 @@ RepoObsValidationCard.propTypes = {
   classes: PropTypes.object,
 }
 
+/*
+*/

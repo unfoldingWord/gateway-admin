@@ -10,18 +10,20 @@ function processNoticeList( notices ) {
   data.push(hdrs);
   Object.keys(notices).forEach ( key => {
     const rowData = notices[key];
-    csv.addRow( data, [
-      String(rowData.priority),
-      String(rowData.C || ""),
-      String(rowData.V || ""),
-      String(rowData.lineNumber || ""),
-      String(rowData.rowID || ""),
-      String(rowData.fieldName || ""),
-      String(rowData.characterIndex || ""),
-      String(rowData.excerpt || ""),
-      String(rowData.message),
-      String(rowData.location),
-    ])
+    if ( rowData ) {
+      csv.addRow( data, [
+        String(rowData.priority),
+        String(rowData.C || ""),
+        String(rowData.V || ""),
+        String(rowData.lineNumber || ""),
+        String(rowData.rowID || ""),
+        String(rowData.fieldName || ""),
+        String(rowData.characterIndex || ""),
+        String(rowData.excerpt || ""),
+        String(rowData.message),
+        String(rowData.location),
+      ])
+    }
   });
 
   return data;
@@ -30,6 +32,8 @@ function processNoticeList( notices ) {
 function selectCvFunction(resourceCode) {
   let cvFunction
   switch (resourceCode) {
+    case 'OBS':
+      return cvFunction = cv.checkMarkdownText
     case 'TN9':
       return cvFunction = cv.checkDeprecatedTN_TSV9Table
     case 'TN':
@@ -70,10 +74,15 @@ export async function contentValidate(username, repo, bookID, filename, filecont
     disableAllLinkFetchingFlag : true,
   }
   console.log("langId, resourceCode=",langId, resourceCode)
+
+  // checkMarkdownText(username, languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
   let nl
   if ( usfmCodes.includes(resourceCode) ) { 
     console.log("CV for USFM:",resourceCode)
-    const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options);
+    const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options)
+    nl = rawResults.noticeList;
+  } else if ( resourceCode === 'OBS' ) {
+    const rawResults = await cvFunction(username, langId, resourceCode, filename, filecontent, '', options)
     nl = rawResults.noticeList;
   } else {
     const rawResults = await cvFunction(username, langId, bookID, filename, filecontent, options)
