@@ -80,6 +80,9 @@ export async function contentValidate(username, repo, bookID, filename, filecont
   } else if ( resourceCode === 'OBS' ) {
     const rawResults = await cvFunction(username, langId, resourceCode, filename, filecontent, '', options)
     nl = rawResults.noticeList;
+  } else if ( resourceCode === 'TA' ) {
+    const rawResults = await cvFunction(username, langId, resourceCode, filename, filecontent, '', options)
+    nl = rawResults.noticeList;
   } else {
     const rawResults = await cvFunction(username, langId, bookID, filename, filecontent, options)
     nl = rawResults.noticeList;

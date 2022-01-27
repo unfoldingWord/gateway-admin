@@ -181,9 +181,7 @@ export default function RepoValidationCard({
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.Status ? rc.Status : null)
       const lists = { Present: rc.Present, Absent: rc.Absent}
-      if ( rc.Absent.length > 0 ) {
-        setTaMissing(lists)
-      } 
+      setTaMissing(lists)
     }
 
     // check tn repo first

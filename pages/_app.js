@@ -7,9 +7,10 @@ import AuthContextProvider from '@context/AuthContext'
 import AdminContextProvider from '@context/AdminContext'
 import { APP_NAME } from '@common/constants'
 import AppHead from '@components/AppHead'
-import Layout from '@components/Layout'
+//import Layout from '@components/Layout'
 import theme from '../src/theme'
 import '@styles/globals.css'
+import { clearCaches } from '@utils/fetchCache'
 
 export default function Application({ Component, pageProps }) {
   useEffect(() => {
@@ -19,6 +20,9 @@ export default function Application({ Component, pageProps }) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles)
     }
+
+    // clear the session cache
+    clearCaches()
   }, [])
 
   return (

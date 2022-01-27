@@ -18,6 +18,7 @@ import ReplaceManifest from './ReplaceManifest'
 import ViewListButton from './ViewListButton'
 import ValidateContent from './ValidateContent'
 import MultiValidateContent from './MultiValidateContent'
+import ValidateListContent from './ValidateListContent'
 import DownloadCvResults from './DownloadCvResults'
 
 
@@ -92,6 +93,21 @@ export function applyIcon(server,owner,bookId,
       <p>{repoErr}</p>
     )
   }
+
+  if ( bookErr === OK && repo.endsWith("_ta") ) {
+    // Note: the content to be validated will be
+    // the value for missingList.Content, which is an object
+    // where the key is the path and the value is the file content
+    return (
+      <ValidateListContent 
+        active={true} server={server} owner={owner} 
+        repo={repo} refresh={refresh} 
+        list={missingList} bookId={bookId} onRefresh={setRefresh} 
+        onContentValidation={setContentValidation}
+      />
+    )
+  }
+
 
   if ( bookErr === OK ) {
     return (
