@@ -22,7 +22,7 @@ export default function Application({ Component, pageProps }) {
     }
 
     // clear the session cache
-    clearCaches()
+    setTimeout( () => clearCaches(), 1)
   }, [])
 
   return (

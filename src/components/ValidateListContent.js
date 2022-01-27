@@ -40,7 +40,7 @@ async function locateContent(url, authentication) {
       .then(response => {
         if (response?.status !== 200) {
           errorCode = response?.status
-          console.warn(`doFetch - error fetching file ${filename},
+          console.warn(`doFetch - error fetching file,
             status code ${errorCode},
             URL=${url},
             response:`,response)
@@ -57,7 +57,7 @@ async function locateContent(url, authentication) {
   } catch (e) {
     const message = e?.message
     const disconnected = isServerDisconnected(e)
-    console.warn(`doFetch - error fetching file ${filename},
+    console.warn(`doFetch - error fetching file,
       message '${message}',
       disconnected=${disconnected},
       URL=${url},
@@ -90,13 +90,18 @@ function ValidateListContent({ active, server, owner, repo, bookId, list, onRefr
       let results = []
       for (let i=0; i<files.length; i++) {
         let url = `${server}/${owner}/${repo}/raw/branch/master/${files[i]}`
+        if ( repo.endsWith("_ta") ) {
+          url += "/01.md"
+        }
         const content = locateContent(url, authentication)
         if ( content ) {
           const data = await contentValidate(owner, repo, bookId.toUpperCase(), files[i], content)
           if ( data.length < 2 ) continue
           if ( results.length === 0 ) {
+            // keeping the header row on first push
             results.push( ...data )
           } else {
+            // omitting the header row after first push
             results.push( ...data.slice(1))
           }
         }
