@@ -137,9 +137,7 @@ export default function RepoValidationCard({
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.Status ? rc.Status : null)
       const lists = { Present: rc.Present, Absent: rc.Absent}
-      if ( rc.Absent.length > 0 ) {
-        setTwMissing(lists)
-      } 
+      setTwMissing(lists)
     }
 
     // check twl repo first
