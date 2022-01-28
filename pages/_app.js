@@ -10,7 +10,6 @@ import AppHead from '@components/AppHead'
 //import Layout from '@components/Layout'
 import theme from '../src/theme'
 import '@styles/globals.css'
-import { clearCaches } from '@utils/fetchCache'
 
 export default function Application({ Component, pageProps }) {
   useEffect(() => {
@@ -21,8 +20,6 @@ export default function Application({ Component, pageProps }) {
       jssStyles.parentElement.removeChild(jssStyles)
     }
 
-    // clear the session cache
-    setTimeout( () => clearCaches(), 1)
   }, [])
 
   return (

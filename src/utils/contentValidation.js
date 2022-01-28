@@ -4,13 +4,14 @@
 import * as csv from './csvMaker'
 import * as cv from 'uw-content-validation'
  
-function processNoticeList( notices ) {
-  let hdrs =  ['Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
+function processNoticeList( notices, filename ) {
+  let hdrs =  ['Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
   let data = [];
   data.push(hdrs);
   Object.keys(notices).forEach ( key => {
     const rowData = notices[key];
     csv.addRow( data, [
+      filename,
       String(rowData.priority),
       String(rowData.C || ""),
       String(rowData.V || ""),
@@ -53,6 +54,11 @@ function selectCvFunction(resourceCode) {
       return cvFunction = cv.checkTA_markdownArticle
     case 'TW':
       return cvFunction = cv.checkTW_markdownArticle
+    case 'ULT':
+    case 'GLT':
+    case 'UST':
+    case 'GST':
+      return cvFunction = cv.checkUSFMText
     default:
       console.log(`Resource Id not yet supported ${resourceCode}.`);
   }
@@ -75,12 +81,12 @@ export async function contentValidate(username, repo, bookID, filename, filecont
   // checkMarkdownText(username, languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
   let nl
   if ( usfmCodes.includes(resourceCode) ) { 
-    const rawResults = await cv.checkUSFMText(username, langId, resourceCode, bookID, filename, filecontent, '', options)
+    const rawResults = await cvFunction(username, langId, resourceCode, bookID, filename, filecontent, '', options)
     nl = rawResults.noticeList;
   } else if ( resourceCode === 'OBS' ) {
     const rawResults = await cvFunction(username, langId, resourceCode, filename, filecontent, '', options)
     nl = rawResults.noticeList;
-  } else if ( resourceCode === 'TA' ) {
+  } else if ( resourceCode === 'TA' || resourceCode === 'TW' ) {
     const rawResults = await cvFunction(username, langId, resourceCode, filename, filecontent, '', options)
     nl = rawResults.noticeList;
   } else {
@@ -88,7 +94,7 @@ export async function contentValidate(username, repo, bookID, filename, filecont
     nl = rawResults.noticeList;
   }
 
-  let data = processNoticeList(nl);
+  let data = processNoticeList(nl, filename);
   return data;
 }
 

@@ -275,91 +275,29 @@ export default function RepoValidationCard({
     checkManifestBook(bookId, snRepoTreeManifest, snRepoTree, setSnBookErrorMsg, setSnFilename)
   }, [bookId, snRepoTree, snRepoTreeManifest])
 
+  function cvCombine( resourceId, cv, data ) {
+    if (!cv) return
+    for(let i=1; i < cv.length; i++) {
+      csv.addRow( data, 
+        [
+          resourceId,cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10]
+        ]
+      )
+    }
+  }
   const getAllValidationResults = () => {
-    let hdrs =  ['ResourceId','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
+    let hdrs =  ['ResourceId','Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
     data.push(hdrs);
-    if ( taCv ) {
-      for(let i=1; i < taCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'TA',taCv[i][0],taCv[i][1],taCv[i][2],taCv[i][3],taCv[i][4],taCv[i][5],taCv[i][6],taCv[i][7],taCv[i][8],taCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( twCv ) {
-      for(let i=1; i < twCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'TW',twCv[i][0],twCv[i][1],twCv[i][2],twCv[i][3],twCv[i][4],twCv[i][5],twCv[i][6],twCv[i][7],twCv[i][8],twCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( ltCv ) {
-      for(let i=1; i < ltCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'LT',ltCv[i][0],ltCv[i][1],ltCv[i][2],ltCv[i][3],ltCv[i][4],ltCv[i][5],ltCv[i][6],ltCv[i][7],ltCv[i][8],ltCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( stCv ) {
-      for(let i=1; i < stCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'ST',stCv[i][0],stCv[i][1],stCv[i][2],stCv[i][3],stCv[i][4],stCv[i][5],stCv[i][6],stCv[i][7],stCv[i][8],stCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( tnCv ) {
-      for(let i=1; i < tnCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'TN',tnCv[i][0],tnCv[i][1],tnCv[i][2],tnCv[i][3],tnCv[i][4],tnCv[i][5],tnCv[i][6],tnCv[i][7],tnCv[i][8],tnCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( twlCv ) {
-      for(let i=1; i < twlCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'TWL',twlCv[i][0],twlCv[i][1],twlCv[i][2],twlCv[i][3],twlCv[i][4],twlCv[i][5],twlCv[i][6],twlCv[i][7],twlCv[i][8],twlCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( tqCv ) {
-      for(let i=1; i < tqCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'TQ',tqCv[i][0],tqCv[i][1],tqCv[i][2],tqCv[i][3],tqCv[i][4],tqCv[i][5],tqCv[i][6],tqCv[i][7],tqCv[i][8],tqCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( sqCv ) {
-      for(let i=1; i < sqCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'SQ',sqCv[i][0],sqCv[i][1],sqCv[i][2],sqCv[i][3],sqCv[i][4],sqCv[i][5],sqCv[i][6],sqCv[i][7],sqCv[i][8],sqCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( snCv ) {
-      for(let i=1; i < snCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'SN',snCv[i][0],snCv[i][1],snCv[i][2],snCv[i][3],snCv[i][4],snCv[i][5],snCv[i][6],snCv[i][7],snCv[i][8],snCv[i][9],
-          ]
-        )
-      }
-    }
+    cvCombine('TA',taCv,data)
+    cvCombine('TW',twCv,data)
+    cvCombine('LT',ltCv,data)
+    cvCombine('ST',stCv,data)
+    cvCombine('TN',tnCv,data)
+    cvCombine('TWL',twlCv,data)
+    cvCombine('TQ',tqCv,data)
+    cvCombine('SQ',sqCv,data)
+    cvCombine('SN',snCv,data)
     return csv.toCSV(data)
   }
 
