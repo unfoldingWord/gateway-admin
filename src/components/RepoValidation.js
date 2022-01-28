@@ -22,6 +22,7 @@ import { HTTP_CONFIG } from '@common/constants'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
 import RepoValidationCard from './RepoValidationCard'
 import RepoObsValidationCard from './RepoObsValidationCard'
+import { clearCaches } from '@utils/fetchCache'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -142,6 +143,7 @@ function RepoValidation() {
     setWorkspaceReady(false)
 
     if (owner && languageId && appRef && server && loggedInUser) {
+      clearCaches()
       setWorkspaceReady(true)
     }// eslint-disable-next-line
   }, [owner, languageId, appRef, server, loggedInUser])
