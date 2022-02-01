@@ -32,7 +32,7 @@ export function applyIcon(server,owner,bookId,
   //   manifest:${manifest}
   //   manifestSha:${manifestSha}
   // `)
-  if ( repo.endsWith("_tw") || repo.endsWith("_ta") ) {
+  if ( repo.endsWith("tw") || repo.endsWith("ta") ) {
     if ( repoErr === null && bookErr === WORKING ) {
       return (
         <p>{WORKING}</p>
@@ -94,7 +94,7 @@ export function applyIcon(server,owner,bookId,
     )
   }
 
-  if ( bookErr === OK && (repo.endsWith("_ta") || repo.endsWith("_tw")) ) {
+  if ( bookErr === OK && (repo.endsWith("ta") || repo.endsWith("tw")) ) {
     // Note: the content to be validated will be
     // the value for missingList.Content, which is an object
     // where the key is the path and the value is the file content
@@ -121,9 +121,11 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr === ALL_PRESENT ) {
-    // Note: the content to be validated will be
+    // Note: the obs content to be validated will be
     // the value for missingList.Content, which is an object
     // where the key is the path and the value is the file content
+    // To Do: consider whether this approach for OBS can be
+    // replaced with the conceptually similar one for TA and TW.
     return (
       <MultiValidateContent 
         active={true} server={server} owner={owner} 
@@ -144,12 +146,12 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr.endsWith('Missing') ) {
-    if ( repo.endsWith("_tw") ) {
+    if ( repo.endsWith("tw") ) {
       const title = "Translation Word Articles Missing"
       return (
         <ViewListButton title={title} value={missingList} />
       )
-    } else if ( repo.endsWith("_ta") ) {
+    } else if ( repo.endsWith("ta") ) {
       const title = "Translation Academy Articles Missing"
       return (
         <ViewListButton title={title} value={missingList} />
@@ -163,7 +165,7 @@ export function applyIcon(server,owner,bookId,
   }
 
   if ( bookErr !== null ) {
-    if ( repo.endsWith("_tw") ) {
+    if ( repo.endsWith("tw") ) {
       return (
         <Tooltip title="Use tC Create to create translation word list">
           <IconButton aria-label="Use-tc-create-tw">
@@ -172,7 +174,7 @@ export function applyIcon(server,owner,bookId,
         </Tooltip>
       )
     }
-    if ( repo.endsWith("_ta") ) {
+    if ( repo.endsWith("ta") ) {
       return (
         <Tooltip title="Use tC Create to create translation notes">
           <IconButton aria-label="Use-tc-create-ta">
