@@ -32,9 +32,11 @@ export default function RepoObsValidationCard({
   // obs tw
   const [obsTwErrorMsg, setObsTwErrorMsg] = useState(null)
   const [obsTwMissing, setObsTwMissing] = useState({})
+  const [obsTwCv, setObsTwCv] = useState(null)
   // obs ta
   const [obsTaErrorMsg, setObsTaErrorMsg] = useState(null)
   const [obsTaMissing, setObsTaMissing] = useState({})
+  const [obsTaCv, setObsTaCv] = useState(null)
   // obs tn
   const [obsTnBookErrorMsg, setObsTnBookErrorMsg] = useState(null)
   const [obsTnCv, setObsTnCv] = useState(null)
@@ -174,9 +176,7 @@ export default function RepoObsValidationCard({
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, obsTaRepoTree)
       setObsTaErrorMsg(rc.Status ? rc.Status : null)
       const lists = { Present: rc.Present, Absent: rc.Absent}
-      if ( rc.Absent.length > 0 ) {
-        setObsTaMissing(lists)
-      } 
+      setObsTaMissing(lists)
     }
 
     // check tn repo first
@@ -217,9 +217,7 @@ export default function RepoObsValidationCard({
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, obsTwRepoTree)
       setObsTwErrorMsg(rc.Status ? rc.Status : null)
       const lists = { Present: rc.Present, Absent: rc.Absent}
-      if ( rc.Absent.length > 0 ) {
-        setObsTwMissing(lists)
-      } 
+      setObsTwMissing(lists)
     }
 
     // check twl repo first
@@ -262,64 +260,26 @@ export default function RepoObsValidationCard({
     checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
   }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
 
+  function cvCombine( resourceId, cv, data ) {
+    if (!cv) return
+    for(let i=1; i < cv.length; i++) {
+      csv.addRow( data, 
+        [
+          resourceId,cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10]
+        ]
+      )
+    }
+  }
   const getAllValidationResults = () => {
-    let hdrs =  ['ResourceId','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
+    let hdrs =  ['ResourceId','Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
     data.push(hdrs);
-    if ( obsCv ) {
-      for(let i=1; i < obsCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'OBS',obsCv[i][0],obsCv[i][1],obsCv[i][2],obsCv[i][3],obsCv[i][4],obsCv[i][5],obsCv[i][6],obsCv[i][7],obsCv[i][8],obsCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( obsTnCv ) {
-      for(let i=1; i < obsTnCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'OBS-TN',obsTnCv[i][0],obsTnCv[i][1],obsTnCv[i][2],obsTnCv[i][3],obsTnCv[i][4],obsTnCv[i][5],obsTnCv[i][6],obsTnCv[i][7],obsTnCv[i][8],obsTnCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( obsTwlCv ) {
-      for(let i=1; i < obsTwlCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'OBS-TWL',obsTwlCv[i][0],obsTwlCv[i][1],obsTwlCv[i][2],obsTwlCv[i][3],obsTwlCv[i][4],obsTwlCv[i][5],obsTwlCv[i][6],obsTwlCv[i][7],obsTwlCv[i][8],obsTwlCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( obsTqCv ) {
-      for(let i=1; i < obsTqCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'OBS-TQ',obsTqCv[i][0],obsTqCv[i][1],obsTqCv[i][2],obsTqCv[i][3],obsTqCv[i][4],obsTqCv[i][5],obsTqCv[i][6],obsTqCv[i][7],obsTqCv[i][8],obsTqCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( obsSqCv ) {
-      for(let i=1; i < obsSqCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'OBS-SQ',obsSqCv[i][0],obsSqCv[i][1],obsSqCv[i][2],obsSqCv[i][3],obsSqCv[i][4],obsSqCv[i][5],obsSqCv[i][6],obsSqCv[i][7],obsSqCv[i][8],obsSqCv[i][9],
-          ]
-        )
-      }
-    }
-    if ( obsSnCv ) {
-      for(let i=1; i < obsSnCv.length; i++) {
-        csv.addRow( data, 
-          [
-            'OBS-SN',obsSnCv[i][0],obsSnCv[i][1],obsSnCv[i][2],obsSnCv[i][3],obsSnCv[i][4],obsSnCv[i][5],obsSnCv[i][6],obsSnCv[i][7],obsSnCv[i][8],obsSnCv[i][9],
-          ]
-        )
-      }
-    }
+    cvCombine('OBS',obsCv,data)
+    cvCombine('OBS-TN',obsTnCv,data)
+    cvCombine('OBS-TWL',obsTwlCv,data)
+    cvCombine('OBS-TQ',obsTqCv,data)
+    cvCombine('OBS-SQ',obsSqCv,data)
+    cvCombine('OBS-SN',obsSnCv,data)
     return csv.toCSV(data)
   }
 
@@ -338,10 +298,10 @@ export default function RepoObsValidationCard({
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha, null, 'tq_OBS.tsv', setObsTqCv, obsTqCv, getAllValidationResults) 
     ],
     ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeStatus || obsTaErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha, obsTaMissing, null, null) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha, obsTaMissing, null, setObsTaCv, obsTaCv, getAllValidationResults) 
     ],
     ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeStatus || obsTwErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha, obsTwMissing, null, null) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha, obsTwMissing, null, setObsTwCv, obsTwCv, getAllValidationResults) 
     ],
     ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeStatus || obsSnBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha, null, 'sn_OBS.tsv', setObsSnCv, obsSnCv, getAllValidationResults) 
