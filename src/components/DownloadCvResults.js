@@ -23,7 +23,6 @@ function DownloadCvResults({ active, bookId, validationResults, getAllValidation
   const [submitDownloadCvResults, setSubmitDownloadCvResults] = useState(false)
   const [cvStatus, setCvStatus] = useState(<CircularProgress/>)
   const priorityColumn = 1
-  console.log("validation results in DownloadCvResults():", validationResults)
   useEffect(() => {
     // determine status of validation 
     let _status
