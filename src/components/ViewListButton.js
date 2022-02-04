@@ -54,14 +54,9 @@ function ViewListButton({ active=true, title, value }) {
           }}
         >
           <div>
-          <TreeView aria-label="ViewList"
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-          >
-            <TreeItem nodeId="1" label="Files Missing">
-              <ul>
+          <ul>
               {
-                value.Absent.map( (item,index) => {
+                value?.Absent?.map( (item,index) => {
                   return (
                     <li id={index}>
                       {item}
@@ -70,11 +65,14 @@ function ViewListButton({ active=true, title, value }) {
                 })
               }
               </ul>
-            </TreeItem>
-            <TreeItem nodeId="2" label="Files Present">
+          <TreeView aria-label="ViewList"
+            defaultCollapseIcon={<ExpandMoreIcon />}
+            defaultExpandIcon={<ChevronRightIcon />}
+          >
+            <TreeItem nodeId="2" label="View Files Present">
               <ul>
               {
-                value.Present.map( (item,index) => {
+                value?.Present?.map( (item,index) => {
                   return (
                     <li id={index}>
                       {item}

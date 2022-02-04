@@ -1,8 +1,4 @@
 import { useEffect, useState, useContext } from 'react'
-import TreeView from '@material-ui/lab/TreeView'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import TreeItem from '@material-ui/lab/TreeItem'
 
 import PropTypes from 'prop-types'
 import { Card } from 'translation-helps-rcl'
@@ -318,14 +314,7 @@ export default function RepoObsValidationCard({
       closeable={true}
       onClose={() => removeBook(bookId)}
     >
-      <TreeView aria-label="RepoCardView"
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-      >
-        <TreeItem nodeId="1" label="Resources">
-          <DenseTable cols={headers} rows={rows} />
-        </TreeItem>
-      </TreeView>
+      <DenseTable cols={headers} rows={rows} />
     </Card>
   )
 }
