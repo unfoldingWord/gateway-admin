@@ -22,16 +22,17 @@ const useStyles = makeStyles(theme => ({
 function DownloadCvResults({ active, bookId, validationResults, getAllValidationResults }) {
   const [submitDownloadCvResults, setSubmitDownloadCvResults] = useState(false)
   const [cvStatus, setCvStatus] = useState(<CircularProgress/>)
-   
+  const priorityColumn = 1
+  console.log("validation results in DownloadCvResults():", validationResults)
   useEffect(() => {
     // determine status of validation 
     let _status
     for (let i=1; i < validationResults.length; i++) {
-      if ( parseInt(validationResults[i][0]) >= 800 ) {
+      if ( parseInt(validationResults[i][priorityColumn]) >= 800 ) {
         _status = red[500]
         break // stop looking
       }
-      if ( parseInt(validationResults[i][0]) >= 600 ) {
+      if ( parseInt(validationResults[i][priorityColumn]) >= 600 ) {
         _status = yellow[500] // keep looking, don't break
       }
     }
