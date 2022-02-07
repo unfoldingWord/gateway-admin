@@ -9,8 +9,8 @@ import {
   doFetch,
   isServerDisconnected,
 } from '@utils/network'
-import { contentValidate } from '@utils/contentValidation'
-import * as localforage from '@utils/fetchCache';
+import { contentValidate, locateContent } from '@utils/contentValidation'
+import { RETRIEVING, VALIDATION_FINISHED } from '@common/constants';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,55 +24,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-async function locateContent(url, authentication) {
-  let content = await localforage.sessionStore.getItem(url)
-  if ( content !== null ) {
-    return content
-  }
 
-  let errorCode
-  let _errorMessage = null
-  let fetchError = true
-
-  // not in cache ... go get it
-  try {
-    content = await doFetch(url, authentication)
-      .then(response => {
-        if (response?.status !== 200) {
-          errorCode = response?.status
-          console.warn(`doFetch - error fetching file,
-            status code ${errorCode},
-            URL=${url},
-            response:`,response)
-          fetchError = true
-          return null
-      }
-      fetchError = false
-      return response?.data
-    })
-    if (fetchError) {
-      _errorMessage = `Fetch error`
-      content = null // just to be sure
-    }
-  } catch (e) {
-    const message = e?.message
-    const disconnected = isServerDisconnected(e)
-    console.warn(`doFetch - error fetching file,
-      message '${message}',
-      disconnected=${disconnected},
-      URL=${url},
-      error message:`, 
-      e)
-    _errorMessage = "Network error"
-    content = null
-  }
-  if ( content ) {
-    localforage.sessionStore.setItem(url,content)
-  }
-  return content
-}
-
-function ValidateListContent({ active, server, owner, repo, bookId, list, onRefresh, onContentValidation }) {
+function ValidateListContent({ active, server, owner, repo, bookId, list, onRefresh, onContentValidation, onAction }) {
   const {
     state: {
       authentication,
@@ -85,6 +38,7 @@ function ValidateListContent({ active, server, owner, repo, bookId, list, onRefr
     if ( !submitValidateListContent ) return;
 
     async function doSubmitValidateListContent() {
+      onAction && onAction(RETRIEVING)
       onContentValidation && onContentValidation(null) // set to null first
       const files = list.Present
       let results = []
@@ -108,6 +62,7 @@ function ValidateListContent({ active, server, owner, repo, bookId, list, onRefr
 
       }
       onContentValidation && onContentValidation(results) // set to results
+      onAction && onAction(VALIDATION_FINISHED)
       setSubmitValidateListContent(false)
     }
     doSubmitValidateListContent()
