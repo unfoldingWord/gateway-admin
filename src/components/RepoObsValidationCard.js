@@ -8,13 +8,14 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 import { checkTwForBook, checkTaForBook, checkObsForFiles } from '@utils/checkArticles'
-import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING } 
+import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING, VALIDATION_FINISHED } 
 from '@common/constants'
 import * as csv from '@utils/csvMaker'
 
 import DenseTable from './DenseTable'
 import { checkManifestBook } from '@common/manifests'
 import { applyIcon } from './iconHelper'
+import { cvCombine } from '@utils/contentValidation'
 
 export default function RepoObsValidationCard({
   bookId,
@@ -168,6 +169,11 @@ export default function RepoObsValidationCard({
       return // wait until we know the result
     }
 
+    // no need to update existence checks when TN is being validated
+    if ( obsTnBookErrorMsg === RETRIEVING || obsTnBookErrorMsg === VALIDATION_FINISHED ) {
+      return
+    }
+
     async function getTaWords() {
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, obsTaRepoTree)
       setObsTaErrorMsg(rc.Status ? rc.Status : null)
@@ -207,6 +213,11 @@ export default function RepoObsValidationCard({
   useEffect(() => {
     if ( obsTwlBookErrorMsg === null ) {
       return // wait until we know the result
+    }
+
+    // no need to re-evaluate TW article existence while TWL is being validated
+    if ( obsTwlBookErrorMsg === RETRIEVING || obsTwlBookErrorMsg === VALIDATION_FINISHED ) {
+      return
     }
 
     async function getTwWords() {
@@ -256,16 +267,6 @@ export default function RepoObsValidationCard({
     checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
   }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
 
-  function cvCombine( resourceId, cv, data ) {
-    if (!cv) return
-    for(let i=1; i < cv.length; i++) {
-      csv.addRow( data, 
-        [
-          resourceId,cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10]
-        ]
-      )
-    }
-  }
   const getAllValidationResults = () => {
     let hdrs =  ['ResourceId','Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
@@ -282,28 +283,44 @@ export default function RepoObsValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, obsMissing, null, setObsCv, obsCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, 
+        obsMissing, null, setObsCv, obsCv, getAllValidationResults, setObsBookErrorMsg,
+      ) 
     ],
     ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha, null, 'tn_OBS.tsv', setObsTnCv, obsTnCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha, 
+        null, 'tn_OBS.tsv', setObsTnCv, obsTnCv, getAllValidationResults, setObsTnBookErrorMsg,
+      ) 
     ],
     ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeStatus || obsTwlBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest, obsTwlManifestSha, null, 'twl_OBS.tsv', setObsTwlCv, obsTwlCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest, obsTwlManifestSha, 
+        null, 'twl_OBS.tsv', setObsTwlCv, obsTwlCv, getAllValidationResults, setObsTwlBookErrorMsg,
+      ) 
     ],
     ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeStatus || obsTqBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha, null, 'tq_OBS.tsv', setObsTqCv, obsTqCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha, 
+        null, 'tq_OBS.tsv', setObsTqCv, obsTqCv, getAllValidationResults, setObsTqBookErrorMsg,
+      ) 
     ],
     ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeStatus || obsTaErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha, obsTaMissing, null, setObsTaCv, obsTaCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha, obsTaMissing, 
+        null, setObsTaCv, obsTaCv, getAllValidationResults, setObsTaErrorMsg
+      ) 
     ],
     ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeStatus || obsTwErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha, obsTwMissing, null, setObsTwCv, obsTwCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha, obsTwMissing, 
+        null, setObsTwCv, obsTwCv, getAllValidationResults, setObsTwErrorMsg,
+      ) 
     ],
     ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeStatus || obsSnBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha, null, 'sn_OBS.tsv', setObsSnCv, obsSnCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha, 
+        null, 'sn_OBS.tsv', setObsSnCv, obsSnCv, getAllValidationResults, setObsSnBookErrorMsg,
+      ) 
     ],
     ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeStatus || obsSqBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest, obsSqManifestSha, null, 'sq_OBS.tsv', setObsSqCv, obsSqCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest, obsSqManifestSha, 
+        null, 'sq_OBS.tsv', setObsSqCv, obsSqCv, getAllValidationResults, setObsSqBookErrorMsg,
+      ) 
     ],
   ]
 

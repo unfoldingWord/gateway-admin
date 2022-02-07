@@ -1,8 +1,73 @@
 /*
   Commmon code to run Content Validation process.
 */
+import {
+  doFetch,
+  isServerDisconnected,
+} from '@utils/network'
 import * as csv from './csvMaker'
 import * as cv from 'uw-content-validation'
+import * as localforage from '@utils/fetchCache';
+
+
+export function cvCombine( resourceId, cv, data ) {
+  if (!cv) return
+  for(let i=1; i < cv.length; i++) {
+    csv.addRow( data, 
+      [
+        resourceId,cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10]
+      ]
+    )
+  }
+}
+
+export async function locateContent(url, authentication) {
+  let content = await localforage.sessionStore.getItem(url)
+  if ( content !== null ) {
+    return content
+  }
+
+  let errorCode
+  let _errorMessage = null
+  let fetchError = true
+
+  // not in cache ... go get it
+  try {
+    content = await doFetch(url, authentication)
+      .then(response => {
+        if (response?.status !== 200) {
+          errorCode = response?.status
+          console.warn(`doFetch - error fetching file,
+            status code ${errorCode},
+            URL=${url},
+            response:`,response)
+          fetchError = true
+          return null
+      }
+      fetchError = false
+      return response?.data
+    })
+    if (fetchError) {
+      _errorMessage = `Fetch error`
+      content = null // just to be sure
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`doFetch - error fetching file,
+      message '${message}',
+      disconnected=${disconnected},
+      URL=${url},
+      error message:`, 
+      e)
+    _errorMessage = "Network error"
+    content = null
+  }
+  if ( content ) {
+    localforage.sessionStore.setItem(url,content)
+  }
+  return content
+}
  
 function processNoticeList( notices, filename ) {
   let hdrs =  ['Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];

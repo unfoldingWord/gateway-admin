@@ -59,6 +59,7 @@ export const SEE_TWL_ERROR = "See TWL error"
 export const NO_TN_REPO = "No TN Repo"
 export const SEE_TN_ERROR = "See TN error"
 export const ALL_PRESENT = "All Present"
+export const VALIDATION_FINISHED = "Validation Finished"
 
 // States for hook refreshing
 export const ALL = "ALL" // do all of them

@@ -10,12 +10,13 @@ import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 import * as csv from '@utils/csvMaker'
-import { WORKING, OK, REPO_NOT_FOUND, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_TWL_REPO, SEE_TWL_ERROR, NO_TN_REPO, SEE_TN_ERROR } 
+import { WORKING, OK, NO_TWL_REPO, SEE_TWL_ERROR, SEE_TN_ERROR, RETRIEVING, VALIDATION_FINISHED } 
 from '@common/constants'
 
 import DenseTable from './DenseTable'
 import { checkManifestBook } from '@common/manifests'
 import { applyIcon } from './iconHelper'
+import { cvCombine } from '@utils/contentValidation'
 
 export default function RepoValidationCard({
   bookId,
@@ -128,8 +129,13 @@ export default function RepoValidationCard({
       return // wait until we know the result
     }
 
+    // no need to re-evaluate TW articles when twl is validating
+    if ( twlBookErrorMsg === RETRIEVING || twlBookErrorMsg === VALIDATION_FINISHED ) {
+      return
+    }
+
     async function getTwWords() {
-      setTwErrorMsg('Checking TWL')
+      setTwErrorMsg(WORKING)
       const rc = await checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree)
       setTwErrorMsg(rc.Status ? rc.Status : null)
       const lists = { Present: rc.Present, Absent: rc.Absent}
@@ -172,8 +178,13 @@ export default function RepoValidationCard({
       return // wait until we know the result
     }
 
+    // no need to re-evaluate TA articles when TN is being validated
+    if ( tnBookErrorMsg === VALIDATION_FINISHED || tnBookErrorMsg === RETRIEVING ) {
+      return
+    }
+
     async function getTaWords() {
-      setTaErrorMsg('Checking TA')
+      setTaErrorMsg(WORKING)
       const rc = await checkTaForBook(authentication, bookId, languageId, owner, server, taRepoTree)
       setTaErrorMsg(rc.Status ? rc.Status : null)
       const lists = { Present: rc.Present, Absent: rc.Absent}
@@ -269,16 +280,6 @@ export default function RepoValidationCard({
     checkManifestBook(bookId, snRepoTreeManifest, snRepoTree, setSnBookErrorMsg, setSnFilename)
   }, [bookId, snRepoTree, snRepoTreeManifest])
 
-  function cvCombine( resourceId, cv, data ) {
-    if (!cv) return
-    for(let i=1; i < cv.length; i++) {
-      csv.addRow( data, 
-        [
-          resourceId,cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10]
-        ]
-      )
-    }
-  }
   const getAllValidationResults = () => {
     let hdrs =  ['ResourceId','Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
     let data = [];
@@ -307,31 +308,49 @@ export default function RepoValidationCard({
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Literal Translation", `${_ltRepo}`, ltRepoTreeStatus || ltBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha, null, ltFilename, setLtCv, ltCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,_ltRepo,ltRepoTreeStatus,ltBookErrorMsg, ltRepoTreeManifest, ltManifestSha, 
+        null, ltFilename, setLtCv, ltCv, getAllValidationResults, setLtBookErrorMsg,
+      ) 
     ],
     ["Simplified Translation", `${_stRepo}`, stRepoTreeStatus || stBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha, null, stFilename, setStCv, stCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,_stRepo,stRepoTreeStatus,stBookErrorMsg, stRepoTreeManifest, stManifestSha, 
+        null, stFilename, setStCv, stCv, getAllValidationResults, setStBookErrorMsg,
+      ) 
     ],
     ["Translation Notes", `${languageId}_tn`, tnRepoTreeStatus || tnBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest, tnManifestSha, null, tnFilename, setTnCv, tnCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tn`,tnRepoTreeStatus,tnBookErrorMsg, tnRepoTreeManifest, tnManifestSha, 
+        null, tnFilename, setTnCv, tnCv, getAllValidationResults, setTnBookErrorMsg,
+      ) 
     ],
     ["Translation Word List", `${languageId}_twl`, twlRepoTreeStatus || twlBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest, twlManifestSha, null, twlFilename, setTwlCv, twlCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_twl`,twlRepoTreeStatus,twlBookErrorMsg, twlRepoTreeManifest, twlManifestSha, 
+        null, twlFilename, setTwlCv, twlCv, getAllValidationResults, setTwlBookErrorMsg,
+      ) 
     ],
     ["Translation Words", `${languageId}_tw`, twRepoTreeStatus || twErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest, twManifestSha, twMissing, null, setTwCv, twCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,twRepoTreeStatus,twErrorMsg, twRepoTreeManifest, twManifestSha, twMissing, 
+        null, setTwCv, twCv, getAllValidationResults, setTwErrorMsg,
+      ) 
     ],
     ["Translation Academy", `${languageId}_ta`, taRepoTreeStatus || taErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest, taManifestSha, taMissing, null, setTaCv, taCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,taRepoTreeStatus,taErrorMsg, taRepoTreeManifest, taManifestSha, taMissing, 
+        null, setTaCv, taCv, getAllValidationResults, setTaErrorMsg,
+      ) 
     ],
     ["Translation Questions", `${languageId}_tq`, tqRepoTreeStatus || tqBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest, tqManifestSha, null, tqFilename, setTqCv, tqCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tq`,tqRepoTreeStatus,tqBookErrorMsg, tqRepoTreeManifest, tqManifestSha, 
+        null, tqFilename, setTqCv, tqCv, getAllValidationResults, setTqBookErrorMsg,
+      ) 
     ],
     ["Study Questions", `${languageId}_sq`, sqRepoTreeStatus || sqBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest, sqManifestSha, null, sqFilename, setSqCv, sqCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_sq`,sqRepoTreeStatus,sqBookErrorMsg, sqRepoTreeManifest, sqManifestSha, 
+        null, sqFilename, setSqCv, sqCv, getAllValidationResults, setSqBookErrorMsg,
+      ) 
     ],
     ["Study Notes", `${languageId}_sn`, snRepoTreeStatus || snBookErrorMsg, 
-      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest, snManifestSha, null, snFilename, setSnCv, snCv, getAllValidationResults) 
+      applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_sn`,snRepoTreeStatus,snBookErrorMsg, snRepoTreeManifest, snManifestSha, 
+        null, snFilename, setSnCv, snCv, getAllValidationResults, setSnBookErrorMsg,
+      ) 
     ],
   ]
 

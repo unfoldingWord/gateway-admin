@@ -10,6 +10,7 @@ import {
   isServerDisconnected,
 } from '@utils/network'
 import { contentValidate } from '@utils/contentValidation'
+import { RETRIEVING, VALIDATION_FINISHED } from '@common/constants';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function ValidateContent({ active, server, owner, repo, bookId, filename, onRefresh, onContentValidation }) {
+function ValidateContent({ active, server, owner, repo, bookId, filename, onRefresh, onContentValidation, onAction }) {
   const {
     state: {
       authentication,
@@ -44,6 +45,7 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
       let url = `${server}/${owner}/${repo}/raw/branch/master/${filename}`
     
       try {
+        onAction && onAction(RETRIEVING)
         content = await doFetch(url, authentication)
           .then(response => {
             if (response?.status !== 200) {
@@ -59,7 +61,7 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
           return response?.data
         })
         if (fetchError) {
-          _errorMessage = `Fetch error`
+          _errorMessage = `Error retrieving ${filename}`
           content = null // just to be sure
         }
       } catch (e) {
@@ -71,7 +73,7 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
           URL=${url},
           error message:`, 
           e)
-        _errorMessage = "Network error"
+        _errorMessage = `Network error: ${message}`
         content = null
       }
 
@@ -80,6 +82,7 @@ function ValidateContent({ active, server, owner, repo, bookId, filename, onRefr
         onContentValidation && onContentValidation(null) // set to null first
         const data = await contentValidate(owner, repo, bookId.toUpperCase(), filename, content)
         onContentValidation && onContentValidation(data) // set to results
+        onAction && onAction(VALIDATION_FINISHED)
       }
       
       setSubmitValidateContent(false)
