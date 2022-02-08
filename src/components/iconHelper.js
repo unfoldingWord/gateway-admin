@@ -25,7 +25,7 @@ import DownloadCvResults from './DownloadCvResults'
 export function applyIcon(server,owner,bookId,
   refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
   missingList,filename,setContentValidation,validationResults,
-  getAllValidationResults,setAction,
+  setAction,
 ) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
@@ -48,7 +48,6 @@ export function applyIcon(server,owner,bookId,
     return (
       <DownloadCvResults active={true} 
         validationResults={validationResults}
-        getAllValidationResults={getAllValidationResults}
         bookId={bookId}
       />
     )
