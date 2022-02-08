@@ -68,6 +68,28 @@ export async function locateContent(url, authentication) {
   }
   return content
 }
+
+// a simple filter to discard certain rows
+// returns true to include and false to exclude
+function cvFilter(rowData, filename) {
+  if ( String(rowData.priority) === '20' ) {
+    // discard these since they only state that
+    // all linked documents are not being processed
+    return false
+  }
+  if ( filename.startsWith("tq")
+      && String(rowData.priority) === '119' 
+      && String(rowData.fieldName) === 'Quote') {
+    // discard - TQ does not use the Quote field
+    return false
+  }
+  // to handle this false error for Spanish
+  // Unexpected ¿ character at start of line
+  if ( String(rowData.message).startsWith('Unexpected ¿') ) {
+    return false
+  }
+  return true
+}
  
 function processNoticeList( notices, filename ) {
   let hdrs =  ['Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
@@ -75,19 +97,22 @@ function processNoticeList( notices, filename ) {
   data.push(hdrs);
   Object.keys(notices).forEach ( key => {
     const rowData = notices[key];
-    csv.addRow( data, [
-      filename,
-      String(rowData.priority),
-      String(rowData.C || ""),
-      String(rowData.V || ""),
-      String(rowData.lineNumber || ""),
-      String(rowData.rowID || ""),
-      String(rowData.fieldName || ""),
-      String(rowData.characterIndex || ""),
-      String(rowData.excerpt || ""),
-      String(rowData.message),
-      String(rowData.location),
-      ])
+    const includeFlag = cvFilter(rowData, filename)
+    if ( includeFlag ) {
+      csv.addRow( data, [
+        filename,
+        String(rowData.priority),
+        String(rowData.C || ""),
+        String(rowData.V || ""),
+        String(rowData.lineNumber || ""),
+        String(rowData.rowID || ""),
+        String(rowData.fieldName || ""),
+        String(rowData.characterIndex || ""),
+        String(rowData.excerpt || ""),
+        String(rowData.message),
+        String(rowData.location),
+        ])
+    }
   });
 
   return data;
@@ -143,7 +168,6 @@ export async function contentValidate(username, repo, bookID, filename, filecont
     disableAllLinkFetchingFlag : true,
   }
 
-  // checkMarkdownText(username, languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
   let nl
   if ( usfmCodes.includes(resourceCode) ) { 
     const rawResults = await cvFunction(username, langId, resourceCode, bookID, filename, filecontent, '', options)
@@ -163,6 +187,3 @@ export async function contentValidate(username, repo, bookID, filename, filecont
   return data;
 }
 
-/*
- const rawResults = await checkUSFMText(username, languageCode, repoCode, bookID, filename, USFMText, givenLocation, checkingOptions);
-*/
