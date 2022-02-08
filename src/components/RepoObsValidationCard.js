@@ -267,59 +267,46 @@ export default function RepoObsValidationCard({
     checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
   }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
 
-  const getAllValidationResults = () => {
-    let hdrs =  ['ResourceId','Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
-    let data = [];
-    data.push(hdrs);
-    cvCombine('OBS',obsCv,data)
-    cvCombine('OBS-TN',obsTnCv,data)
-    cvCombine('OBS-TWL',obsTwlCv,data)
-    cvCombine('OBS-TQ',obsTqCv,data)
-    cvCombine('OBS-SQ',obsSqCv,data)
-    cvCombine('OBS-SN',obsSnCv,data)
-    return csv.toCSV(data)
-  }
-
   const headers = ["Resource", "Repo", "Status", "Action"]
   const rows = [
     ["Open Bible Stories (OBS)", `${languageId}_obs`, obsRepoTreeStatus || obsBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs`,obsRepoTreeStatus,obsBookErrorMsg, obsRepoTreeManifest, obsManifestSha, 
-        obsMissing, null, setObsCv, obsCv, getAllValidationResults, setObsBookErrorMsg,
+        obsMissing, null, setObsCv, obsCv, setObsBookErrorMsg,
       ) 
     ],
     ["OBS Translation Notes", `${languageId}_obs-tn`, obsTnRepoTreeStatus || obsTnBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tn`,obsTnRepoTreeStatus,obsTnBookErrorMsg, obsTnRepoTreeManifest, obsTnManifestSha, 
-        null, 'tn_OBS.tsv', setObsTnCv, obsTnCv, getAllValidationResults, setObsTnBookErrorMsg,
+        null, 'tn_OBS.tsv', setObsTnCv, obsTnCv, setObsTnBookErrorMsg,
       ) 
     ],
     ["OBS Translation Word List", `${languageId}_obs-twl`, obsTwlRepoTreeStatus || obsTwlBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-twl`,obsTwlRepoTreeStatus,obsTwlBookErrorMsg, obsTwlRepoTreeManifest, obsTwlManifestSha, 
-        null, 'twl_OBS.tsv', setObsTwlCv, obsTwlCv, getAllValidationResults, setObsTwlBookErrorMsg,
+        null, 'twl_OBS.tsv', setObsTwlCv, obsTwlCv, setObsTwlBookErrorMsg,
       ) 
     ],
     ["OBS Translation Questions", `${languageId}_obs-tq`, obsTqRepoTreeStatus || obsTqBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-tq`,obsTqRepoTreeStatus,obsTqBookErrorMsg, obsTqRepoTreeManifest, obsTqManifestSha, 
-        null, 'tq_OBS.tsv', setObsTqCv, obsTqCv, getAllValidationResults, setObsTqBookErrorMsg,
+        null, 'tq_OBS.tsv', setObsTqCv, obsTqCv, setObsTqBookErrorMsg,
       ) 
     ],
     ["OBS Translation Academy", `${languageId}_ta`, obsTaRepoTreeStatus || obsTaErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_ta`,obsTaRepoTreeStatus,obsTaErrorMsg, obsTaRepoTreeManifest, obsTaManifestSha, obsTaMissing, 
-        null, setObsTaCv, obsTaCv, getAllValidationResults, setObsTaErrorMsg
+        null, setObsTaCv, obsTaCv, setObsTaErrorMsg
       ) 
     ],
     ["OBS Translation Words", `${languageId}_tw`, obsTwRepoTreeStatus || obsTwErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_tw`,obsTwRepoTreeStatus,obsTwErrorMsg, obsTwRepoTreeManifest, obsTwManifestSha, obsTwMissing, 
-        null, setObsTwCv, obsTwCv, getAllValidationResults, setObsTwErrorMsg,
+        null, setObsTwCv, obsTwCv, setObsTwErrorMsg,
       ) 
     ],
     ["OBS Study Notes", `${languageId}_obs-sn`, obsSnRepoTreeStatus || obsSnBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sn`,obsSnRepoTreeStatus,obsSnBookErrorMsg, obsSnRepoTreeManifest, obsSnManifestSha, 
-        null, 'sn_OBS.tsv', setObsSnCv, obsSnCv, getAllValidationResults, setObsSnBookErrorMsg,
+        null, 'sn_OBS.tsv', setObsSnCv, obsSnCv, setObsSnBookErrorMsg,
       ) 
     ],
     ["OBS Study Questions", `${languageId}_obs-sq`, obsSqRepoTreeStatus || obsSqBookErrorMsg, 
       applyIcon(server,owner,bookId,refresh,setRefresh,`${languageId}_obs-sq`,obsSqRepoTreeStatus,obsSqBookErrorMsg, obsSqRepoTreeManifest, obsSqManifestSha, 
-        null, 'sq_OBS.tsv', setObsSqCv, obsSqCv, getAllValidationResults, setObsSqBookErrorMsg,
+        null, 'sq_OBS.tsv', setObsSqCv, obsSqCv, setObsSqBookErrorMsg,
       ) 
     ],
   ]

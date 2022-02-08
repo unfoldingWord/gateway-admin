@@ -7,15 +7,14 @@ import {
 } from '@utils/network'
 import * as csv from './csvMaker'
 import * as cv from 'uw-content-validation'
-import * as localforage from '@utils/fetchCache';
+import * as localforage from '@utils/fetchCache'
 
-
-export function cvCombine( resourceId, cv, data ) {
+export function cvCombine( cv, data ) {
   if (!cv) return
   for(let i=1; i < cv.length; i++) {
     csv.addRow( data, 
       [
-        resourceId,cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10]
+        cv[i][0],cv[i][1],cv[i][2],cv[i][3],cv[i][4],cv[i][5],cv[i][6],cv[i][7],cv[i][8],cv[i][9],cv[i][10],cv[i][11]
       ]
     )
   }
@@ -77,7 +76,7 @@ function cvFilter(rowData, filename) {
     // all linked documents are not being processed
     return false
   }
-  if ( filename.startsWith("tq")
+  if ( (filename.startsWith("tq") || filename.startsWith("sq") )
       && String(rowData.priority) === '119' 
       && String(rowData.fieldName) === 'Quote') {
     // discard - TQ does not use the Quote field
@@ -88,10 +87,15 @@ function cvFilter(rowData, filename) {
   if ( String(rowData.message).startsWith('Unexpected ¿') ) {
     return false
   }
+  // to handle this false error for Spanish
+  // Unexpected ¡ character at start of line
+  if ( String(rowData.message).startsWith('Unexpected ¡') ) {
+    return false
+  }
   return true
 }
  
-function processNoticeList( notices, filename ) {
+function processNoticeList( notices, filename, resourceCode ) {
   let hdrs =  ['Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
   let data = [];
   data.push(hdrs);
@@ -100,6 +104,7 @@ function processNoticeList( notices, filename ) {
     const includeFlag = cvFilter(rowData, filename)
     if ( includeFlag ) {
       csv.addRow( data, [
+        resourceCode,
         filename,
         String(rowData.priority),
         String(rowData.C || ""),
@@ -155,6 +160,43 @@ function selectCvFunction(resourceCode) {
   
 }
 
+function getAllResourceCodes() {
+  return [
+    'OBS',
+    'TN9',
+    'TN',
+    'OBS-TN',
+    'SN',
+    'OBS-SN',
+    'TQ',
+    'OBS-TQ',
+    'SQ',
+    'OBS-SQ',
+    'TWL',
+    'OBS-TWL',
+    'TA',
+    'TW',
+    'ULT',
+    'GLT',
+    'UST',
+    'GST',
+  ]
+}
+
+export async function getBpValidationResults(bookId) {
+  const book = bookId.toUpperCase()
+  let hdrs =  ['ResourceId','Filename','Priority','Chapter','Verse','Line','Row ID','Details','Char Pos','Excerpt','Message','Location'];
+  let data = [];
+  data.push(hdrs);
+
+  const resourceTypes = getAllResourceCodes()
+  for (let i=0; i<resourceTypes.length; i++) {
+    const cvresults = await localforage.sessionStore.getItem(`CV_${resourceTypes[i]}_${book}`)
+    cvCombine(cvresults,data)
+  }
+  return csv.toCSV(data)
+}
+
 export async function contentValidate(username, repo, bookID, filename, filecontent) {
   const langId = repo.split("_")[0]
   let resourceCode = repo.split("_")[1].toUpperCase()
@@ -183,7 +225,10 @@ export async function contentValidate(username, repo, bookID, filename, filecont
     nl = rawResults.noticeList;
   }
 
-  let data = processNoticeList(nl, filename);
+  let data = processNoticeList(nl, filename, resourceCode);
+  // Store in database too
+  localforage.sessionStore.setItem(`CV_${resourceCode}_${bookID}`,data)
+
   return data;
 }
 

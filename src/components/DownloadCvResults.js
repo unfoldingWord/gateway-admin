@@ -5,6 +5,7 @@ import { green, red, yellow, grey } from '@material-ui/core/colors'
 import { CircularProgress, Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import * as cvs from '@utils/csvMaker'
+import { getBpValidationResults } from '@utils/contentValidation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,7 +47,8 @@ function DownloadCvResults({ active, bookId, validationResults, getAllValidation
     if ( !submitDownloadCvResults ) return;
 
     async function doSubmitDownloadCvResults() {
-      const results = getAllValidationResults()
+      //const results = getAllValidationResults()
+      const results = await getBpValidationResults(bookId)
       let ts = new Date().toISOString();
       let fn = 'gaValidationResults-' + bookId + '-' + ts + '.csv';
 
