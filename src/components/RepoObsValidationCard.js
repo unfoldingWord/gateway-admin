@@ -8,7 +8,7 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import React from 'react';
 import { checkTwForBook, checkTaForBook, checkObsForFiles } from '@utils/checkArticles'
-import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING, VALIDATION_FINISHED } 
+import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING, VALIDATION_FINISHED, OBS_TQ, OBS_TWL, OBS_TN, OBS_SN, OBS_SQ } 
 from '@common/constants'
 import * as csv from '@utils/csvMaker'
 
@@ -144,21 +144,21 @@ export default function RepoObsValidationCard({
   -- OBS TN
   */
   useEffect(() => {
-    checkManifestBook(bookId, obsTnRepoTreeManifest, obsTnRepoTree, setObsTnBookErrorMsg)
+    checkManifestBook(bookId, obsTnRepoTreeManifest, obsTnRepoTree, setObsTnBookErrorMsg, null, OBS_TN)
   }, [bookId, obsTnRepoTree, obsTnRepoTreeManifest])
 
   /*
   -- OBS TWL
   */
   useEffect(() => {
-    checkManifestBook(bookId, obsTwlRepoTreeManifest, obsTwlRepoTree, setObsTwlBookErrorMsg)
+    checkManifestBook(bookId, obsTwlRepoTreeManifest, obsTwlRepoTree, setObsTwlBookErrorMsg, null, OBS_TWL)
   }, [bookId, obsTwlRepoTree, obsTwlRepoTreeManifest])
 
   /*
   -- OBS TQ
   */
   useEffect(() => {
-    checkManifestBook(bookId, obsTqRepoTreeManifest, obsTqRepoTree, setObsTqBookErrorMsg)
+    checkManifestBook(bookId, obsTqRepoTreeManifest, obsTqRepoTree, setObsTqBookErrorMsg, null, OBS_TQ)
   }, [bookId, obsTqRepoTree, obsTqRepoTreeManifest])
 
   /*
@@ -257,14 +257,14 @@ export default function RepoObsValidationCard({
   -- OBS SN
   */
   useEffect(() => {
-    checkManifestBook(bookId, obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg)
+    checkManifestBook(bookId, obsSnRepoTreeManifest, obsSnRepoTree, setObsSnBookErrorMsg, null, OBS_SN)
   }, [bookId, obsSnRepoTree, obsSnRepoTreeManifest])
 
   /*
   -- OBS SQ
   */
   useEffect(() => {
-    checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg)
+    checkManifestBook(bookId, obsSqRepoTreeManifest, obsSqRepoTree, setObsSqBookErrorMsg, null, OBS_SQ)
   }, [bookId, obsSqRepoTree, obsSqRepoTreeManifest])
 
   const headers = ["Resource", "Repo", "Status", "Action"]

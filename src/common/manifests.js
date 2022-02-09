@@ -1,8 +1,18 @@
-import { OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_MANIFEST_FOUND } 
+import { 
+  OK, FILE_NOT_FOUND, BOOK_NOT_IN_MANIFEST, NO_MANIFEST_FOUND, 
+  TQ,
+  MUST_BE_TSV_FORMAT,
+  SQ,
+  SN,
+  OBS_TQ,
+  OBS_SQ,
+  OBS_SN,
+  OBS_TN,
+} 
 from '@common/constants'
 
 
-export function checkManifestBook(bookId, manifest, repoTree, setError, setFilename) {
+export function checkManifestBook(bookId, manifest, repoTree, setError, setFilename, rid) {
   let projects = []
   if ( manifest ) {
     if ( manifest.projects ) {
@@ -26,6 +36,31 @@ export function checkManifestBook(bookId, manifest, repoTree, setError, setFilen
       break
     }
   }
+
+  // Special handling for formats that now should be TSV
+  // but formerly were markdown. So here I examine
+  // the value of pathToBook and verify it is correct
+  // This is done for the following repos:
+  // tq (fex: path: './gen' and should be tq_GEN.tsv)
+  // sq (should be sq_TIT.tsv)
+  // sn (should be sn_TIT.tsv)
+  // obs-tn (should be tn_OBS.tsv)
+  // obs-tq (should be tq_OBS.tsv)
+  // obs-sq (should be sq_OBS.tsv)
+  // obs-sn (should be sn_OBS.tsv)
+  if ( isBookIdInManfest && rid && [TQ,SQ,SN,OBS_TN,OBS_TQ,OBS_SQ,OBS_SN].includes(rid) ) {
+    let _rid = rid
+    if ( [OBS_TN,OBS_TQ,OBS_SQ,OBS_SN].includes(rid) ) {
+      // only need the last two characters
+      _rid = rid.substring(rid.length - 2)
+    }
+    if ( !pathToBook.endsWith(`${_rid}_${bookId.toUpperCase()}.tsv`) ) {
+      setError(MUST_BE_TSV_FORMAT)
+      setFilename && setFilename(null)
+      return
+    }
+  }
+
 
   // if project id exists, then does the file actually exist?
   if ( isBookIdInManfest ) {

@@ -10,7 +10,7 @@ import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import { checkTwForBook, checkTaForBook } from '@utils/checkArticles'
 import * as csv from '@utils/csvMaker'
-import { WORKING, OK, NO_TWL_REPO, SEE_TWL_ERROR, SEE_TN_ERROR, RETRIEVING, VALIDATION_FINISHED } 
+import { WORKING, OK, NO_TWL_REPO, SEE_TWL_ERROR, SEE_TN_ERROR, RETRIEVING, VALIDATION_FINISHED, TQ, SQ, SN, TN, TWL, LT, ST } 
 from '@common/constants'
 
 import DenseTable from './DenseTable'
@@ -223,7 +223,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg, setTnFilename)
+    checkManifestBook(bookId, tnRepoTreeManifest, tnRepoTree, setTnBookErrorMsg, setTnFilename, TN)
   }, [bookId, tnRepoTree, tnRepoTreeManifest])
 
   /*
@@ -232,7 +232,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, twlRepoTreeManifest, twlRepoTree, setTwlBookErrorMsg, setTwlFilename)
+    checkManifestBook(bookId, twlRepoTreeManifest, twlRepoTree, setTwlBookErrorMsg, setTwlFilename, TWL)
   }, [bookId, twlRepoTree, twlRepoTreeManifest])
 
   /*
@@ -241,7 +241,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, ltRepoTreeManifest, ltRepoTree, setLtBookErrorMsg, setLtFilename)
+    checkManifestBook(bookId, ltRepoTreeManifest, ltRepoTree, setLtBookErrorMsg, setLtFilename, LT)
   }, [bookId, ltRepoTree, ltRepoTreeManifest])
 
   /*
@@ -250,7 +250,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, stRepoTreeManifest, stRepoTree, setStBookErrorMsg, setStFilename)
+    checkManifestBook(bookId, stRepoTreeManifest, stRepoTree, setStBookErrorMsg, setStFilename, ST)
   }, [bookId, stRepoTree, stRepoTreeManifest])
 
   /*
@@ -259,7 +259,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, tqRepoTreeManifest, tqRepoTree, setTqBookErrorMsg, setTqFilename)
+    checkManifestBook(bookId, tqRepoTreeManifest, tqRepoTree, setTqBookErrorMsg, setTqFilename, TQ)
   }, [bookId, tqRepoTree, tqRepoTreeManifest])
 
   /*
@@ -268,7 +268,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, sqRepoTreeManifest, sqRepoTree, setSqBookErrorMsg, setSqFilename)
+    checkManifestBook(bookId, sqRepoTreeManifest, sqRepoTree, setSqBookErrorMsg, setSqFilename, SQ)
   }, [bookId, sqRepoTree, sqRepoTreeManifest])
 
   /*
@@ -277,7 +277,7 @@ export default function RepoValidationCard({
   -- 
   */
   useEffect(() => {
-    checkManifestBook(bookId, snRepoTreeManifest, snRepoTree, setSnBookErrorMsg, setSnFilename)
+    checkManifestBook(bookId, snRepoTreeManifest, snRepoTree, setSnBookErrorMsg, setSnFilename, SN)
   }, [bookId, snRepoTree, snRepoTreeManifest])
 
   let _ltRepo = languageId
