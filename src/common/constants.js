@@ -60,6 +60,7 @@ export const NO_TN_REPO = "No TN Repo"
 export const SEE_TN_ERROR = "See TN error"
 export const ALL_PRESENT = "All Present"
 export const VALIDATION_FINISHED = "Validation Finished"
+export const MUST_BE_TSV_FORMAT = "Must be TSV Format"
 
 // States for hook refreshing
 export const ALL = "ALL" // do all of them
