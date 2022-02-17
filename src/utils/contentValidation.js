@@ -127,7 +127,7 @@ function selectCvFunction(resourceCode) {
   let cvFunction
   switch (resourceCode) {
     case 'OBS':
-      return cvFunction = cv.checkMarkdownText
+      return cvFunction = cv.checkMarkdownFileContents
     case 'TN9':
       return cvFunction = cv.checkDeprecatedTN_TSV9Table
     case 'TN':
