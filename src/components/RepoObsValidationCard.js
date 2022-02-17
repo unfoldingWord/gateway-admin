@@ -7,7 +7,7 @@ import { AuthContext } from '@context/AuthContext'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import React from 'react';
-import { checkTwForBook, checkTaForBook, checkObsForFiles } from '@utils/checkArticles'
+import { checkTwForBook, checkTaForBook, checkObsDocs } from '@utils/checkArticles'
 import { WORKING, OK, SEE_TWL_ERROR, NO_TWL_REPO, SEE_TN_ERROR, NO_TN_REPO, RETRIEVING, VALIDATION_FINISHED, OBS_TQ, OBS_TWL, OBS_TN, OBS_SN, OBS_SQ } 
 from '@common/constants'
 import * as csv from '@utils/csvMaker'
@@ -15,7 +15,7 @@ import * as csv from '@utils/csvMaker'
 import DenseTable from './DenseTable'
 import { checkManifestBook } from '@common/manifests'
 import { applyIcon } from './iconHelper'
-import { cvCombine } from '@utils/contentValidation'
+// import { cvCombine } from '@utils/contentValidation'
 
 export default function RepoObsValidationCard({
   bookId,
@@ -120,14 +120,12 @@ export default function RepoObsValidationCard({
   useEffect(() => {
         
     async function checkObs() {
-      setObsBookErrorMsg(RETRIEVING)
-      const rc = await checkObsForFiles(authentication, languageId, owner, server)
-      setObsBookErrorMsg(rc.Status)
-      // observe that obs files are retrieved and are in the Content
+      setObsBookErrorMsg(WORKING)
+      const rc = await checkObsDocs(obsRepoTree)
+      setObsBookErrorMsg(rc.Status ? rc.Status : null)
       const lists = { 
         Present: rc.Present, 
         Absent: rc.Absent, 
-        Content: rc.Content,
         Status: rc.Status,
       }
       setObsMissing(lists)

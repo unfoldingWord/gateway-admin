@@ -1,6 +1,6 @@
 import mistql from 'mistql'
 import {
-  HTTP_GET_MAX_WAIT_TIME,
+  HTTP_GET_MAX_WAIT_TIME, OBS,
 } from '@common/constants'
 import {
   doFetch,
@@ -86,7 +86,7 @@ export async function checkTwForBook(authentication, bookId, languageId, owner, 
     if ( _absent.length > 0 ) {
       _errorMessage = `${_absent.length} Missing`
     } else {
-      _errorMessage = OK
+      _errorMessage = ALL_PRESENT
     }
   }
   return {Book: bookId, Present: _present, Absent: _absent, Status: _errorMessage}
@@ -189,7 +189,7 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     if ( _absent.length > 0 ) {
       _errorMessage = `${_absent.length} Missing`
     } else {
-      _errorMessage = OK
+      _errorMessage = ALL_PRESENT
     }
   }
   return {Book: bookId, Present: _present, Absent: _absent, Status: _errorMessage}
@@ -265,4 +265,28 @@ export async function checkObsForFiles(authentication, languageId, owner, server
     Status: _errorMessage,
     Content: _content,
   }
+}
+
+export async function checkObsDocs(obsRepoTree) {
+  let _errorMessage = null
+  let _absent = []
+  let _present = []
+  
+  const obsfiles  = Object.keys(OBS_FILENAMES);
+  for (let i=0; i<obsfiles.length; i++) {
+    const obspath = "content/" + OBS_FILENAMES[obsfiles[i]]
+    const query = `@ | filter path == "${obspath}"`
+    let results = mistql.query(query, obsRepoTree);
+    if ( results.length === 0 ) { 
+      _absent.push(obspath)
+    } else {
+      _present.push(obspath)
+    }
+  }
+  if ( _absent.length > 0 ) {
+    _errorMessage = `${_absent.length} Missing`
+  } else {
+    _errorMessage = ALL_PRESENT
+  }
+  return {Book: 'obs', Present: _present, Absent: _absent, Status: _errorMessage}
 }

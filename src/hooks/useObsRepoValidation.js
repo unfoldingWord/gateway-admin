@@ -16,7 +16,7 @@ export default function useObsRepoValidation({authentication, owner, server, lan
       setValues({obsRepoTree: null, obsRepoTreeManifest: null, obsRepoTreeStatus: WORKING})
       let _repo = languageId + "_obs"
 
-      const url = `${server}/api/v1/repos/${owner}/${_repo}/git/trees/master?recursive=false&per_page=999999`
+      const url = `${server}/api/v1/repos/${owner}/${_repo}/git/trees/master?recursive=true&per_page=999999`
       const {RepoTree: _tree, Manifest: _manifest, ManifestSha: _manifestSha, RepoTreeStatus: _errorMesage} =  await getTreesManifest(authentication, url)
       setValues({obsRepoTree: _tree, obsRepoTreeManifest: _manifest, obsManifestSha: _manifestSha, obsRepoTreeStatus: _errorMesage})
     }

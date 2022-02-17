@@ -95,7 +95,7 @@ export function applyIcon(server,owner,bookId,
     )
   }
 
-  if ( bookErr === OK && (repo.endsWith("ta") || repo.endsWith("tw")) ) {
+  if ( bookErr === ALL_PRESENT && (repo.endsWith("ta") || repo.endsWith("tw") || repo.endsWith("obs")) ) {
     // Note: the content to be validated will be
     // the value for missingList.Content, which is an object
     // where the key is the path and the value is the file content
@@ -123,21 +123,21 @@ export function applyIcon(server,owner,bookId,
     )
   }
 
-  if ( bookErr === ALL_PRESENT ) {
-    // Note: the obs content to be validated will be
-    // the value for missingList.Content, which is an object
-    // where the key is the path and the value is the file content
-    // To Do: consider whether this approach for OBS can be
-    // replaced with the conceptually similar one for TA and TW.
-    return (
-      <MultiValidateContent 
-        active={true} server={server} owner={owner} 
-        repo={repo} refresh={refresh} 
-        list={missingList} bookId={bookId} onRefresh={setRefresh} 
-        onContentValidation={setContentValidation}
-      />
-    )
-  }
+  // if ( bookErr === ALL_PRESENT ) {
+  //   // Note: the obs content to be validated will be
+  //   // the value for missingList.Content, which is an object
+  //   // where the key is the path and the value is the file content
+  //   // To Do: consider whether this approach for OBS can be
+  //   // replaced with the conceptually similar one for TA and TW.
+  //   return (
+  //     <MultiValidateContent 
+  //       active={true} server={server} owner={owner} 
+  //       repo={repo} refresh={refresh} 
+  //       list={missingList} bookId={bookId} onRefresh={setRefresh} 
+  //       onContentValidation={setContentValidation}
+  //     />
+  //   )
+  // }
 
   if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
     return (

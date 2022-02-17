@@ -47,7 +47,7 @@ function ValidateListContent({ active, server, owner, repo, bookId, list, onRefr
         if ( repo.endsWith("_ta") ) {
           url += "/01.md"
         }
-        const content = locateContent(url, authentication)
+        const content = await locateContent(url, authentication)
         if ( content ) {
           const data = await contentValidate(owner, repo, bookId.toUpperCase(), files[i], content)
           if ( data.length < 2 ) continue
@@ -68,9 +68,17 @@ function ValidateListContent({ active, server, owner, repo, bookId, list, onRefr
     doSubmitValidateListContent()
   }, [submitValidateListContent, server, owner, repo, list, bookId, onRefresh])
   
+  let _title
+  if ( repo.endsWith("ta") ) {
+    _title = "Validate Content for Translation Academy Articles"
+  } else if ( repo.endsWith("tw")) {
+    _title = "Validate Content for Translation Word Articles"
+  } else {
+    _title = "Validate Content for OBS"
+  }
   const classes = useStyles({ active })
   return (
-      <Tooltip title="Validate Content for Translation Academy Articles" >
+      <Tooltip title={_title} >
         <IconButton className={classes.iconButton} 
           onClick={() => setSubmitValidateListContent(true)} 
           aria-label="Validate Content">
