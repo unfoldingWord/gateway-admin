@@ -29,19 +29,19 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/unfoldingWord/gateway-admin">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://gateway-admin.netlify.app/">
+    <img src="images/uW.png" alt="Logo" width="300" height="50">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">gatewayAdmin</h3>
 
   <p align="center">
-    project_description
+    This application is for use by Gateway Language Administrators.
     <br />
     <a href="https://github.com/unfoldingword/gateway-admin"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/unfoldingword/gateway-admin">View Demo</a>
+    <a href="https://gateway-admin.netlify.app/">Go to Application</a>
     ·
     <a href="https://github.com/unfoldingword/gateway-admin/issues">Report Bug</a>
     ·
@@ -81,38 +81,36 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+**Login Page**
+![Login](./images/login.png)
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+**Setup Account**
+![Setup Account](./images/setup_account.png)
 
+**View Resources**
+![view_resources](./images/view_resources.png)
 
 **Purpose**
-- The purpose of this project
+To provide a tool to Translation Team Administrators to easily create Gitea repos, create/update manifests, run checks, etc.
 
 **Problem**
-- The problem statement
+The admins must be skilled Git users today and such activity is often error prone and time consuming.
 
 **Scope**
-- What's in scope and out of scope for this project?
+- Current scope is focused on helping with Git and other translation backend requirements.
+- It is envisioned that this tool might also:
+  - Manage teams, translation assignments, issues, etc.
+  - Provide a dashboard for at-a-glance status of translation projects
 
 **Background**
-- What led us to this point? How did we get here?
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `unfoldingword`, `gateway-admin`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+The unfoldingWord training teams spent copious amounts of time dealing with backend Gitea requirements to support the translation tools. Ongoing, the teams also spent a lot of time and required IT support to manage backend issues.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 ### Built With
 
 * [Next.js](https://nextjs.org/)
 * [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -127,36 +125,35 @@ To get a local copy up and running follow these simple example steps.
 ### Prerequisites
 
 **Data**
-what is the source of the data and data formats are covered by this project?
+- Must have an account on [DCS](https://git.door43.org)
+- The source must be cloned from its repository (see above)
+- `yarn install` is used to resolve/install dependencies
+- `yarn dev` is used to start the local server listening on `localhost:3000`
 
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
 
 ### Installation/First Steps
 
-1. Get a free API Key at [https://example.com](https://example.com)
+1. Get a DCS account
 2. Clone the repo
    ```sh
    git clone https://github.com/unfoldingword/gateway-admin.git
    ```
 3. Install NPM packages
    ```sh
-   npm install
+   yarn install
    ```
 4. Enter your API in `config.js`
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
 
+Be sure to review `TESTING.md` for comprehensive testing notes and instruction on running cypress tests.
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
-<!-- USAGE EXAMPLES -->
+<!-- USAGE EXAMPLES (for RCLs only)
 ## Usage/Integration
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
@@ -167,17 +164,14 @@ _For more examples, please refer to the [Documentation](https://example.com)_  P
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
+-->
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [] Feature 1
-- [] Feature 2
-- [] Feature 3
-    - [] Nested Feature
-
 See the [open issues](https://github.com/unfoldingword/gateway-admin/issues) for a full list of proposed features (and known issues).
+
+This project uses Zenhub to manage the roadmap.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -199,6 +193,16 @@ If you would like to fork the repo and create a pull request.
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+Finally, you can point the application to either the QA or Production servers this way:
+
+To use QA add the "server=qa" parameter to the URL:
+`https://gateway-edit.netlify.app/?server=qa`.  
+
+This is a toggle and will stay pointed at QA until another setting is applied.
+
+To point to production:
+`https://gateway-edit.netlify.app/?server=prod`
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
@@ -215,7 +219,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Cecil New 
+- Twitter [@mandolyte](https://twitter.com/@mandolyte)
+- Discord [Cecil#5551](tbd)
 
 Project Link: [https://github.com/unfoldingword/gateway-admin](https://github.com/unfoldingword/gateway-admin)
 
@@ -223,7 +229,7 @@ Project Link: [https://github.com/unfoldingword/gateway-admin](https://github.co
 
 
 
-<!-- ACKNOWLEDGMENTS -->
+<!-- ACKNOWLEDGMENTS 
 ## Acknowledgments
 
 * []()
@@ -232,7 +238,7 @@ Project Link: [https://github.com/unfoldingword/gateway-admin](https://github.co
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
+-->
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -248,17 +254,4 @@ Project Link: [https://github.com/unfoldingword/gateway-admin](https://github.co
 [license-url]: https://github.com/unfoldingword/gateway-admin/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/company/unfoldingword
-[product-screenshot]: images/screenshot.png
 
-
-# gateway-admin
-The gatewayAdmin app gives GL team administrators an easier way to manage files and repos on DCS.
-
-## QA vs Production
-To use QA add the "server=qa" parameter to the URL:
-`https://gateway-edit.netlify.app/?server=qa`.  
-
-This is a toggle and will stay pointed at QA until another setting is applied.
-
-To point to production:
-`https://gateway-edit.netlify.app/?server=prod`
