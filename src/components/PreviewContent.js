@@ -73,7 +73,7 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
     verbose,
   });
 
-  const structure = { ot: [], nt: [] };
+  const structure = {};
   if ( isNT(bookId) ) {
     structure.nt = [bookId]
   } else {
@@ -81,17 +81,17 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
   }
   const {
     html, // dummy output (currently <html><head>...</head><body>...</body></html>)
-    rendering, // dummy timer for simulating false, true, false.
+    running, // dummy timer for simulating false, true, false.
     progress, // dummy 0...50...100
     errors, // caught and floated up
   } = useRenderPreview({
     ...proskommaHook,
-    docSet: catalogHook.catalog.docSets[0], // docset provides language and docSetId to potentially query, and build structure
-    title: i18n?.titlePage, // isn't this already in the i18n? Do we need to pass it again?
-    dir: language?.direction || 'ltr',
+    docSetId: catalogHook?.catalog?.docSets?.[0]?.id, // docset provides language and docSetId to potentially query, and build structure
+    textDirection: language?.direction || 'ltr',
     structure, // eventually generate structure from catalog
     i18n,
-    ready: submitPreview, // bool to allow render to run, don't run until true and all content is present
+    language: languageId,
+    ready: submitPreview && i18n?.title, // bool to allow render to run, don't run until true and all content is present
     // pagedJS, // is this a link or a local file?
     // css, //
     // htmlFragment, // show full html or what's in the body
@@ -99,12 +99,13 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
   });
 
   useEffect(() => {
-    if (html && submitPreview && !rendering) {
-      const wnd = window.open("about:blank", "", "_blank")
-      wnd.document.write(html)
+    if (html && submitPreview && !running) {
+      const newPage = window.open("about:blank", "", "_blank")
+      newPage.document.write(html.replace("https://unpkg.com/pagedjs/dist", "/static/js"))
+      newPage.document.close()
       setSubmitPreview(false)
     }
-  }, [html, submitPreview, rendering])
+  }, [html, submitPreview, running])
 
   // useEffect( () => {
   //   setSubmitPreview(false)
@@ -177,6 +178,7 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
         const i18n = {
           ...i18n_default,
           titlePage: title,
+          title,
         }
         setI18n(i18n)
         setDocuments(docs)
