@@ -1,18 +1,28 @@
-import {useState, useEffect, useContext} from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import DoneIcon from '@material-ui/icons/Done';
-import { Tooltip } from '@material-ui/core'
-import { IconButton } from '@material-ui/core'
+import Pageview from '@material-ui/icons/Pageview'
+import { Tooltip, IconButton } from '@material-ui/core'
 
 import { AuthContext } from '@context/AuthContext'
 import {
   doFetch,
   isServerDisconnected,
 } from '@utils/network'
-import { contentValidate } from '@utils/contentValidation'
-import { RETRIEVING, VALIDATION_FINISHED } from '@common/constants';
 import { ALL_BIBLE_BOOKS, isNT } from '@common/BooksOfTheBible';
 import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks';
+import {getLanguage} from "@common/languages";
+import {getBuildId} from "@utils/build";
+
+const i18n_default = {
+  // coverAlt: "Cover",
+  titlePage: "unfoldingWord Literal Translation: Preview",
+  copyright: "Licensed under a Creative Commons Attribution-Sharealike 4.0 International License",
+  // preface: "Preface",
+  tocBooks: "Books of the Bible",
+  ot: "Old Testament",
+  nt: "New Testament"
+  // notes: "Notes",
+};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,8 +37,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function Preview({ active, server, owner, repo, bookId, filename, onRefresh, 
-  onAction, languageId
+function PreviewContent({ active, server, owner, repo, bookId, filename, onRefresh,
+  onAction, languageId, typeName
 }) {
   const {
     state: {
@@ -38,12 +48,18 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
 
   const [submitPreview, setSubmitPreview] = useState(false)
   const [documents, setDocuments] = useState([])
+  const [i18n, setI18n] = useState(i18n_default)
+
+  const language = useMemo(() => {
+    const lang_ = getLanguage({ languageId })
+    return lang_
+  }, [languageId])
 
   const verbose = true
   const proskommaHook = useProskomma({
     verbose,
-  });
-  
+  })
+
   const importHook = useImport({
     ...proskommaHook,
     documents: documents,
@@ -57,22 +73,11 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
     verbose,
   });
 
-  const i18n = {
-    // coverAlt: "Cover",
-    titlePage: "unfoldingWord Literal Translation: Preview",
-    copyright: "Licensed under a Creative Commons Attribution-Sharealike 4.0 International License",
-    // preface: "Preface",
-    tocBooks: "Books of the Bible",
-    ot: "Old Testament",
-    nt: "New Testament"
-    // notes: "Notes",
-  };
-
   const structure = { ot: [], nt: [] };
   if ( isNT(bookId) ) {
-    structure.nt = [bookId] 
+    structure.nt = [bookId]
   } else {
-    structure.ot = [bookId] 
+    structure.ot = [bookId]
   }
   const {
     html, // dummy output (currently <html><head>...</head><body>...</body></html>)
@@ -82,24 +87,24 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
   } = useRenderPreview({
     ...proskommaHook,
     docSet: catalogHook.catalog.docSets[0], // docset provides language and docSetId to potentially query, and build structure
-    title: i18n.titlePage, // isn't this already in the i18n? Do we need to pass it again?
-    dir: 'ltr', //TODO need to dyanimically obtain this
+    title: i18n?.titlePage, // isn't this already in the i18n? Do we need to pass it again?
+    dir: language?.direction || 'ltr',
     structure, // eventually generate structure from catalog
     i18n,
     ready: submitPreview, // bool to allow render to run, don't run until true and all content is present
     // pagedJS, // is this a link or a local file?
-    // css, // 
+    // css, //
     // htmlFragment, // show full html or what's in the body
     verbose,
   });
 
   useEffect(() => {
-    if (html && submitPreview) {
-      const wnd = window.open("about:blank", "", "_blank");
-      wnd.document.write(html);
+    if (html && submitPreview && !rendering) {
+      const wnd = window.open("about:blank", "", "_blank")
+      wnd.document.write(html)
       setSubmitPreview(false)
-    };
-  }, [html, submitPreview]);
+    }
+  }, [html, submitPreview, rendering])
 
   // useEffect( () => {
   //   setSubmitPreview(false)
@@ -115,7 +120,7 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
       let content = null
       let fetchError = true
       let url = `${server}/${owner}/${repo}/raw/branch/master/${filename}`
-    
+
       try {
         //onAction && onAction(RETRIEVING)
         content = await doFetch(url, authentication)
@@ -143,7 +148,7 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
           message '${message}',
           disconnected=${disconnected},
           URL=${url},
-          error message:`, 
+          error message:`,
           e)
         _errorMessage = `Network error: ${message}`
         content = null
@@ -152,37 +157,46 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
       if (content) {
         // create the preview
 
-        const document = ({bookCode, bookName, testament}) => ({
+        const document = ({ bookCode, bookName, testament }) => ({
           selectors: { org: owner, lang: languageId, abbr: bookCode },
           data: content,
           bookCode,
           testament,
-        });
+        })
 
-        const docs = [ 
-          document({bookCode: bookId,
-          bookName: ALL_BIBLE_BOOKS[bookId], 
-          testament: isNT(bookId) ? "nt" : "ot",
-          })
+        const bookName = ALL_BIBLE_BOOKS[bookId]
+        const docs = [
+          document({
+            bookCode: bookId,
+            bookName: bookName,
+            testament: isNT(bookId) ? "nt" : "ot",
+          }),
         ]
+        const languageName = language.localized || language.languageName || language.languageId
+        const title = `${owner} - ${languageName} ${typeName} - ${bookName}`
+        const i18n = {
+          ...i18n_default,
+          titlePage: title,
+        }
+        setI18n(i18n)
         setDocuments(docs)
       }
-      
+
       // setSubmitPreview(false)
     }
     doSubmitPreview()
   }, [submitPreview, server, owner, repo, filename, bookId, onRefresh])
-  
+
   const classes = useStyles({ active })
   return (
       <Tooltip title={ `Preview Content` }>
-        <IconButton className={classes.iconButton} 
-          onClick={() => setSubmitPreview(true)} 
+        <IconButton className={classes.iconButton}
+          onClick={() => setSubmitPreview(true)}
           aria-label="Preview Content">
-          <DoneIcon />
+          <Pageview />
         </IconButton>
       </Tooltip>
   )
 }
 
-export default Preview
+export default PreviewContent

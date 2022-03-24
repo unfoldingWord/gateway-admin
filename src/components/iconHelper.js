@@ -19,14 +19,26 @@ import ViewListButton from './ViewListButton'
 import ValidateContent from './ValidateContent'
 import MultiValidateContent from './MultiValidateContent'
 import ValidateListContent from './ValidateListContent'
-import Preview from './Preview'
+import PreviewContent from './PreviewContent'
 import DownloadCvResults from './DownloadCvResults'
 
+
+function createValidateContent(server, owner, repo, refresh, filename, bookId, setRefresh, setContentValidation, setAction) {
+  return (
+    <ValidateContent
+      active={true} server={server} owner={owner}
+      repo={repo} refresh={refresh}
+      filename={filename} bookId={bookId} onRefresh={setRefresh}
+      onContentValidation={setContentValidation}
+      onAction={setAction}
+    />
+  )
+}
 
 export function applyIcon(server,owner,bookId,
   refresh,setRefresh,repo,repoErr,bookErr,manifest,manifestSha,
   missingList,filename,setContentValidation,validationResults,
-  setAction,
+  setAction, typeName,
 ) {
   // console.log("applyIcon() parameters:",`repo:${repo}
   //   repoErr:${repoErr}
@@ -47,7 +59,7 @@ export function applyIcon(server,owner,bookId,
   if ( validationResults === null || validationResults === undefined ) { _validationResults = false }
   if ( _validationResults ) {
     return (
-      <DownloadCvResults active={true} 
+      <DownloadCvResults active={true}
         validationResults={validationResults}
         bookId={bookId}
       />
@@ -69,23 +81,23 @@ export function applyIcon(server,owner,bookId,
 
   if ( repoErr === REPO_NOT_FOUND ) {
     return (
-      <CreateRepoButton active={true} server={server} owner={owner} 
+      <CreateRepoButton active={true} server={server} owner={owner}
       repo={repo} refresh={refresh} bookId={bookId} onRefresh={setRefresh} />
     )
   }
 
   if ( repoErr === NO_MANIFEST_FOUND || repoErr === NO_FILES_IN_REPO ) {
     return (
-      <AddManifest active={true} server={server} owner={owner} 
+      <AddManifest active={true} server={server} owner={owner}
       repo={repo} refresh={refresh} onRefresh={setRefresh} />
     )
   }
 
   if ( repoErr === MANIFEST_NOT_YAML ) {
     return (
-      <ReplaceManifest 
-        active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
-        sha={manifestSha} onRefresh={setRefresh} 
+      <ReplaceManifest
+        active={true} server={server} owner={owner} repo={repo} refresh={refresh}
+        sha={manifestSha} onRefresh={setRefresh}
       />
     )
   }
@@ -101,39 +113,37 @@ export function applyIcon(server,owner,bookId,
     // the value for missingList.Content, which is an object
     // where the key is the path and the value is the file content
     return (
-      <ValidateListContent 
-        active={true} server={server} owner={owner} 
-        repo={repo} refresh={refresh} 
-        list={missingList} bookId={bookId} onRefresh={setRefresh} 
+      <ValidateListContent
+        active={true} server={server} owner={owner}
+        repo={repo} refresh={refresh}
+        list={missingList} bookId={bookId} onRefresh={setRefresh}
         onContentValidation={setContentValidation}
         onAction={setAction}
       />
     )
   }
 
-  if ( bookErr === OK  && repo.endsWith("lt") ) {
+  if ( bookErr === OK && (repo.endsWith("lt") || repo.endsWith("st")) ) {
     return (
-      <Preview  
-        active={true} server={server} owner={owner} 
-        repo={repo} refresh={refresh} 
-        filename={filename} bookId={bookId} onRefresh={setRefresh} 
-        onAction={setAction}
-        languageId={repo.split('_')[0]}
-      />
+      <>
+        {
+          createValidateContent(server, owner, repo, refresh, filename, bookId, setRefresh, setContentValidation, setAction)
+        }
+        <PreviewContent
+          active={true} server={server} owner={owner}
+          repo={repo} refresh={refresh}
+          filename={filename} bookId={bookId} onRefresh={setRefresh}
+          onAction={setAction}
+          languageId={repo.split('_')[0]}
+          typeName={typeName}
+        />
+      </>
     )
   }
 
 
   if ( bookErr === OK ) {
-    return (
-      <ValidateContent 
-        active={true} server={server} owner={owner} 
-        repo={repo} refresh={refresh} 
-        filename={filename} bookId={bookId} onRefresh={setRefresh} 
-        onContentValidation={setContentValidation}
-        onAction={setAction}
-      />
-    )
+    return createValidateContent(server, owner, repo, refresh, filename, bookId, setRefresh, setContentValidation, setAction)
   }
 
   // if ( bookErr === ALL_PRESENT ) {
@@ -143,10 +153,10 @@ export function applyIcon(server,owner,bookId,
   //   // To Do: consider whether this approach for OBS can be
   //   // replaced with the conceptually similar one for TA and TW.
   //   return (
-  //     <MultiValidateContent 
-  //       active={true} server={server} owner={owner} 
-  //       repo={repo} refresh={refresh} 
-  //       list={missingList} bookId={bookId} onRefresh={setRefresh} 
+  //     <MultiValidateContent
+  //       active={true} server={server} owner={owner}
+  //       repo={repo} refresh={refresh}
+  //       list={missingList} bookId={bookId} onRefresh={setRefresh}
   //       onContentValidation={setContentValidation}
   //     />
   //   )
@@ -154,9 +164,9 @@ export function applyIcon(server,owner,bookId,
 
   if ( bookErr === BOOK_NOT_IN_MANIFEST ) {
     return (
-      <AddBookToManifest 
-        active={true} server={server} owner={owner} repo={repo} refresh={refresh} 
-        manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh} 
+      <AddBookToManifest
+        active={true} server={server} owner={owner} repo={repo} refresh={refresh}
+        manifest={manifest} sha={manifestSha} bookId={bookId} onRefresh={setRefresh}
       />
     )
   }
