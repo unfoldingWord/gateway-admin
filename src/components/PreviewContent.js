@@ -1,6 +1,6 @@
 import {useState, useEffect, useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import DoneIcon from '@material-ui/icons/Done';
+import Pageview from '@material-ui/icons/Pageview'
 import { Tooltip } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-function Preview({ active, server, owner, repo, bookId, filename, onRefresh, 
+function PreviewContent({ active, server, owner, repo, bookId, filename, onRefresh,
   onAction, languageId
 }) {
   const {
@@ -43,7 +43,7 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
   const proskommaHook = useProskomma({
     verbose,
   });
-  
+
   const importHook = useImport({
     ...proskommaHook,
     documents: documents,
@@ -70,9 +70,9 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
 
   const structure = { ot: [], nt: [] };
   if ( isNT(bookId) ) {
-    structure.nt = [bookId] 
+    structure.nt = [bookId]
   } else {
-    structure.ot = [bookId] 
+    structure.ot = [bookId]
   }
   const {
     html, // dummy output (currently <html><head>...</head><body>...</body></html>)
@@ -88,7 +88,7 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
     i18n,
     ready: submitPreview, // bool to allow render to run, don't run until true and all content is present
     // pagedJS, // is this a link or a local file?
-    // css, // 
+    // css, //
     // htmlFragment, // show full html or what's in the body
     verbose,
   });
@@ -115,7 +115,7 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
       let content = null
       let fetchError = true
       let url = `${server}/${owner}/${repo}/raw/branch/master/${filename}`
-    
+
       try {
         //onAction && onAction(RETRIEVING)
         content = await doFetch(url, authentication)
@@ -143,7 +143,7 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
           message '${message}',
           disconnected=${disconnected},
           URL=${url},
-          error message:`, 
+          error message:`,
           e)
         _errorMessage = `Network error: ${message}`
         content = null
@@ -159,30 +159,30 @@ function Preview({ active, server, owner, repo, bookId, filename, onRefresh,
           testament,
         });
 
-        const docs = [ 
+        const docs = [
           document({bookCode: bookId,
-          bookName: ALL_BIBLE_BOOKS[bookId], 
+          bookName: ALL_BIBLE_BOOKS[bookId],
           testament: isNT(bookId) ? "nt" : "ot",
           })
         ]
         setDocuments(docs)
       }
-      
+
       // setSubmitPreview(false)
     }
     doSubmitPreview()
   }, [submitPreview, server, owner, repo, filename, bookId, onRefresh])
-  
+
   const classes = useStyles({ active })
   return (
       <Tooltip title={ `Preview Content` }>
-        <IconButton className={classes.iconButton} 
-          onClick={() => setSubmitPreview(true)} 
+        <IconButton className={classes.iconButton}
+          onClick={() => setSubmitPreview(true)}
           aria-label="Preview Content">
-          <DoneIcon />
+          <Pageview />
         </IconButton>
       </Tooltip>
   )
 }
 
-export default Preview
+export default PreviewContent
