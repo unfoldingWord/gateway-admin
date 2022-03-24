@@ -19,6 +19,7 @@ import ViewListButton from './ViewListButton'
 import ValidateContent from './ValidateContent'
 import MultiValidateContent from './MultiValidateContent'
 import ValidateListContent from './ValidateListContent'
+import Preview from './Preview'
 import DownloadCvResults from './DownloadCvResults'
 
 
@@ -110,6 +111,18 @@ export function applyIcon(server,owner,bookId,
     )
   }
 
+  if ( bookErr === OK  && repo.endsWith("lt") ) {
+    return (
+      <Preview  
+        active={true} server={server} owner={owner} 
+        repo={repo} refresh={refresh} 
+        filename={filename} bookId={bookId} onRefresh={setRefresh} 
+        onAction={setAction}
+        languageId={repo.split('_')[0]}
+      />
+    )
+  }
+
 
   if ( bookErr === OK ) {
     return (
@@ -187,8 +200,8 @@ export function applyIcon(server,owner,bookId,
       )
     }
     return (
-      <Tooltip title="Use tC Create to create file">
-        <IconButton aria-label="Use-tc-create">
+      <Tooltip title="View HTML Preview">
+        <IconButton aria-label="Preview">
           <CreateIcon/>
         </IconButton>
       </Tooltip>
