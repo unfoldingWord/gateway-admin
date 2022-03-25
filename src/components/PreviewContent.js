@@ -100,7 +100,7 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
 
   useEffect(() => {
     if (html && submitPreview && !running) {
-      const newPage = window.open("about:blank", "", "_blank")
+      const newPage = window.open("about:blank", "_blank", "width=850,height=1000")
       newPage.document.write(html.replace("https://unpkg.com/pagedjs/dist", "/static/js"))
       newPage.document.close()
       setSubmitPreview(false)
