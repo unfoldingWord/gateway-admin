@@ -40,6 +40,15 @@ export default function Drawer({
     }
   }
 
+  async function onReleaseRepoClick() {
+    const okToContinue = await checkUnsavedChanges()
+
+    if (okToContinue) {
+      router.push('/releaseRepo')
+      onClose()
+    }
+  }
+
   function onFeedbackClick() {
     onClose()
     showFeedback && showFeedback()
@@ -95,6 +104,14 @@ export default function Drawer({
             <SettingsIcon />
           </ListItemIcon>
           <ListItemText primary={'Account Settings'} />
+        </ListItem>
+      </List>
+      <List disablePadding>
+        <ListItem button key={'Release Repository'} onClick={onReleaseRepoClick}>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Release Repository'} />
         </ListItem>
       </List>
       <List disablePadding>
