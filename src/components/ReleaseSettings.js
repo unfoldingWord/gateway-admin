@@ -1,16 +1,14 @@
 import React, {
   useContext, useEffect, useState,
 } from 'react'
-import PropTypes from 'prop-types'
 import Paper from 'translation-helps-rcl/dist/components/Paper'
 import FormControl from '@material-ui/core/FormControl'
 import { makeStyles } from '@material-ui/core/styles'
-import InputLabel from '@material-ui/core/InputLabel'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 
 import { StoreContext } from '@context/StoreContext'
-import { AuthContext } from '@context/AuthContext'
+import { AdminContext } from '@context/AdminContext'
 import { resourceSelectList } from '@common/ResourceList'
 
 const useStyles = makeStyles(theme => ({
@@ -21,11 +19,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ReleaseSettings({ authentication }) {
-  const { actions: { logout } } = useContext(AuthContext)
+export default function ReleaseSettings() {
   const classes = useStyles()
-  const [resource, setResource] = useState("")
-  const [version, setVersion] = useState("")
 
   const {
     state: {
@@ -34,6 +29,25 @@ export default function ReleaseSettings({ authentication }) {
       server,
     },
   } = useContext(StoreContext)
+
+  const {
+    state: {
+      releaseResource,
+      releaseVersion,
+    },
+    actions: {
+      setReleaseResource,
+      setReleaseVersion,
+    }
+  } = useContext(AdminContext)
+
+  const handleResourceChange = event => {
+    setReleaseResource(event.target.value)
+  }
+
+  const handleVersionChange = event => {
+    setReleaseVersion(event.target.value)
+  }
 
 
   const defaultProps = {
@@ -51,13 +65,10 @@ export default function ReleaseSettings({ authentication }) {
             <Autocomplete
               {...defaultProps}
               id="select-resource"
-              value={resource}
-              onChange={(event, newValue) => {
-                console.log("Autocomplete() onchange() setValue:", newValue)
-                setResource(newValue);
-              }}
+              // value={resource}
+              onChange={handleResourceChange}
               renderInput={(params) => <TextField {...params} 
-              label="Select Repository" margin="normal" />}
+              label="Select Resource" margin="normal" />}
             />      
           </FormControl>
           <FormControl variant='outlined' className={classes.formControl}>
@@ -66,11 +77,9 @@ export default function ReleaseSettings({ authentication }) {
               required={true} 
               label="Version" 
               autoFocus={true}
-              defaultValue={version}
+              // defaultValue={version}
               type='text'
-              onChange={(event) => {
-                setVersion(event.target.value)
-              }}
+              onChange={handleVersionChange}
             />
           </FormControl>
         </div>
@@ -79,4 +88,3 @@ export default function ReleaseSettings({ authentication }) {
   )
 }
 
-ReleaseSettings.propTypes = { authentication: PropTypes.object }

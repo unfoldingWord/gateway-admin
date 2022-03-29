@@ -7,6 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import SettingsIcon from '@material-ui/icons/Settings'
+import BeenhereIcon from '@material-ui/icons/Beenhere';
 import BugReportIcon from '@material-ui/icons/BugReport'
 import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
@@ -109,7 +110,7 @@ export default function Drawer({
       <List disablePadding>
         <ListItem button key={'Release Repository'} onClick={onReleaseRepoClick}>
           <ListItemIcon>
-            <SettingsIcon />
+            <BeenhereIcon />
           </ListItemIcon>
           <ListItemText primary={'Release Repository'} />
         </ListItem>
