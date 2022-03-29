@@ -41,12 +41,14 @@ export default function ReleaseSettings() {
     }
   } = useContext(AdminContext)
 
-  const handleResourceChange = event => {
-    setReleaseResource(event.target.value)
+  const handleResourceChange = (event, newvalue) => {
+    setReleaseResource(newvalue)
+    // setTimeout( () => console.log("new resource=",releaseResource), 1)
   }
 
   const handleVersionChange = event => {
     setReleaseVersion(event.target.value)
+    // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
 
