@@ -4,9 +4,10 @@ import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
-import ReleaseRepoSettings from '@components/ReleaseSettings'
+import ReleaseSettings from '@components/ReleaseSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
+import { validVersionTag } from '@utils/dcsApis'
 
 const ReleasePage = () => {
   const router = useRouter()
@@ -35,7 +36,7 @@ const ReleasePage = () => {
   } = useContext(AdminContext)
 
   useEffect( () => {
-    if ( releaseResource && releaseVersion ) { 
+    if ( releaseResource && releaseVersion && validVersionTag(releaseVersion) ) { 
       setReleaseActive(true) 
     } else {
       setReleaseActive(false)
@@ -69,7 +70,7 @@ const ReleasePage = () => {
       <div className='flex flex-col justify-center items-center'>
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
           <h1 className='mx-4'>Release Repository</h1>
-          <ReleaseRepoSettings />
+          <ReleaseSettings />
           <div className='flex justify-end'>
             <Button
               size='large'

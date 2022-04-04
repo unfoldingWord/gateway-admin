@@ -8,6 +8,7 @@ import { apiPath } from '@common/constants'
 import getResourceManifest from '@common/manifests'
 import getResourceManifestProject from '@common/manifestProjects'
 import {ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT} from '@common/BooksOfTheBible'
+import { doFetch } from './network';
 
 export function getResourceIdFromRepo(repo) {
   let resourceId = repo.split('_')[1];
@@ -224,4 +225,56 @@ export async function manifestReplace({server, username, repository, sha, tokeni
   })
 
   return res
+}
+
+/**
+ * determine if version tag is formatted properly
+ * @param {string} versionTag
+ * @return {boolean}
+ */
+export function validVersionTag(versionTag) {
+  if ( !versionTag.startsWith("v") ) return false
+  
+  return true
+}
+
+
+/**
+ * determine if version tag is formatted properly
+ * @param {string} organization
+ * @param {string} languageId
+ * @param {string} resourceId
+ * @return {object} 
+ *                 shape of return object is {isValid: bool, message: string}
+ */
+export async function validManifest({organization, languageId, resourceId}) {
+  // example:
+  // https://qa.door43.org/api/catalog/v5/entry/es-419_gl/es-419_tn/master
+  const uri = server + "/" + Path.join('api','catalog','v5','entry',organization,`${languageId}_${resourceId}`,'master') ;
+  let val = {}
+  try {
+    const response = await doFetch(uri)
+    if (response.status === 200) {
+      val.isValid = true
+      val.message = response.data[0]['tag_name']
+    } else if (response.status === 404) {
+      val.isValid = false
+      val.message = `Repo does not exist: ${languageId}_${resourceId}`
+    } else if (response.status === 500)  {
+      val.isValid = false
+      val.message = "Repo does not have a valid manifest"
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`getTreesManifest() - error fetching repos tree,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${url}
+      Error:`, 
+      e)
+    val.isValid = false
+    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  }
+  return val
 }
