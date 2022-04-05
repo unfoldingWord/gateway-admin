@@ -37,13 +37,14 @@ export function resourceSelectList() {
  * @return {string} full resource id
  */
 export function resourceIdMapper(organization, resourceId) {
+  let _rid = resourceId
   if ( organization.toLowerCase() === 'unfoldingword') {
-    if ( resourceId === 'lt' ) return 'ult'
-    if ( resourceId === 'st' ) return 'ust'
+    if ( resourceId === 'lt' ) _rid = 'ult'
+    if ( resourceId === 'st' ) _rid = 'ust'
   } else {
-    if ( resourceId === 'lt' ) return 'glt'
-    if ( resourceId === 'st' ) return 'gst'
+    if ( resourceId === 'lt' ) _rid = 'glt'
+    if ( resourceId === 'st' ) _rid = 'gst'
   }
   // otherwise return as-is
-  return resourceId
+  return _rid
 }

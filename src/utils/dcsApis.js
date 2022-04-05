@@ -327,3 +327,58 @@ export async function validManifest({server, organization, languageId, resourceI
   }
   return val
 }
+
+/**
+ * Create a new release from the master branch
+ * @param {string} server
+ * @param {string} organization
+ * @param {string} languageId
+ * @param {string} resourceId
+ * @return {object} response 
+ */
+ export async function createRelease({server, organization, languageId, resourceId, version, tokenid}) {
+  // example: POST
+  // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
+
+  let val = {}
+  const uri = server + "/" + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases') ;
+  try {
+    const res = await fetch(uri+'?token='+tokenid, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+        "tag_name": "${version}",
+        "target_commitish": "master",
+        "name": "${version}",
+        "body": "Release ${version} of ${languageId}_${resourceId}",
+        "draft": false,
+        "prerelease": false
+      }`
+    })
+    if ( res.status === 201 ) {
+      val.status = true
+      val.message = `Created release ${version} of ${languageId}_${resourceId} `
+    } else if ( res.status === 404 ) {
+      val.status = false
+      val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
+    } else if ( res.status === 409 ) {
+      val.status = false
+      val.message = `Invalid JSON payload (409)`
+    } else {
+      val.status = false
+      val.message = `Unexpected response: status ${res.status}, message ${res.message}`
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`createRelease() - error creating release,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${uri}
+      Error:`, 
+      e)
+    val.isValid = false
+    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  }
+  return val
+}

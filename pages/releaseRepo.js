@@ -7,7 +7,8 @@ import Layout from '@components/Layout'
 import ReleaseSettings from '@components/ReleaseSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { validVersionTag } from '@utils/dcsApis'
+import { validVersionTag, createRelease } from '@utils/dcsApis'
+import { resourceIdMapper } from '@common/ResourceList'
 
 const ReleasePage = () => {
   const router = useRouter()
@@ -47,24 +48,26 @@ const ReleasePage = () => {
 
   //  
   useEffect( () => {
+
     if ( !confirmRelease ) return;
     if ( !releaseResource ) return;
     if ( !releaseVersion ) return;
 
-    setReleaseMessage(<CircularProgress />)
-
-    console.log("Repo to Release:",`${organization}/${languageId}_${releaseResource.id}`)
-    console.log("Version to release:", releaseVersion)
-
-    setTimeout( () => {
-      setReleaseMessage(<>Success!</>)
+    async function doRelease() {
+      setReleaseMessage(<CircularProgress />)
+      const tokenid = authentication.token.sha1;
+      const _resourceId = resourceIdMapper(organization, releaseResource.id)
+      const _results = await createRelease({server, organization, languageId, resourceId: _resourceId, version: releaseVersion, tokenid})
+      setReleaseMessage(<span>{_results.message}</span>)
       // initialize release state vars
       setReleaseResource(null)
       setReleaseVersion(null)
       setReleaseActive(false)
-      // setConfirmRelease(false)
-    }, 5000)
-  }, [organization, languageId, releaseResource, releaseVersion, confirmRelease])
+    }
+
+    doRelease()
+
+  }, [server, organization, languageId, releaseResource, releaseVersion, confirmRelease])
 
 
 
@@ -105,7 +108,7 @@ const ReleasePage = () => {
             <br/>
           </div>
           {confirmRelease &&
-            <h1 className='mx-4'>Status: {releaseMessage}</h1>         
+            <h2 className='mx-4'>Status: {releaseMessage}</h2>         
           }
         </div>
       </div>
