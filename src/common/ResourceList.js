@@ -27,3 +27,23 @@ export function resourceSelectList() {
     }
   )
 }
+
+/**
+ * if uW then lt becomes ult; otherwise glt
+ * if uW then st becomes ust; otherwise gst
+ * else no change
+ * @param {string} organization
+ * @param {string} resourceId
+ * @return {string} full resource id
+ */
+export function resourceIdMapper(organization, resourceId) {
+  if ( organization.toLowerCase() === 'unfoldingword') {
+    if ( resourceId === 'lt' ) return 'ult'
+    if ( resourceId === 'st' ) return 'ust'
+  } else {
+    if ( resourceId === 'lt' ) return 'glt'
+    if ( resourceId === 'st' ) return 'gst'
+  }
+  // otherwise return as-is
+  return resourceId
+}

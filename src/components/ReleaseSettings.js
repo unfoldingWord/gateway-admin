@@ -11,6 +11,7 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { resourceSelectList } from '@common/ResourceList'
 import { validManifest } from '@utils/dcsApis'
+import { resourceIdMapper } from '@common/ResourceList'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -24,6 +25,7 @@ export default function ReleaseSettings() {
   const classes = useStyles()
 
   const [textDisabled, setTextDisabled] = useState(true)
+  const [manifestValid, setManifestValid] = useState({})
 
   const {
     state: {
@@ -53,12 +55,16 @@ export default function ReleaseSettings() {
     setReleaseVersion(event.target.value)
     // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
-  let _validManifest = {}
+
   useEffect( () => {
-    if ( releaseResource ) {
-      // first check if manifest is valid
-      _validManifest = validManifest({organization, languageId, resourceId: releaseResource.id})
+    async function checkValidManifest() {
+      const _resourceId = resourceIdMapper(organization, releaseResource.id)
+      const _validManifest = await validManifest({server, organization, languageId, resourceId: _resourceId})
+      setManifestValid(_validManifest)
       setTextDisabled(false)
+    }
+    if ( releaseResource ) {
+      checkValidManifest()
     }
   }, [releaseResource])
 
@@ -83,7 +89,12 @@ export default function ReleaseSettings() {
               label="Select Resource" margin="normal" />}
             />      
           </FormControl>
-          <p>Last Release Version is: {_validManifest.isValid} {_validManifest.message} </p>
+          <p>Last Release Version is: 
+            { manifestValid && manifestValid.message && <i> {manifestValid.message}</i>
+              ||
+              <i> (Please select resource first)</i>
+            }
+          </p>
           <FormControl variant='outlined' className={classes.formControl}>
             <TextField id="version" 
               variant='outlined'

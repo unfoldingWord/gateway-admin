@@ -13,6 +13,8 @@ const ReleasePage = () => {
   const router = useRouter()
   const [confirmRelease, setConfirmRelease] = useState(false)
   const [releaseMessage, setReleaseMessage] = useState(<CircularProgress />)
+  // The release button will be active (enabled) iff all are true:
+  // resource is selected, release version supplied and is valid
   const [releaseActive, setReleaseActive] = useState(false)
 
   const { state: authentication } = useContext(AuthenticationContext)
@@ -59,6 +61,7 @@ const ReleasePage = () => {
       // initialize release state vars
       setReleaseResource(null)
       setReleaseVersion(null)
+      setReleaseActive(false)
       // setConfirmRelease(false)
     }, 5000)
   }, [organization, languageId, releaseResource, releaseVersion, confirmRelease])
@@ -77,9 +80,13 @@ const ReleasePage = () => {
               color='primary'
               className='my-3 mx-1'
               variant='contained'
-              onClick={() => router.push('/')}
+              onClick={() => {
+                setReleaseResource(null)
+                setReleaseVersion(null)
+                router.push('/')
+              }}
             >
-              Cancel
+              Close
             </Button>
             <Button
               size='large'

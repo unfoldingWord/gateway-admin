@@ -8,7 +8,7 @@ import { apiPath } from '@common/constants'
 import getResourceManifest from '@common/manifests'
 import getResourceManifestProject from '@common/manifestProjects'
 import {ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT} from '@common/BooksOfTheBible'
-import { doFetch } from './network';
+import { doFetch, isServerDisconnected } from './network';
 
 export function getResourceIdFromRepo(repo) {
   let resourceId = repo.split('_')[1];
@@ -233,7 +233,7 @@ export async function manifestReplace({server, username, repository, sha, tokeni
  * @return {boolean}
  */
 export function validVersionTag(versionTag) {
-  if ( !versionTag.startsWith("v") ) return false
+  // if ( !versionTag.startsWith("v") ) return false
   
   return true
 }
@@ -241,13 +241,14 @@ export function validVersionTag(versionTag) {
 
 /**
  * determine if version tag is formatted properly
+ * @param {string} server
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
  * @return {object} 
  *                 shape of return object is {isValid: bool, message: string}
  */
-export async function validManifest({organization, languageId, resourceId}) {
+export async function validManifest({server, organization, languageId, resourceId}) {
   // example:
   // https://qa.door43.org/api/catalog/v5/entry/es-419_gl/es-419_tn/master
   const uri = server + "/" + Path.join('api','catalog','v5','entry',organization,`${languageId}_${resourceId}`,'master') ;
@@ -255,8 +256,9 @@ export async function validManifest({organization, languageId, resourceId}) {
   try {
     const response = await doFetch(uri)
     if (response.status === 200) {
-      val.isValid = true
-      val.message = response.data[0]['tag_name']
+      // master branch is in the catalog, thus must have a valid manifest
+      // now fetch the latest release!
+      val = await latestReleaseVersion({server, organization, languageId, resourceId})
     } else if (response.status === 404) {
       val.isValid = false
       val.message = `Repo does not exist: ${languageId}_${resourceId}`
@@ -267,10 +269,57 @@ export async function validManifest({organization, languageId, resourceId}) {
   } catch (e) {
     const message = e?.message
     const disconnected = isServerDisconnected(e)
-    console.warn(`getTreesManifest() - error fetching repos tree,
+    console.warn(`validManifest() - error fetching releases,
       message '${message}',
       disconnected=${disconnected},
-      url ${url}
+      url ${uri}
+      Error:`, 
+      e)
+    val.isValid = false
+    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  }
+  return val
+}
+
+/**
+ * determine if version tag is formatted properly
+ * @param {string} server
+ * @param {string} organization
+ * @param {string} languageId
+ * @param {string} resourceId
+ * @return {object} 
+ *                 shape of return object is {isValid: bool, message: string}
+ */
+ async function latestReleaseVersion({server, organization, languageId, resourceId}) {
+  // example:
+  // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases?draft=false&pre-release=false&page=1&limit=9999'
+  const uri = server + "/" + Path.join('api','v1','repos',organization,`${languageId}_${resourceId}`,'releases?page=1&limit=9999') ;
+  let val = {}
+  try {
+    const response = await doFetch(uri)
+    if (response.status === 200) {
+      // master branch is in the catalog, thus must have a valid manifest
+      // now fetch the latest release!
+      val.isValid = true
+      if ( response.data.length === 0 ) {
+        val.message = 'No releases yet, use "v1"'
+      } else {
+        val.message = response.data[0]['tag_name']
+      }
+    } else if (response.status === 404) {
+      val.isValid = false
+      val.message = `Repo does not exist: ${languageId}_${resourceId}`
+    } else {
+      val.isValid = false
+      val.message = "Unexpected status returned:"+response.status
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`latestReleaseVersion() - error fetching releases,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${uri}
       Error:`, 
       e)
     val.isValid = false
