@@ -108,7 +108,7 @@ export default function Header({
           </div>
           <>
             {
-              user && owner &&
+              user && owner && (router.pathname === '/') &&
               <Fab color="primary" aria-label="add" variant="extended"
                 onClick={() => { setShowModal(true)} }
               >

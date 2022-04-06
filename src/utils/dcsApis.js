@@ -8,6 +8,7 @@ import { apiPath } from '@common/constants'
 import getResourceManifest from '@common/manifests'
 import getResourceManifestProject from '@common/manifestProjects'
 import {ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT} from '@common/BooksOfTheBible'
+import { doFetch, isServerDisconnected } from './network';
 
 export function getResourceIdFromRepo(repo) {
   let resourceId = repo.split('_')[1];
@@ -224,4 +225,160 @@ export async function manifestReplace({server, username, repository, sha, tokeni
   })
 
   return res
+}
+
+/**
+ * determine if version tag is formatted properly
+ * @param {string} versionTag
+ * @return {boolean}
+ */
+export function validVersionTag(versionTag) {
+  // if ( !versionTag.startsWith("v") ) return false
+  
+  return true
+}
+
+
+/**
+ * determine if version tag is formatted properly
+ * @param {string} server
+ * @param {string} organization
+ * @param {string} languageId
+ * @param {string} resourceId
+ * @return {object} 
+ *                 shape of return object is {isValid: bool, message: string}
+ */
+export async function validManifest({server, organization, languageId, resourceId}) {
+  // example:
+  // https://qa.door43.org/api/catalog/v5/entry/es-419_gl/es-419_tn/master
+  const uri = server + "/" + Path.join('api','catalog','v5','entry',organization,`${languageId}_${resourceId}`,'master') ;
+  let val = {}
+  try {
+    const response = await doFetch(uri)
+    if (response.status === 200) {
+      // master branch is in the catalog, thus must have a valid manifest
+      // now fetch the latest release!
+      val = await latestReleaseVersion({server, organization, languageId, resourceId})
+    } else if (response.status === 404) {
+      val.isValid = false
+      val.message = `Repo does not exist: ${languageId}_${resourceId}`
+    } else if (response.status === 500)  {
+      val.isValid = false
+      val.message = "Repo does not have a valid manifest"
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`validManifest() - error fetching releases,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${uri}
+      Error:`, 
+      e)
+    val.isValid = false
+    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  }
+  return val
+}
+
+/**
+ * determine if version tag is formatted properly
+ * @param {string} server
+ * @param {string} organization
+ * @param {string} languageId
+ * @param {string} resourceId
+ * @return {object} 
+ *                 shape of return object is {isValid: bool, message: string}
+ */
+ async function latestReleaseVersion({server, organization, languageId, resourceId}) {
+  // example:
+  // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases?draft=false&pre-release=false&page=1&limit=9999'
+  const uri = server + "/" + Path.join('api','v1','repos',organization,`${languageId}_${resourceId}`,'releases?page=1&limit=9999') ;
+  let val = {}
+  try {
+    const response = await doFetch(uri)
+    if (response.status === 200) {
+      // master branch is in the catalog, thus must have a valid manifest
+      // now fetch the latest release!
+      val.isValid = true
+      if ( response.data.length === 0 ) {
+        val.message = 'No releases yet, use "v1"'
+      } else {
+        val.message = response.data[0]['tag_name']
+      }
+    } else if (response.status === 404) {
+      val.isValid = false
+      val.message = `Repo does not exist: ${languageId}_${resourceId}`
+    } else {
+      val.isValid = false
+      val.message = "Unexpected status returned:"+response.status
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`latestReleaseVersion() - error fetching releases,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${uri}
+      Error:`, 
+      e)
+    val.isValid = false
+    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  }
+  return val
+}
+
+/**
+ * Create a new release from the master branch
+ * @param {string} server
+ * @param {string} organization
+ * @param {string} languageId
+ * @param {string} resourceId
+ * @return {object} response 
+ */
+ export async function createRelease({server, organization, languageId, resourceId, version, tokenid}) {
+  // example: POST
+  // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
+
+  let val = {}
+  const uri = server + "/" + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases') ;
+  try {
+    const res = await fetch(uri+'?token='+tokenid, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+        "tag_name": "${version}",
+        "target_commitish": "master",
+        "name": "${version}",
+        "body": "Release ${version} of ${languageId}_${resourceId}",
+        "draft": false,
+        "prerelease": false
+      }`
+    })
+    if ( res.status === 201 ) {
+      val.status = true
+      val.message = `Created release ${version} of ${languageId}_${resourceId} `
+    } else if ( res.status === 404 ) {
+      val.status = false
+      val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
+    } else if ( res.status === 409 ) {
+      val.status = false
+      val.message = `Invalid JSON payload (409)`
+    } else {
+      val.status = false
+      val.message = `Unexpected response: status ${res.status}, message ${res.message}`
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`createRelease() - error creating release,
+      message '${message}',
+      disconnected=${disconnected},
+      url ${uri}
+      Error:`, 
+      e)
+    val.isValid = false
+    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  }
+  return val
 }

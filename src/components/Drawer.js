@@ -7,6 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import SettingsIcon from '@material-ui/icons/Settings'
+import BeenhereIcon from '@material-ui/icons/Beenhere';
 import BugReportIcon from '@material-ui/icons/BugReport'
 import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
@@ -36,6 +37,15 @@ export default function Drawer({
 
     if (okToContinue) {
       router.push('/settings')
+      onClose()
+    }
+  }
+
+  async function onReleaseRepoClick() {
+    const okToContinue = await checkUnsavedChanges()
+
+    if (okToContinue) {
+      router.push('/releaseRepo')
       onClose()
     }
   }
@@ -95,6 +105,14 @@ export default function Drawer({
             <SettingsIcon />
           </ListItemIcon>
           <ListItemText primary={'Account Settings'} />
+        </ListItem>
+      </List>
+      <List disablePadding>
+        <ListItem button key={'Release Repository'} onClick={onReleaseRepoClick}>
+          <ListItemIcon>
+            <BeenhereIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Release Repository'} />
         </ListItem>
       </List>
       <List disablePadding>

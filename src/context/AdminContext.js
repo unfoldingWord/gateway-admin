@@ -43,6 +43,12 @@ export default function AdminContextProvider({
   // Of course, the initial state will be to run them all.
   const [refresh, setRefresh] = useState(ALL)
 
+  // these two state variable captures the resource to release and
+  // the version to assign to the release
+  const [releaseResource, setReleaseResource] = useState(null)
+  const [releaseVersion, setReleaseVersion] = useState(null)
+
+
   const {
     state: {
       authentication,
@@ -296,10 +302,14 @@ export default function AdminContextProvider({
       twRepoTreeStatus,
       books,
       refresh,
+      releaseResource,
+      releaseVersion,
     },
     actions: {
       setBooks: _setBooks,
       setRefresh: setRefresh,
+      setReleaseResource: setReleaseResource,
+      setReleaseVersion: setReleaseVersion,
     }
   };
 
