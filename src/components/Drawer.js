@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import SettingsIcon from '@material-ui/icons/Settings'
 import BeenhereIcon from '@material-ui/icons/Beenhere';
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import BugReportIcon from '@material-ui/icons/BugReport'
 import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
@@ -46,6 +47,15 @@ export default function Drawer({
 
     if (okToContinue) {
       router.push('/releaseRepo')
+      onClose()
+    }
+  }
+
+  async function onPrintRepoClick() {
+    const okToContinue = await checkUnsavedChanges()
+
+    if (okToContinue) {
+      router.push('/printRepo')
       onClose()
     }
   }
@@ -113,6 +123,14 @@ export default function Drawer({
             <BeenhereIcon />
           </ListItemIcon>
           <ListItemText primary={'Release Repository'} />
+        </ListItem>
+      </List>
+      <List disablePadding>
+        <ListItem button key={'Print Repository'} onClick={onPrintRepoClick}>
+          <ListItemIcon>
+            <PictureAsPdfIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Print Repository'} />
         </ListItem>
       </List>
       <List disablePadding>

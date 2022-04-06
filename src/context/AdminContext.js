@@ -48,6 +48,10 @@ export default function AdminContextProvider({
   const [releaseResource, setReleaseResource] = useState(null)
   const [releaseVersion, setReleaseVersion] = useState(null)
 
+  // repo printing states
+  const [printConstraints, setPrintContraints] = useState(null)
+  const [printResource, setPrintResource] = useState(null)
+
 
   const {
     state: {
@@ -304,12 +308,16 @@ export default function AdminContextProvider({
       refresh,
       releaseResource,
       releaseVersion,
+      printConstraints,
+      printResource,
     },
     actions: {
       setBooks: _setBooks,
       setRefresh: setRefresh,
       setReleaseResource: setReleaseResource,
       setReleaseVersion: setReleaseVersion,
+      setPrintContraints: setPrintContraints,
+      setPrintResource: setPrintResource,
     }
   };
 
