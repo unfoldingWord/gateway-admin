@@ -11,6 +11,7 @@ import { AdminContext } from '@context/AdminContext'
 const PrintPage = () => {
   const router = useRouter()
   const [confirmPrint, setConfirmPrint] = useState(false)
+  const [printDisabled, setPrintDisabled] = useState(true)
 
   const { state: authentication } = useContext(AuthenticationContext)
   const {
@@ -32,6 +33,16 @@ const PrintPage = () => {
     }
   } = useContext(AdminContext)
 
+  useEffect( () => {
+    if (printConstraints === null) {
+      setPrintDisabled(true)
+    } else if (printConstraints.ot || printConstraints.nt || printConstraints.bpFilter) {
+      setPrintDisabled(false)
+    } else {
+      setPrintDisabled(true)
+    }
+  },[printConstraints])
+
 
   useEffect( () => {
 
@@ -47,8 +58,6 @@ const PrintPage = () => {
     doPrint()
 
   }, [server, organization, languageId, confirmPrint, printConstraints, printResource])
-
-
 
   return (
     <Layout>
@@ -73,7 +82,7 @@ const PrintPage = () => {
               color='primary'
               className='my-3 mx-1'
               variant='contained'
-              disabled={false}
+              disabled={printDisabled}
               onClick={
                 () => {
                   setConfirmPrint(true)
@@ -85,7 +94,7 @@ const PrintPage = () => {
             <br/>
           </div>
           {confirmPrint &&
-            <h2 className='mx-4'>Status: tbd</h2>         
+            <h2 className='mx-4'>Status: {JSON.stringify(printConstraints)}</h2>         
           }
         </div>
       </div>

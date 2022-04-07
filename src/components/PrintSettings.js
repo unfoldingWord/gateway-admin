@@ -69,6 +69,8 @@ export default function ReleaseSettings() {
     },
   } = useContext(StoreContext)
 
+  // initialize context with default value of state
+  setPrintContraints(state)
 
   return (
     <>
