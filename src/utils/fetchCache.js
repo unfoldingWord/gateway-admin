@@ -22,3 +22,69 @@ export async function clearCaches() {
   await sessionStore.clear();
 }
 
+
+
+/**
+ * get content from cache if present, otherwise use fetch()
+ * The return value is an object:
+ * - data: contains the data (content or error message)
+ * - error: if true, then data is an error message; othewise the content
+ * Note: only one should be null!
+ * @param {string} url
+ * @param {object} authentication
+ * @return {object} returned object with content or an error
+ */
+export async function getContent(url, authentication) {
+  let results = {}
+  let content = await localforage.sessionStore.getItem(url)
+  if ( content !== null ) {
+    results.data = content
+    results.error = false
+    return results
+  }
+
+  let errorCode
+  let _errorMessage = null
+  let fetchError = true
+
+  // not in cache ... go get it
+  try {
+    content = await doFetch(url, authentication)
+      .then(response => {
+        if (response?.status !== 200) {
+          errorCode = response?.status
+          console.warn(`doFetch - error fetching file,
+            status code ${errorCode},
+            URL=${url},
+            response:`,response)
+          fetchError = true
+          return null
+      }
+      fetchError = false
+      return response?.data
+    })
+    if (fetchError) {
+      _errorMessage = `Fetch error`
+      content = null // just to be sure
+    }
+  } catch (e) {
+    const message = e?.message
+    const disconnected = isServerDisconnected(e)
+    console.warn(`doFetch - error fetching file,
+      message '${message}',
+      disconnected=${disconnected},
+      URL=${url},
+      error message:`, 
+      e)
+    _errorMessage = "Network error"
+    content = null
+  }
+  if ( content ) {
+    localforage.sessionStore.setItem(url,content)
+  } 
+  
+  results.data = content 
+  results.error = fetchError
+
+  return results
+}
