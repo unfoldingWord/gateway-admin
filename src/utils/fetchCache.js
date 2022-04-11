@@ -36,7 +36,7 @@ export async function clearCaches() {
  */
 export async function getContent(url, authentication) {
   let results = {}
-  let content = await localforage.sessionStore.getItem(url)
+  let content = await localforage.sessionStore?.getItem(url)
   if ( content !== null ) {
     results.data = content
     results.error = false

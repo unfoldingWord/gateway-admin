@@ -147,12 +147,22 @@ const PrintPage = () => {
           repo += 'gst'
         }
       }
-      setStatus(JSON.stringify(books))
+      // setStatus(JSON.stringify(books))
+      let _docs = []
       for ( let i=0; i < books.length; i++ ) {
         const bookId = books[i]
         const filename = BIBLES_ABBRV_INDEX[bookId] + "-" + bookId.toUpperCase() + ".usfm"
         let url = `${server}/${organization}/${repo}/raw/branch/master/${filename}`
-        setTimeout( () =>  setStatus(url), 5000*(i+1))
+        // setTimeout( () =>  setStatus(url), 5000*(i+1))
+        setStatus("Retrieving:"+filename)
+        const results = getContent(url, authentication)
+        if ( results.error ) {
+          setStatus("Error retrieving:"+filename)
+          break
+        } else {
+          _docs.push(results.data)
+          setStatus("Retrieved OK:"+filename)
+        }
       }
       setConfirmPrint(false)
     }
