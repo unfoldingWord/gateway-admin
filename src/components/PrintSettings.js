@@ -71,6 +71,7 @@ export default function ReleaseSettings() {
 
   // initialize context with default value of state
   setPrintContraints(state)
+  setPrintResource(value)
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import Button from '@material-ui/core/Button'
 // import CircularProgress from '@material-ui/core/CircularProgress'
@@ -7,9 +7,10 @@ import Layout from '@components/Layout'
 import PrintSettings from '@components/PrintSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { ALL_BIBLE_BOOKS, isNT } from '@common/BooksOfTheBible';
-import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks';
-import {getLanguage} from "@common/languages";
+import { BIBLES_ABBRV_INDEX } from '@common/BooksOfTheBible'
+import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks'
+import {getLanguage} from "@common/languages"
+import { getContent } from '@utils/fetchCache'
 
 const i18n_default = {
   // coverAlt: "Cover",
@@ -26,14 +27,11 @@ const PrintPage = () => {
   const router = useRouter()
   const [confirmPrint, setConfirmPrint] = useState(false)
   const [printDisabled, setPrintDisabled] = useState(true)
+  const [status, setStatus] = useState("Click Confirm Print to continue")
 
   const [documents, setDocuments] = useState([])
   const [i18n, setI18n] = useState(i18n_default)
 
-  const language = useMemo(() => {
-    const lang_ = getLanguage({ languageId })
-    return lang_
-  }, [languageId])
 
   const { state: authentication } = useContext(AuthenticationContext)
   const {
@@ -43,6 +41,15 @@ const PrintPage = () => {
       server,
     },
   } = useContext(StoreContext)
+
+  const handleClickPrint = () => {
+    setConfirmPrint(true)
+  }
+
+  const language = useMemo(() => {
+    const lang_ = getLanguage({ languageId })
+    return lang_
+  }, [languageId])
 
   const {
     state: {
@@ -77,7 +84,7 @@ const PrintPage = () => {
     ready: documents.length && proskommaHook?.proskomma,
     verbose,
   });
-
+/*
   const catalogHook = useCatalog({
     ...proskommaHook,
     cv: !importHook.importing,
@@ -85,11 +92,11 @@ const PrintPage = () => {
   });
 
   const structure = {};
-  if ( isNT(bookId) ) {
-    structure.nt = [bookId]
-  } else {
-    structure.ot = [bookId]
-  }
+  // if ( isNT(bookId) ) {
+  //   structure.nt = [bookId]
+  // } else {
+  //   structure.ot = [bookId]
+  // }
   const {
     html, // dummy output (currently <html><head>...</head><body>...</body></html>)
     running, // dummy timer for simulating false, true, false.
@@ -108,7 +115,6 @@ const PrintPage = () => {
     // htmlFragment, // show full html or what's in the body
     verbose,
   });
-
   useEffect(() => {
     if (html && confirmPrint && !running) {
       const newPage = window.open("about:blank", "_blank", "width=850,height=1000")
@@ -117,20 +123,40 @@ const PrintPage = () => {
       setSubmitPreview(false)
     }
   }, [html, confirmPrint, running])
+*/
 
 
   useEffect( () => {
-
-    if ( !confirmPrint ) return;
 
     async function doPrint() {
       const tokenid = authentication.token.sha1;
       console.log("doPrint() - entered")
       console.log("printConstraints:",printConstraints)
       console.log("printResource", printResource)
+      let repo = languageId + "_"
+      if ( printResource === 'lt' ) {
+        if ( organization.toLowerCase() === 'unfoldingword' ) {
+          repo += 'ult'
+        } else {
+          repo += 'glt'
+        }
+      } else {
+        if ( organization.toLowerCase() === 'unfoldingword' ) {
+          repo += 'ust'
+        } else {
+          repo += 'gst'
+        }
+      }
+      setStatus(JSON.stringify(books))
+      for ( let i=0; i < books.length; i++ ) {
+        const bookId = books[i]
+        const filename = BIBLES_ABBRV_INDEX[bookId] + "-" + bookId.toUpperCase() + ".usfm"
+        let url = `${server}/${organization}/${repo}/raw/branch/master/${filename}`
+        setTimeout( () =>  setStatus(url), 5000*(i+1))
+      }
+      setConfirmPrint(false)
     }
-
-    doPrint()
+    if ( confirmPrint ) doPrint()
 
   }, [server, organization, languageId, confirmPrint, printConstraints, printResource])
 
@@ -160,7 +186,7 @@ const PrintPage = () => {
               disabled={printDisabled}
               onClick={
                 () => {
-                  setConfirmPrint(true)
+                  handleClickPrint()
                 }
               }
             >
@@ -168,9 +194,7 @@ const PrintPage = () => {
             </Button>
             <br/>
           </div>
-          {confirmPrint &&
-            <h2 className='mx-4'>Status: {JSON.stringify(books)}</h2>         
-          }
+          {<h2 className='mx-4'>Status: {status}</h2>}
         </div>
       </div>
     </Layout>
