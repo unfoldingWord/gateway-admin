@@ -26,6 +26,7 @@ const PrintPage = () => {
     state: {
       printConstraints,
       printResource,
+      books,
     },
     actions: {
       setPrintConstraints,
@@ -94,7 +95,7 @@ const PrintPage = () => {
             <br/>
           </div>
           {confirmPrint &&
-            <h2 className='mx-4'>Status: {JSON.stringify(printConstraints)}</h2>         
+            <h2 className='mx-4'>Status: {JSON.stringify(books)}</h2>         
           }
         </div>
       </div>
