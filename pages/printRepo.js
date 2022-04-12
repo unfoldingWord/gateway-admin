@@ -155,7 +155,8 @@ const PrintPage = () => {
         let url = `${server}/${organization}/${repo}/raw/branch/master/${filename}`
         // setTimeout( () =>  setStatus(url), 5000*(i+1))
         setStatus("Retrieving:"+filename)
-        const results = getContent(url, authentication)
+        const results = await getContent(url, authentication)
+        console.log("results:",results)
         if ( results.error ) {
           setStatus("Error retrieving:"+filename)
           break
@@ -163,6 +164,7 @@ const PrintPage = () => {
           _docs.push(results.data)
           setStatus("Retrieved OK:"+filename)
         }
+        console.log("_docs[]", _docs)
       }
       setConfirmPrint(false)
     }

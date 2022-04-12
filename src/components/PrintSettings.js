@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ReleaseSettings() {
+export default function PrintSettings() {
   const classes = useStyles()
   const errorMessage = 'One or more of must be checked'
   const [state, setState] = useState({

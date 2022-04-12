@@ -1,4 +1,8 @@
 import localforage from 'localforage';
+import {
+  doFetch,
+  isServerDisconnected,
+} from '@utils/network'
 
 localforage.setDriver([localforage.INDEXEDDB, localforage.WEBSQL]);
 
@@ -20,6 +24,7 @@ export const sessionStore = localforage.createInstance({
 export async function clearCaches() {
   console.log("Clearing localforage.INDEXEDDB sessionStore");
   await sessionStore.clear();
+  await sessionStore.setItem("Session-Cleared","true")
 }
 
 
@@ -35,22 +40,26 @@ export async function clearCaches() {
  * @return {object} returned object with content or an error
  */
 export async function getContent(url, authentication) {
+  console.log("getContent() entering")
   let results = {}
-  let content = await localforage.sessionStore?.getItem(url)
-  if ( content !== null ) {
-    results.data = content
-    results.error = false
-    return results
-  }
+  // let content = await localforage.sessionStore.getItem(url)
+  // if ( content !== null ) {
+  //   console.log("getContent() cached=", content)
+  //   results.data = content
+  //   results.error = false
+  //   return results
+  // }
 
   let errorCode
   let _errorMessage = null
   let fetchError = true
-
+  let content
   // not in cache ... go get it
+  console.log("getContent() not in cache, fetching")
   try {
     content = await doFetch(url, authentication)
       .then(response => {
+        console.log("response=", response)
         if (response?.status !== 200) {
           errorCode = response?.status
           console.warn(`doFetch - error fetching file,
@@ -79,10 +88,10 @@ export async function getContent(url, authentication) {
     _errorMessage = "Network error"
     content = null
   }
-  if ( content ) {
-    localforage.sessionStore.setItem(url,content)
-  } 
-  
+  // if ( content ) {
+  //   localforage.sessionStore.setItem(url,content)
+  // } 
+  console.log("getContent() results=", results)
   results.data = content 
   results.error = fetchError
 
