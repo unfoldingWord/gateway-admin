@@ -7659,10 +7659,10 @@ prop-types@15.7.2, prop-types@15.x, prop-types@^15.0.0, prop-types@^15.5.10, pro
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
-proskomma-react-hooks@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/proskomma-react-hooks/-/proskomma-react-hooks-2.1.1.tgz#1333beec2923fc06482440b69e984a8301c3d6d0"
-  integrity sha512-r6ZMqO45cdR+ib8AmxbAP6R+3HY7r9l03Nlb//Pms5wn9DAmzLLYl5hbHjlgExl0oR3rkQGtJU/jTedGDfcsIQ==
+proskomma-react-hooks@2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/proskomma-react-hooks/-/proskomma-react-hooks-2.2.1.tgz#653e038c689fb4e8eb93e310b2a3f5102d3b5d3e"
+  integrity sha512-QFLyyCt75cEWOEoKiAcqcakCKLXhFMf5emXqTr0YjUvDLRqrZhTfXq4PPYpxzAVKbzNI0m+IilqnhDXRX+dIxw==
   dependencies:
     deep-freeze "^0.0.1"
     lorem-ipsum "^2.0.4"

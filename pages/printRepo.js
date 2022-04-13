@@ -84,7 +84,6 @@ const PrintPage = () => {
     ready: documents.length && proskommaHook?.proskomma,
     verbose,
   });
-/*
   const catalogHook = useCatalog({
     ...proskommaHook,
     cv: !importHook.importing,
@@ -97,6 +96,21 @@ const PrintPage = () => {
   // } else {
   //   structure.ot = [bookId]
   // }
+  let ntList = []
+  let otList = []
+  for (let i=0; i<books; i++) {
+    if ( isNT(books[i]) ) {
+      ntList.push(books[i])
+    } else {
+      otList.push(books[i])
+    }
+  }
+  if ( ntList.length > 0 ) {
+    structure.nt = ntList
+  }
+  if ( otList.length > 0 ) {
+    structure.ot = otList
+  }
   const {
     html, // dummy output (currently <html><head>...</head><body>...</body></html>)
     running, // dummy timer for simulating false, true, false.
@@ -115,15 +129,20 @@ const PrintPage = () => {
     // htmlFragment, // show full html or what's in the body
     verbose,
   });
+
   useEffect(() => {
+    console.log("html:", html)
+    console.log("confirmPrint:", confirmPrint)
+    console.log("running:", running)
     if (html && confirmPrint && !running) {
+      setStatus("Generating Preview!")
       const newPage = window.open("about:blank", "_blank", "width=850,height=1000")
       newPage.document.write(html.replace("https://unpkg.com/pagedjs/dist", "/static/js"))
       newPage.document.close()
-      setSubmitPreview(false)
+      setStatus("Press Control-P to save as PDF")
+      setConfirmPrint(false) // all done
     }
   }, [html, confirmPrint, running])
-*/
 
 
   useEffect( () => {
@@ -175,10 +194,19 @@ const PrintPage = () => {
         }
       }
       if ( ! errFlag ) {
+        const languageName = language.localized || language.languageName || language.languageId
+        const title = `${organization} - ${languageName}`
+        const i18n = {
+          ...i18n_default,
+          titlePage: title,
+          title,
+        }
+        setI18n(i18n)
+        setStatus("Begin importing documents for printing")
         setDocuments(docs)
-        setStatus("Importing documents for printing")
+        setStatus("Completed import of documents for printing")
       }
-      setConfirmPrint(false)
+      // setConfirmPrint(false)
     }
     if ( confirmPrint ) doPrint()
 

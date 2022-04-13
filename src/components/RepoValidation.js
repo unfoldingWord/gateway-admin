@@ -241,6 +241,7 @@ function RepoValidation() {
                 bookId={bookId} 
                 classes={classes} 
                 onClose={removeBook}
+                // key={bookId} /* this key property utterly messes up the layout */
               />
 
               :
@@ -249,6 +250,7 @@ function RepoValidation() {
                 bookId={bookId} 
                 classes={classes} 
                 onClose={removeBook}
+                // key={bookId} /* this key property utterly messes up the layout */
               />
             )
           }
