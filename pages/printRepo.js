@@ -7,10 +7,10 @@ import Layout from '@components/Layout'
 import PrintSettings from '@components/PrintSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { BIBLES_ABBRV_INDEX } from '@common/BooksOfTheBible'
+import { ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT } from '@common/BooksOfTheBible'
 import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks'
 import {getLanguage} from "@common/languages"
-import { getContent } from '@utils/fetchCache'
+import { locateContent } from '@utils/contentValidation'
 
 const i18n_default = {
   // coverAlt: "Cover",
@@ -148,23 +148,35 @@ const PrintPage = () => {
         }
       }
       // setStatus(JSON.stringify(books))
-      let _docs = []
+      let errFlag = false
+      let docs = []
       for ( let i=0; i < books.length; i++ ) {
         const bookId = books[i]
+        const bookName = ALL_BIBLE_BOOKS[bookId]
         const filename = BIBLES_ABBRV_INDEX[bookId] + "-" + bookId.toUpperCase() + ".usfm"
         let url = `${server}/${organization}/${repo}/raw/branch/master/${filename}`
         // setTimeout( () =>  setStatus(url), 5000*(i+1))
         setStatus("Retrieving:"+filename)
-        const results = await getContent(url, authentication)
-        console.log("results:",results)
-        if ( results.error ) {
-          setStatus("Error retrieving:"+filename)
-          break
-        } else {
-          _docs.push(results.data)
+        const content = await locateContent(url, authentication)
+        if ( content ) {
+          docs.push(
+            { selectors: { org: organization, lang: languageId, abbr: bookId },
+              data: content, 
+              bookCode: bookId, 
+              bookName: bookName,
+              testament: isNT(bookId) ? "nt":"ot,",
+            }
+          )
           setStatus("Retrieved OK:"+filename)
+        } else {
+          setStatus("Error retrieving "+filename)
+          errFlag = true
+          break
         }
-        console.log("_docs[]", _docs)
+      }
+      if ( ! errFlag ) {
+        setDocuments(docs)
+        setStatus("Importing documents for printing")
       }
       setConfirmPrint(false)
     }
