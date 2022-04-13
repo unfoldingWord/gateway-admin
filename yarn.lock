@@ -7684,10 +7684,10 @@ proskomma-utils@^0.4.28:
     uuid-base64 "^1.0.0"
     xregexp "^4.4.1"
 
-proskomma@^0.6.9:
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/proskomma/-/proskomma-0.6.10.tgz#d77b3f3c5b27e426e0baa975a8e2ede5c7dfb8dc"
-  integrity sha512-v0x4rei9CzJfXW9YYT9xITpNlfVgf0xotuiw+Ac+hqlXrkwXXZJz4J0g69EkzW91O9l10LJVVu9zCMg6T/uGDg==
+proskomma@0.6.9:
+  version "0.6.9"
+  resolved "https://registry.yarnpkg.com/proskomma/-/proskomma-0.6.9.tgz#e2bb92ec3cd3f109c8d3068a780b8a4738ddc85f"
+  integrity sha512-/8wJyXrZb5107Ov2wIMEuFolZ3V0vROpUehPTYv3pSa8V0uqgItko00Sa8kt7yefS3LNc7PFrtqQOk7TZd815Q==
   dependencies:
     "@babel/core" "^7.12.9"
     async-mutex "^0.2.6"

@@ -91,14 +91,9 @@ const PrintPage = () => {
   });
 
   const structure = {};
-  // if ( isNT(bookId) ) {
-  //   structure.nt = [bookId]
-  // } else {
-  //   structure.ot = [bookId]
-  // }
   let ntList = []
   let otList = []
-  for (let i=0; i<books; i++) {
+  for (let i=0; i<books.length; i++) {
     if ( isNT(books[i]) ) {
       ntList.push(books[i])
     } else {
@@ -130,8 +125,13 @@ const PrintPage = () => {
     verbose,
   });
 
+  useEffect( () => {
+    console.log("Errors:",errors)
+    console.log("catalog:", catalogHook?.catalog)
+  }, [errors])
+
   useEffect(() => {
-    console.log("html:", html)
+    console.log("html yet?", html ? "yes" : "no")
     console.log("confirmPrint:", confirmPrint)
     console.log("running:", running)
     if (html && confirmPrint && !running) {
