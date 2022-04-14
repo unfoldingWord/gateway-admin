@@ -118,7 +118,7 @@ const PrintPage = () => {
     structure, // eventually generate structure from catalog
     i18n,
     language: languageId,
-    ready: confirmPrint && i18n?.title, // bool to allow render to run, don't run until true and all content is present
+    ready: confirmPrint && i18n?.title && catalogHook?.catalog?.docSets?.[0]?.id, // bool to allow render to run, don't run until true and all content is present
     // pagedJS, // is this a link or a local file?
     // css, //
     // htmlFragment, // show full html or what's in the body
