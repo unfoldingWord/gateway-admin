@@ -18,14 +18,18 @@ The goal of this phase is have all the initial building blocks (creation, valida
 
   Allow users to create a release in Catalog Next 
   
- 
+ - [ ] **Validate Content**
+  Integrate Content validation RCL
   
+ - [ ] **Merging branches**
+ Provide a UI for merging branches into master.
+ 
+## Phase 2
+*gatewayadmin 1.0.x*
 
-Draft:
-~~Finalize Mock ups~~
-~~TSV migration to be completed for TN,TQ and TW~~
-Integrate Content validation RCL
+- [ ] **Publish a release to Catalog Next**
+
 Integrate Catalog Next RCL for publish process automation (1.0 MVP)
-Merging branches
-Task assignment and progress
-Produce PDFs
+
+- [ ] **Task assignment and progress**
+- [ ] **Produce PDFs**
