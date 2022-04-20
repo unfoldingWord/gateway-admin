@@ -136,9 +136,21 @@ const PrintPage = () => {
     console.log("running:", running)
     if (html && confirmPrint && !running) {
       setStatus("Generating Preview!")
-      const newPage = window.open("about:blank", "_blank", "width=850,height=1000")
-      newPage.document.write(html.replace("https://unpkg.com/pagedjs/dist", "/static/js"))
-      newPage.document.close()
+      const newPage = window.open('','','_window');
+      newPage.document.head.innerHTML = "<title>PDF Preview</title>";
+      const script = newPage.document.createElement('script');
+      script.src = 'https://unpkg.com/pagedjs/dist/paged.polyfill.js';
+      newPage.document.head.appendChild(script);
+      const style = newPage.document.createElement('style');
+      const newStyles = `
+      html { background: grey; }
+      .pagedjs_right_page { float: right; }
+      .pagedjs_left_page { float: left; }
+      .pagedjs_page { background: white; margin: 1em; }
+      `;
+      style.innerHTML = newStyles + html.replace(/^[\s\S]*<style>/, "").replace(/<\/style>[\s\S]*/, "");
+      newPage.document.head.appendChild(style);
+      newPage.document.body.innerHTML = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");      
       setStatus("Press Control-P to save as PDF")
       setConfirmPrint(false) // all done
     }
@@ -181,9 +193,9 @@ const PrintPage = () => {
           docs.push(
             { selectors: { org: organization, lang: languageId, abbr: bookId },
               data: content, 
-              bookCode: bookId, 
+              bookCode: bookId.toUpperCase(), 
               bookName: bookName,
-              testament: isNT(bookId) ? "nt":"ot,",
+              testament: isNT(bookId) ? "nt":"ot",
             }
           )
           setStatus("Retrieved OK:"+filename)
