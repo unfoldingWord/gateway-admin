@@ -113,12 +113,12 @@ const PrintPage = () => {
     errors, // caught and floated up
   } = useRenderPreview({
     ...proskommaHook,
-    docSetId: catalogHook?.catalog?.docSets?.[0]?.id, // docset provides language and docSetId to potentially query, and build structure
+    docSetId: catalogHook?.catalog?.docSets?.[documents.length-1]?.id, // docset provides language and docSetId to potentially query, and build structure
     textDirection: language?.direction || 'ltr',
     structure, // eventually generate structure from catalog
     i18n,
     language: languageId,
-    ready: confirmPrint && i18n?.title && catalogHook?.catalog?.docSets?.[0]?.id, // bool to allow render to run, don't run until true and all content is present
+    ready: importHook.done && confirmPrint && i18n?.title && catalogHook?.catalog?.docSets?.[documents.length-1]?.id, // bool to allow render to run, don't run until true and all content is present
     // pagedJS, // is this a link or a local file?
     // css, //
     // htmlFragment, // show full html or what's in the body
