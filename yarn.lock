@@ -7690,17 +7690,17 @@ prop-types@15.7.2, prop-types@15.x, prop-types@^15.0.0, prop-types@^15.5.10, pro
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
-proskomma-react-hooks@2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/proskomma-react-hooks/-/proskomma-react-hooks-2.3.1.tgz#6bb600911e0a25a44596e00c042201b08de2bb8d"
-  integrity sha512-KGRIKIBiLOyg0L3jsssxeY2jZvmV3VkriIcwRqbXaEE3VytdcvzwCjd5PGk3MPwVdhIrEZfvvxbZ8/6BZn8EKQ==
+proskomma-react-hooks@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/proskomma-react-hooks/-/proskomma-react-hooks-2.3.2.tgz#ad541b998f0922ef34252cc7bc3c7506a65df728"
+  integrity sha512-H1ffFbsqoJWIwVIjb6v7DwgomaQCr9U5rQPIqevWohYijLfthze/vCyDpaZ3sjJSxIS3L+CK/Iy8fHJWG8GQqA==
   dependencies:
     deep-freeze "^0.0.1"
     lorem-ipsum "^2.0.4"
-    proskomma-render-pdf "^0.6.8"
+    proskomma-render-pdf "0.6.8"
     use-deep-compare "^1.1.0"
 
-proskomma-render-pdf@^0.6.8:
+proskomma-render-pdf@0.6.8:
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/proskomma-render-pdf/-/proskomma-render-pdf-0.6.8.tgz#0fe5a558363371e9a3a310b5d12d1115ac705e6c"
   integrity sha512-FMY4N1XW7TUPbyHYjFR5Dt89O+EgQ9XJfS/M08TzigKJlRgQPHTM7dVmqQxfnNB8/Qp/V0yE3tlNJ35QJeiwbw==

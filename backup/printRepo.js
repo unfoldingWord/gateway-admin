@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useMemo } from 'react'
+import { useContext, useEffect, useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import Button from '@material-ui/core/Button'
 // import CircularProgress from '@material-ui/core/CircularProgress'
@@ -42,9 +42,9 @@ const PrintPage = () => {
     },
   } = useContext(StoreContext)
 
-  const handleClickPrint = () => {
-    setConfirmPrint(true)
-  }
+  // const handleClickPrint = () => {
+  //   setConfirmPrint(true)
+  // }
 
   const language = useMemo(() => {
     const lang_ = getLanguage({ languageId })
@@ -108,7 +108,7 @@ const PrintPage = () => {
   }
   const {
     html, // dummy output (currently <html><head>...</head><body>...</body></html>)
-    running, // dummy timer for simulating false, true, false.
+    rendering, // dummy timer for simulating false, true, false.
     progress, // dummy 0...50...100
     errors, // caught and floated up
   } = useRenderPreview({
@@ -130,46 +130,31 @@ const PrintPage = () => {
     console.log("catalog:", catalogHook?.catalog)
   }, [errors])
 
-  useEffect(() => {
-    console.log("html yet?", html ? "yes" : "no")
-    console.log("confirmPrint:", confirmPrint)
-    console.log("running:", running)
-    if (html && confirmPrint && !running) {
-      setStatus("Generating Preview!")
-      const newPage = window.open('','','_window');
-      newPage.document.head.innerHTML = "<title>PDF Preview</title>";
-      const script = newPage.document.createElement('script');
-      script.src = 'https://unpkg.com/pagedjs/dist/paged.polyfill.js';
-      newPage.document.head.appendChild(script);
-      const style = newPage.document.createElement('style');
-      const newStyles = `
-      body {
-        margin: 0;
-        background: grey;
-      }
-      .pagedjs_pages {
-      }
-      .pagedjs_page {
-        background: white;
-        margin: 1em;
-      }
-      .pagedjs_right_page {
-        float: right;
-      }
-      .pagedjs_left_page {
-        float: left;
-      }
-      div#page-2 {
-        clear: right;
-      }
-      `;
-      style.innerHTML = newStyles + html.replace(/^[\s\S]*<style>/, "").replace(/<\/style>[\s\S]*/, "");
-      newPage.document.head.appendChild(style);
-      newPage.document.body.innerHTML = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");      
-      setStatus("Press Control-P to save as PDF")
-      setConfirmPrint(false) // all done
-    }
-  }, [html, confirmPrint, running])
+  // useEffect(() => {
+  //   console.log("html yet?", html ? "yes" : "no")
+  //   console.log("confirmPrint:", confirmPrint)
+  //   console.log("running:", running)
+  //   if (html && confirmPrint && !running && progress === 100) {
+  //     setStatus("Generating Preview!")
+  //     const newPage = window.open('','','_window');
+  //     newPage.document.head.innerHTML = "<title>PDF Preview</title>";
+  //     const script = newPage.document.createElement('script');
+  //     script.src = 'https://unpkg.com/pagedjs/dist/paged.polyfill.js';
+  //     newPage.document.head.appendChild(script);
+  //     const style = newPage.document.createElement('style');
+  //     const newStyles = `
+  //     html { background: grey; }
+  //     .pagedjs_right_page { float: right; }
+  //     .pagedjs_left_page { float: left; }
+  //     .pagedjs_page { background: white; margin: 1em; }
+  //     `;
+  //     style.innerHTML = newStyles + html.replace(/^[\s\S]*<style>/, "").replace(/<\/style>[\s\S]*/, "");
+  //     newPage.document.head.appendChild(style);
+  //     newPage.document.body.innerHTML = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");      
+  //     setStatus("Press Control-P to save as PDF")
+  //     setConfirmPrint(false) // all done
+  //   }
+  // }, [html, confirmPrint, running])
 
 
   useEffect( () => {
@@ -239,6 +224,53 @@ const PrintPage = () => {
 
   }, [server, organization, languageId, confirmPrint, printConstraints, printResource])
 
+
+  const onPreviewClick = useCallback(() => {
+    setConfirmPrint(true)
+    if (html && progress === 100) {
+      const newStyles = `
+      body {
+        margin: 0;
+        background: grey;
+      }
+      .pagedjs_pages {
+      }
+      .pagedjs_page {
+        background: white;
+        margin: 1em;
+      }
+      .pagedjs_right_page {
+        float: right;
+      }
+      .pagedjs_left_page {
+        float: left;
+      }
+      div#page-2 {
+        clear: right;
+      }
+      `;
+      const styles = newStyles + html.replace(/^[\s\S]*<style>/, "").replace(/<\/style>[\s\S]*/, "");
+      const body = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");
+      try {
+        const newPage = window.open('','','location=no,toolbar=no,menubar=no,');
+        newPage.document.head.innerHTML = "<title>PDF Preview</title>";
+        const style = newPage.document.createElement('style');
+        style.innerHTML = styles;
+        newPage.document.head.appendChild(style);
+        newPage.document.body.innerHTML = body;
+        const script = newPage.document.createElement('script');
+        script.src = 'https://unpkg.com/pagedjs/dist/paged.polyfill.js';
+        newPage.document.head.appendChild(script);
+        setStatus("Press Control-P to save as PDF")
+        setConfirmPrint(false) // all done
+
+      } catch (e) {
+        debugger
+      };
+    };
+  }, [html, rendering, progress]);
+
+
   return (
     <Layout>
       <div className='flex flex-col justify-center items-center'>
@@ -265,7 +297,7 @@ const PrintPage = () => {
               disabled={printDisabled}
               onClick={
                 () => {
-                  handleClickPrint()
+                  onPreviewClick()
                 }
               }
             >
