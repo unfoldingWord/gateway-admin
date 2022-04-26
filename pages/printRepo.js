@@ -11,6 +11,7 @@ import { ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT } from '@common/BooksOfTheBib
 import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks'
 import {getLanguage} from "@common/languages"
 import { locateContent } from '@utils/contentValidation'
+import useDeepEffect from 'use-deep-compare-effect';
 
 const i18n_default = {
   // coverAlt: "Cover",
@@ -125,16 +126,45 @@ const PrintPage = () => {
     verbose,
   });
 
-  useEffect( () => {
+  useDeepEffect( () => {
     console.log("Errors:",errors)
-    console.log("catalog:", catalogHook?.catalog)
-  }, [errors])
+    console.log("catalogHook:", catalogHook)
+    console.log("importHook:", importHook)
+  }, [errors, catalogHook, importHook])
 
   useEffect(() => {
-    console.log("html yet?", html ? "yes" : "no")
-    console.log("confirmPrint:", confirmPrint)
-    console.log("running:", running)
-    if (html && confirmPrint && !running) {
+    if ( errors && errors.length > 0 ) {
+      console.log("render returned errors:", errors)
+      return
+    }
+    if ( importHook && importHook.importing ) {
+      console.log("in useEffect/render... still importing")
+      return
+    }
+    if ( importHook.done ) {
+      console.log("importing is done!")
+    } else {
+      console.log("in useEffect/render... importing not done")
+      return
+    }
+    if ( confirmPrint ) {
+      console.log("confirmPrint is true")
+    } else {
+      return
+    }
+    if ( html ) {
+      console.log("html data is available")
+      if ( running ) {
+        console.log("... but running is still true")
+        return
+      } else {
+        console.log("html data and no longer running")
+      }
+    } else {
+      console.log("html data is not available")
+      return
+    }
+    // if (html && confirmPrint && !running) {
       setStatus("Generating Preview!")
       const newPage = window.open('','','_window');
       newPage.document.head.innerHTML = "<title>PDF Preview</title>";
@@ -168,8 +198,8 @@ const PrintPage = () => {
       newPage.document.body.innerHTML = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");      
       setStatus("Press Control-P to save as PDF")
       setConfirmPrint(false) // all done
-    }
-  }, [html, confirmPrint, running])
+    // }
+  }, [html, errors, confirmPrint, running, importHook])
 
 
   useEffect( () => {
