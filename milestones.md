@@ -19,9 +19,11 @@ The goal of this phase is have all the initial building blocks (creation, valida
   Allow users to create a release in Catalog Next 
   
  - [ ] **Validate Content**
+ 
   Integrate Content validation RCL
   
  - [ ] **Merging branches**
+ 
  Provide a UI for merging branches into master.
  
 ## Phase 2
@@ -32,4 +34,7 @@ The goal of this phase is have all the initial building blocks (creation, valida
 Integrate Catalog Next RCL for publish process automation (1.0 MVP)
 
 - [ ] **Task assignment and progress**
+
+Users will be able to assign issues to users and the status of those issues will show a meter of how many issues are completed
+
 - [ ] **Produce PDFs**
