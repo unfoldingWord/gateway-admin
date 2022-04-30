@@ -29,6 +29,7 @@ const PrintPage = () => {
   const [confirmPrint, setConfirmPrint] = useState(false)
   const [printDisabled, setPrintDisabled] = useState(true)
   const [status, setStatus] = useState("Click Confirm Print to continue")
+  const [importCount, setImportCount] = useState(0);
 
   const [documents, setDocuments] = useState([])
   const [i18n, setI18n] = useState(i18n_default)
@@ -84,6 +85,12 @@ const PrintPage = () => {
     documents: documents,
     ready: documents.length && proskommaHook?.proskomma,
     verbose,
+    onImport: ({org, lang, abbr, bookCode}) => {
+      let _importCount = importCount;
+      console.log("onImport fired for:", bookCode);
+      console.log("_importCount=",_importCount);
+      setImportCount(_importCount+1);
+    },
   });
   const catalogHook = useCatalog({
     ...proskommaHook,
@@ -119,37 +126,17 @@ const PrintPage = () => {
     structure, // eventually generate structure from catalog
     i18n,
     language: languageId,
-    ready: importHook.done && confirmPrint && i18n?.title && catalogHook?.catalog?.docSets?.[documents.length-1]?.id, // bool to allow render to run, don't run until true and all content is present
+    // ready: importHook.done && confirmPrint && i18n?.title && catalogHook?.catalog?.docSets?.[documents.length-1]?.id, // bool to allow render to run, don't run until true and all content is present
+    ready: importCount === documents.length,
     // pagedJS, // is this a link or a local file?
     // css, //
     // htmlFragment, // show full html or what's in the body
     verbose,
   });
 
-  useDeepEffect( () => {
-    console.log("Errors:",errors)
-    console.log("catalogHook:", catalogHook)
-    console.log("importHook:", importHook)
-  }, [errors, catalogHook, importHook])
-
   useEffect(() => {
     if ( errors && errors.length > 0 ) {
       console.log("render returned errors:", errors)
-      return
-    }
-    if ( importHook && importHook.importing ) {
-      console.log("in useEffect/render... still importing")
-      return
-    }
-    if ( importHook.done ) {
-      console.log("importing is done!")
-    } else {
-      console.log("in useEffect/render... importing not done")
-      return
-    }
-    if ( confirmPrint ) {
-      console.log("confirmPrint is true")
-    } else {
       return
     }
     if ( html ) {
@@ -165,6 +152,9 @@ const PrintPage = () => {
       return
     }
     // if (html && confirmPrint && !running) {
+      console.log("Generating Preview! Relevant Parameters are:")
+      console.log("Number of documents:", documents.length);
+      console.log("Size of HTML:", html.length);
       setStatus("Generating Preview!")
       const newPage = window.open('','','_window');
       newPage.document.head.innerHTML = "<title>PDF Preview</title>";
@@ -201,14 +191,19 @@ const PrintPage = () => {
     // }
   }, [html, errors, confirmPrint, running, importHook])
 
-
+  useEffect(
+    () => {
+      if ( importCount > 0 ) {
+        if ( importCount === documents.length ) {
+          setStatus("Import Complete!")
+        }
+      }
+    }, [importCount]
+  )
   useEffect( () => {
 
     async function doPrint() {
       const tokenid = authentication.token.sha1;
-      console.log("doPrint() - entered")
-      console.log("printConstraints:",printConstraints)
-      console.log("printResource", printResource)
       let repo = languageId + "_"
       if ( printResource === 'lt' ) {
         if ( organization.toLowerCase() === 'unfoldingword' ) {
@@ -261,7 +256,6 @@ const PrintPage = () => {
         setI18n(i18n)
         setStatus("Begin importing documents for printing")
         setDocuments(docs)
-        setStatus("Completed import of documents for printing")
       }
       // setConfirmPrint(false)
     }
