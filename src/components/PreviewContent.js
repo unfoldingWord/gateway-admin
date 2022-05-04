@@ -158,7 +158,7 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
         // create the preview
 
         const document = ({ bookCode, bookName, testament }) => ({
-          selectors: { org: owner, lang: languageId, abbr: bookCode },
+          selectors: { org: owner, lang: languageId, abbr: 'ult' },
           data: content,
           bookCode,
           testament,

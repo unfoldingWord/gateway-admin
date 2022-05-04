@@ -114,12 +114,12 @@ const PrintPage = () => {
     errors, // caught and floated up
   } = useRenderPreview({
     ...proskommaHook,
-    docSetId: catalogHook?.catalog?.docSets?.[documents.length-1]?.id, // docset provides language and docSetId to potentially query, and build structure
+    docSetId: ['unfoldingword_en_ult'], // docset provides language and docSetId to potentially query, and build structure
     textDirection: language?.direction || 'ltr',
     structure, // eventually generate structure from catalog
     i18n,
     language: languageId,
-    ready: importHook.done && confirmPrint && i18n?.title && catalogHook?.catalog?.docSets?.[documents.length-1]?.id, // bool to allow render to run, don't run until true and all content is present
+    ready: importHook.done, // bool to allow render to run, don't run until true and all content is present
     // pagedJS, // is this a link or a local file?
     // css, //
     // htmlFragment, // show full html or what's in the body
@@ -133,38 +133,12 @@ const PrintPage = () => {
   }, [errors, catalogHook, importHook])
 
   useEffect(() => {
-    if ( errors && errors.length > 0 ) {
-      console.log("render returned errors:", errors)
-      return
-    }
-    if ( importHook && importHook.importing ) {
-      console.log("in useEffect/render... still importing")
-      return
-    }
-    if ( importHook.done ) {
-      console.log("importing is done!")
-    } else {
-      console.log("in useEffect/render... importing not done")
-      return
-    }
-    if ( confirmPrint ) {
-      console.log("confirmPrint is true")
-    } else {
-      return
-    }
-    if ( html ) {
-      console.log("html data is available")
-      if ( running ) {
-        console.log("... but running is still true")
-        return
-      } else {
-        console.log("html data and no longer running")
-      }
-    } else {
-      console.log("html data is not available")
-      return
-    }
-    // if (html && confirmPrint && !running) {
+    console.log("--- Render useEffect Dependencies ---")
+    console.log("--- html:", html)
+    console.log("--- errors:", errors)
+    console.log("--- progress:", progress) 
+    console.log("--- running:", running)
+    if (html && progress === 100 ) {
       setStatus("Generating Preview!")
       const newPage = window.open('','','_window');
       newPage.document.head.innerHTML = "<title>PDF Preview</title>";
@@ -198,8 +172,8 @@ const PrintPage = () => {
       newPage.document.body.innerHTML = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");      
       setStatus("Press Control-P to save as PDF")
       setConfirmPrint(false) // all done
-    // }
-  }, [html, errors, confirmPrint, running, importHook])
+    }
+  }, [html, errors, running, progress])
 
 
   useEffect( () => {
@@ -234,9 +208,17 @@ const PrintPage = () => {
         // setTimeout( () =>  setStatus(url), 5000*(i+1))
         setStatus("Retrieving:"+filename)
         const content = await locateContent(url, authentication)
+        // Note: abbr is the base translation, not the book abbreviation
+        // Thus for uW, we only have two base translations, 'ust' and 'ult'
+        let translationAbbr;
+        if ( printResource === 'lt') {
+          translationAbbr = 'ult'
+        } else {
+          translationAbbr = 'ust'
+        }
         if ( content ) {
           docs.push(
-            { selectors: { org: organization, lang: languageId, abbr: bookId },
+            { selectors: { org: organization.toLowerCase(), lang: languageId, abbr: translationAbbr },
               data: content, 
               bookCode: bookId.toUpperCase(), 
               bookName: bookName,
@@ -311,3 +293,39 @@ const PrintPage = () => {
 }
 
 export default PrintPage
+
+
+/* code graveyard
+
+    if ( confirmPrint ) {
+      console.log("confirmPrint is true")
+    } else {
+      return
+    }
+    if ( errors && errors.length > 0 ) {
+      console.log("render returned errors:", errors)
+      return
+    }
+    if ( importHook && importHook.importing ) {
+      console.log("in useEffect/render... still importing")
+      return
+    }
+    if ( importHook.done ) {
+      console.log("importing is done!")
+    } else {
+      console.log("in useEffect/render... importing not done")
+      return
+    }
+    if ( html ) {
+      console.log("html data is available")
+      if ( running ) {
+        console.log("... but running is still true")
+        return
+      } else {
+        console.log("html data and no longer running")
+      }
+    } else {
+      console.log("html data is not available")
+      return
+    }
+*/
