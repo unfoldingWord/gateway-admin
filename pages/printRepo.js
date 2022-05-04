@@ -29,6 +29,7 @@ const PrintPage = () => {
   const [confirmPrint, setConfirmPrint] = useState(false)
   const [printDisabled, setPrintDisabled] = useState(true)
   const [status, setStatus] = useState("Click Confirm Print to continue")
+  const [importCount, setImportCount] = useState(0);
 
   const [documents, setDocuments] = useState([])
   const [i18n, setI18n] = useState(i18n_default)
@@ -84,6 +85,12 @@ const PrintPage = () => {
     documents: documents,
     ready: documents.length && proskommaHook?.proskomma,
     verbose,
+    onImport: ({org, lang, abbr, bookCode}) => {
+      let _importCount = importCount;
+      console.log("onImport fired for:", bookCode);
+      console.log("_importCount=",_importCount);
+      setImportCount(_importCount+1);
+    },
   });
   const catalogHook = useCatalog({
     ...proskommaHook,
@@ -125,12 +132,6 @@ const PrintPage = () => {
     // htmlFragment, // show full html or what's in the body
     verbose,
   });
-
-  useDeepEffect( () => {
-    console.log("Errors:",errors)
-    console.log("catalogHook:", catalogHook)
-    console.log("importHook:", importHook)
-  }, [errors, catalogHook, importHook])
 
   useEffect(() => {
     console.log("--- Render useEffect Dependencies ---")
@@ -175,14 +176,19 @@ const PrintPage = () => {
     }
   }, [html, errors, running, progress])
 
-
+  useEffect(
+    () => {
+      if ( importCount > 0 ) {
+        if ( importCount === documents.length ) {
+          setStatus("Import Complete!")
+        }
+      }
+    }, [importCount]
+  )
   useEffect( () => {
 
     async function doPrint() {
       const tokenid = authentication.token.sha1;
-      console.log("doPrint() - entered")
-      console.log("printConstraints:",printConstraints)
-      console.log("printResource", printResource)
       let repo = languageId + "_"
       if ( printResource === 'lt' ) {
         if ( organization.toLowerCase() === 'unfoldingword' ) {
@@ -243,7 +249,6 @@ const PrintPage = () => {
         setI18n(i18n)
         setStatus("Begin importing documents for printing")
         setDocuments(docs)
-        setStatus("Completed import of documents for printing")
       }
       // setConfirmPrint(false)
     }
