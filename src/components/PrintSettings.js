@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function PrintSettings() {
   const classes = useStyles()
-  const errorMessage = 'One or more of must be checked'
+  const errorMessage = 'One or more of above must be checked'
   const [state, setState] = useState({
     ot: false,
     nt: false,
@@ -91,11 +91,11 @@ export default function PrintSettings() {
             <FormGroup>
               <FormControlLabel
                 control={<Checkbox checked={ot} onChange={handleCheckboxChange} name="ot" />}
-                label="Old Testament"
+                label="Old Testament" disabled
               />
               <FormControlLabel
                 control={<Checkbox checked={nt} onChange={handleCheckboxChange} name="nt" />}
-                label="New Testament"
+                label="New Testament" disabled
               />
               <FormControlLabel
                 control={<Checkbox checked={bpFilter} onChange={handleCheckboxChange} name="bpFilter" />}

@@ -32,7 +32,7 @@ export const SINGLE_BOOK_CONFIG = {
 
 export async function renderHTML({ proskomma, language, textDirection, books }) {
   let response = {};
-  let docSetIds = ['eng_ult'];
+  let docSetIds = ['en_ult'];
   let _structure = [];
   let ntList = [];
   let otList = [];
@@ -83,7 +83,8 @@ export async function renderHTML({ proskomma, language, textDirection, books }) 
 
   try {
     console.log("Render config, docSetIds:", config, docSetIds)
-    response = await doRender(proskomma, config, docSetIds);
+    // response = await doRender(proskomma, config, docSetIds);
+    response = await doRender(proskomma, config);
   } catch (err) {
     console.log("render error:", err)
   }

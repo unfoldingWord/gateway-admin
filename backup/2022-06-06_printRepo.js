@@ -8,27 +8,36 @@ import PrintSettings from '@components/PrintSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT } from '@common/BooksOfTheBible'
+import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks'
 import {getLanguage} from "@common/languages"
 import { locateContent } from '@utils/contentValidation'
+import useDeepEffect from 'use-deep-compare-effect';
 
-import {Proskomma} from 'proskomma';
-import {renderHTML} from '@utils/renderHTML'
-
+const i18n_default = {
+  // coverAlt: "Cover",
+  titlePage: "unfoldingWord Literal Translation: Preview",
+  copyright: "Licensed under a Creative Commons Attribution-Sharealike 4.0 International License",
+  // preface: "Preface",
+  tocBooks: "Books of the Bible",
+  ot: "Old Testament",
+  nt: "New Testament"
+  // notes: "Notes",
+};
 
 const PrintPage = () => {
   const router = useRouter()
   const [confirmPrint, setConfirmPrint] = useState(false)
   const [printDisabled, setPrintDisabled] = useState(true)
   const [status, setStatus] = useState("Click Confirm Print to continue")
-  const [html, setHtml] = useState(null);
-  const [pk, /*setPk*/] = useState(new Proskomma());
+  const [importCount, setImportCount] = useState(0);
 
+  const [documents, setDocuments] = useState([])
+  const [i18n, setI18n] = useState(i18n_default)
 
 
   const { state: authentication } = useContext(AuthenticationContext)
   const {
     state: {
-      
       owner: organization,
       languageId,
       server,
@@ -66,11 +75,72 @@ const PrintPage = () => {
     }
   },[printConstraints])
 
+  const verbose = true
+  const proskommaHook = useProskomma({
+    verbose,
+  })
+
+  const importHook = useImport({
+    ...proskommaHook,
+    documents: documents,
+    ready: documents.length && proskommaHook?.proskomma,
+    verbose,
+    onImport: ({org, lang, abbr, bookCode}) => {
+      let _importCount = importCount;
+      console.log("onImport fired for:", bookCode);
+      console.log("_importCount=",_importCount);
+      setImportCount(_importCount+1);
+    },
+  });
+  const catalogHook = useCatalog({
+    ...proskommaHook,
+    cv: !importHook.importing,
+    verbose,
+  });
+
+  const structure = {};
+  let ntList = []
+  let otList = []
+  for (let i=0; i<books.length; i++) {
+    if ( isNT(books[i]) ) {
+      ntList.push(books[i])
+    } else {
+      otList.push(books[i])
+    }
+  }
+  if ( ntList.length > 0 ) {
+    structure.nt = ntList
+  }
+  if ( otList.length > 0 ) {
+    structure.ot = otList
+  }
+  const {
+    html, // dummy output (currently <html><head>...</head><body>...</body></html>)
+    running, // dummy timer for simulating false, true, false.
+    progress, // dummy 0...50...100
+    errors, // caught and floated up
+  } = useRenderPreview({
+    ...proskommaHook,
+    docSetId: ['unfoldingword_en_ult'], // docset provides language and docSetId to potentially query, and build structure
+    textDirection: language?.direction || 'ltr',
+    structure, // eventually generate structure from catalog
+    i18n,
+    language: languageId,
+    ready: importHook.done, // bool to allow render to run, don't run until true and all content is present
+    // pagedJS, // is this a link or a local file?
+    // css, //
+    // htmlFragment, // show full html or what's in the body
+    verbose,
+  });
 
   useEffect(() => {
-    if ( html ) {
-      console.log("html data is available")
-      setStatus("HTML is ready! Opening new window...")
+    console.log("--- Render useEffect Dependencies ---")
+    console.log("--- html:", html)
+    console.log("--- errors:", errors)
+    console.log("--- progress:", progress) 
+    console.log("--- running:", running)
+    if (html && progress === 100 ) {
+      setStatus("Generating Preview!")
       const newPage = window.open('','','_window');
       newPage.document.head.innerHTML = "<title>PDF Preview</title>";
       const script = newPage.document.createElement('script');
@@ -101,21 +171,21 @@ const PrintPage = () => {
       style.innerHTML = newStyles + html.replace(/^[\s\S]*<style>/, "").replace(/<\/style>[\s\S]*/, "");
       newPage.document.head.appendChild(style);
       newPage.document.body.innerHTML = html.replace(/^[\s\S]*<body>/, "").replace(/<\/body>[\s\S]*/, "");      
-      setHtml(null);
+      setStatus("Press Control-P to save as PDF")
+      setConfirmPrint(false) // all done
     }
-  }, [html])
+  }, [html, errors, running, progress])
 
+  useEffect(
+    () => {
+      if ( importCount > 0 ) {
+        if ( importCount === documents.length ) {
+          setStatus("Import Complete!")
+        }
+      }
+    }, [importCount]
+  )
   useEffect( () => {
-
-    async function render() {
-      const html = await renderHTML({ 
-        proskomma: pk, 
-        language: languageId,
-        textDirection: language?.direction,
-        books: books,
-      });
-      setHtml(html.output)
-    }
 
     async function doPrint() {
       const tokenid = authentication.token.sha1;
@@ -153,14 +223,15 @@ const PrintPage = () => {
           translationAbbr = 'ust'
         }
         if ( content ) {
-          setStatus("Retrieved OK:"+filename+", begin import...")
-          pk.importDocument(
-            {lang: "eng", abbr: 'ult'}, // selector. docSetId will be eng_ult
-            "usfm",
-            content
-          );
-          setContentStatus("Imported:"+filename);
-  
+          docs.push(
+            { selectors: { org: organization.toLowerCase(), lang: languageId, abbr: translationAbbr },
+              data: content, 
+              bookCode: bookId.toUpperCase(), 
+              bookName: bookName,
+              testament: isNT(bookId) ? "nt":"ot",
+            }
+          )
+          setStatus("Retrieved OK:"+filename)
         } else {
           setStatus("Error retrieving "+filename)
           errFlag = true
@@ -168,9 +239,18 @@ const PrintPage = () => {
         }
       }
       if ( ! errFlag ) {
-        setStatus("Begin rendering to HTML")
-        render()
+        const languageName = language.localized || language.languageName || language.languageId
+        const title = `${organization} - ${languageName}`
+        const i18n = {
+          ...i18n_default,
+          titlePage: title,
+          title,
+        }
+        setI18n(i18n)
+        setStatus("Begin importing documents for printing")
+        setDocuments(docs)
       }
+      // setConfirmPrint(false)
     }
     if ( confirmPrint ) doPrint()
 
