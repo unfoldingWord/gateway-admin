@@ -38,11 +38,15 @@ export default function ReleaseSettings() {
   const {
     state: {
       releaseResource,
-      releaseVersion,
+      // releaseVersion,
+      // releaseNotes,
     },
     actions: {
       setReleaseResource,
       setReleaseVersion,
+      setReleaseNotes,
+      setReleaseName,
+      setReleaseState,
     }
   } = useContext(AdminContext)
 
@@ -53,6 +57,10 @@ export default function ReleaseSettings() {
 
   const handleVersionChange = event => {
     setReleaseVersion(event.target.value)
+    // setTimeout( () => console.log("new version=",releaseVersion), 1)
+  }
+  const handleReleaseNotesChange = event => {
+    setReleaseNotes(event.target.value)
     // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
@@ -105,6 +113,29 @@ export default function ReleaseSettings() {
               type='text'
               onChange={handleVersionChange}
               disabled={textDisabled}
+            />
+          </FormControl>
+          <FormControl variant='outlined' className={classes.formControl}>
+            <TextField id="name" 
+              variant='outlined'
+              required={true} 
+              label="Release Name" 
+              // autoFocus={true}
+              // defaultValue={version}
+              type='text'
+              onChange={handleReleaseNameChange}
+              disabled={textDisabled}
+            />
+          </FormControl>
+          <FormControl variant='outlined' className={classes.formControl}>
+            <TextField id="releaseNotes" 
+              variant='outlined'
+              required={true} 
+              label="Release Notes" 
+              type='text'
+              multiline={true}
+              onChange={handleReleaseNotesChange}
+              // disabled={textDisabled}
             />
           </FormControl>
         </div>
