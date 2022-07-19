@@ -49,7 +49,7 @@ export default function AdminContextProvider({
   const [releaseVersion, setReleaseVersion] = useState(null)
   const [releaseNotes, setReleaseNotes] = useState(null)
   const [releaseName, setReleaseName] = useState(null)
-  const [releaseState, setReleaseState] = useState('Production')
+  const [releaseState, setReleaseState] = useState('prod')
 
 
   const {

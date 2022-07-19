@@ -31,10 +31,16 @@ const ReleasePage = () => {
     state: {
       releaseResource,
       releaseVersion,
+      releaseNotes,
+      releaseName,
+      releaseState,
     },
     actions: {
       setReleaseResource,
       setReleaseVersion,
+      setReleaseNotes,
+      setReleaseName,
+      setReleaseState,
     }
   } = useContext(AdminContext)
 
@@ -57,7 +63,14 @@ const ReleasePage = () => {
       setReleaseMessage(<CircularProgress />)
       const tokenid = authentication.token.sha1;
       const _resourceId = resourceIdMapper(organization, releaseResource.id)
-      const _results = await createRelease({server, organization, languageId, resourceId: _resourceId, version: releaseVersion, tokenid})
+      const _results = await createRelease({server, 
+          organization, languageId, resourceId: _resourceId, 
+          version: releaseVersion, 
+          notes: releaseNotes,
+          name: releaseName,
+          state: releaseState,
+          tokenid 
+        })
       setReleaseMessage(<span>{_results.message}</span>)
       // initialize release state vars
       setReleaseResource(null)

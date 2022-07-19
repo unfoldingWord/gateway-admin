@@ -344,6 +344,7 @@ export default function RepoValidationCard({
       hideMarkdownToggle={true} 
       closeable={true}
       onClose={() => removeBook(bookId)}
+      key={bookId}
     >
       <DenseTable cols={headers} rows={rows} />
     </Card>
