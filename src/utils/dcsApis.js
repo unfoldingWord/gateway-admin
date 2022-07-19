@@ -340,14 +340,22 @@ export async function validManifest({server, organization, languageId, resourceI
   // example: POST
   // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
 
+  // log release parameters
+  console.log(`
+    Name: ${name}
+    Version: ${version}
+    State: ${state}
+  `)
+  // end log release parameters
+
   let val = {}
   const uri = server + "/" + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases') ;
-  let prelease = false;
+  let prerelease = false;
   // compute the draft and prerelease booleans
   // - draft is always false
   // - if state is 'prod', then set prelease to false
-  if ( state === 'prelease' ) {
-    prelease = true
+  if ( state === 'prerelease' ) {
+    prerelease = true
   }
   try {
     const res = await fetch(uri+'?token='+tokenid, {
@@ -359,7 +367,7 @@ export async function validManifest({server, organization, languageId, resourceI
         "name": "${name}",
         "body": "${notes}",
         "draft": false,
-        "prerelease": false
+        "prerelease": ${prerelease}
       }`
     })
     if ( res.status === 201 ) {
