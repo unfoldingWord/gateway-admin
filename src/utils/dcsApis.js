@@ -336,12 +336,27 @@ export async function validManifest({server, organization, languageId, resourceI
  * @param {string} resourceId
  * @return {object} response 
  */
- export async function createRelease({server, organization, languageId, resourceId, version, tokenid}) {
+ export async function createRelease({server, organization, languageId, resourceId, version, notes, name, state, tokenid}) {
   // example: POST
   // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
 
+  // log release parameters
+  console.log(`
+    Name: ${name}
+    Version: ${version}
+    State: ${state}
+  `)
+  // end log release parameters
+
   let val = {}
   const uri = server + "/" + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases') ;
+  let prerelease = false;
+  // compute the draft and prerelease booleans
+  // - draft is always false
+  // - if state is 'prod', then set prelease to false
+  if ( state === 'prerelease' ) {
+    prerelease = true
+  }
   try {
     const res = await fetch(uri+'?token='+tokenid, {
       method: 'POST',
@@ -349,10 +364,10 @@ export async function validManifest({server, organization, languageId, resourceI
       body: `{
         "tag_name": "${version}",
         "target_commitish": "master",
-        "name": "${version}",
-        "body": "Release ${version} of ${languageId}_${resourceId}",
+        "name": "${name}",
+        "body": "${notes}",
         "draft": false,
-        "prerelease": false
+        "prerelease": ${prerelease}
       }`
     })
     if ( res.status === 201 ) {

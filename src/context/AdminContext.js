@@ -47,6 +47,9 @@ export default function AdminContextProvider({
   // the version to assign to the release
   const [releaseResource, setReleaseResource] = useState(null)
   const [releaseVersion, setReleaseVersion] = useState(null)
+  const [releaseNotes, setReleaseNotes] = useState(null)
+  const [releaseName, setReleaseName] = useState(null)
+  const [releaseState, setReleaseState] = useState('prod')
 
 
   const {
@@ -304,12 +307,18 @@ export default function AdminContextProvider({
       refresh,
       releaseResource,
       releaseVersion,
+      releaseNotes,
+      releaseName,
+      releaseState,
     },
     actions: {
       setBooks: _setBooks,
       setRefresh: setRefresh,
       setReleaseResource: setReleaseResource,
       setReleaseVersion: setReleaseVersion,
+      setReleaseNotes: setReleaseNotes,
+      setReleaseName: setReleaseName,
+      setReleaseState: setReleaseState,
     }
   };
 
