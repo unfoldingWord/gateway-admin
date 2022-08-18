@@ -284,10 +284,24 @@ export function isNT(bookId) {
   return NT_BOOKS.includes(bookId)
 }
 
+export function isOT(bookId) {
+  return OT_BOOKS.includes(bookId)
+}
+
 export function bookSelectList() {
   return Object.keys(BIBLE_AND_OBS).map(
     (bookId) => {
       return { id: bookId, name: BIBLE_AND_OBS[bookId] }
     }
   )
+}
+
+export const titlesToBoolean = () => {
+  const titleObject =  Object.keys(BIBLE_AND_OBS).map(
+    (bookId) => {
+      return { [BIBLE_AND_OBS[bookId]]: false }
+    }
+  )
+  console.log("titleObject=", titleObject);
+  return titleObject;
 }
