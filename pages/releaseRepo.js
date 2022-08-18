@@ -75,6 +75,9 @@ const ReleasePage = () => {
       // initialize release state vars
       setReleaseResource(null)
       setReleaseVersion(null)
+      setReleaseNotes(null)
+      setReleaseName(null)
+      setReleaseState('prod')
       setReleaseActive(false)
     }
 
