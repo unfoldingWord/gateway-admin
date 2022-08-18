@@ -109,7 +109,7 @@ function addProject( { resourceId, manifest, bookId }) {
 export async function manifestAddBook({server, username, repository, manifest, sha, bookId, tokenid}) {
   const resourceId = repository.split('_')[1];
   // only applies to scripture oriented resources, skip tw and ta
-  let _manifest 
+  let _manifest
   if ( resourceId === 'ta' || resourceId === 'tw' ) {
     // skip adding book to project section
     _manifest = manifest
@@ -122,7 +122,7 @@ export async function manifestAddBook({server, username, repository, manifest, s
   const dateString = date.toISOString();
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' }, 
+    headers: { 'Content-Type': 'application/json' },
     body: `{
       "author": {
         "email": "info@unfoldingword.org",
@@ -167,7 +167,7 @@ export async function manifestCreate({server, username, repository, bookId, toke
   const dateString = date.toISOString();
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }, 
+    headers: { 'Content-Type': 'application/json' },
     body: `{
       "author": {
         "email": "info@unfoldingword.org",
@@ -200,7 +200,7 @@ export async function manifestReplace({server, username, repository, sha, tokeni
   const dateString = date.toISOString();
   const res = await fetch(uri+'?token='+tokenid, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' }, 
+    headers: { 'Content-Type': 'application/json' },
     body: `{
       "author": {
         "email": "info@unfoldingword.org",
@@ -234,7 +234,7 @@ export async function manifestReplace({server, username, repository, sha, tokeni
  */
 export function validVersionTag(versionTag) {
   // if ( !versionTag.startsWith("v") ) return false
-  
+
   return true
 }
 
@@ -245,7 +245,7 @@ export function validVersionTag(versionTag) {
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
- * @return {object} 
+ * @return {object}
  *                 shape of return object is {isValid: bool, message: string}
  */
 export async function validManifest({server, organization, languageId, resourceId}) {
@@ -273,7 +273,7 @@ export async function validManifest({server, organization, languageId, resourceI
       message '${message}',
       disconnected=${disconnected},
       url ${uri}
-      Error:`, 
+      Error:`,
       e)
     val.isValid = false
     val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
@@ -287,7 +287,7 @@ export async function validManifest({server, organization, languageId, resourceI
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
- * @return {object} 
+ * @return {object}
  *                 shape of return object is {isValid: bool, message: string}
  */
  async function latestReleaseVersion({server, organization, languageId, resourceId}) {
@@ -320,12 +320,77 @@ export async function validManifest({server, organization, languageId, resourceI
       message '${message}',
       disconnected=${disconnected},
       url ${uri}
-      Error:`, 
+      Error:`,
       e)
     val.isValid = false
     val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
   }
   return val
+}
+
+export async function updateManifest({server, organization, languageId, resourceId, version, tokenid}) {
+  const uri = server + "/" + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml');
+
+  const res = await fetch(uri+'?token='+tokenid, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (res.ok) {
+    const body = await res.json()
+    console.log(body)
+    const sha = body.sha
+    const content = atob(body.content)
+    console.log(content)
+    const manifestYAML = YAML.load(content)
+
+    const previousVersion = manifestYAML.dublin_core.version
+    const parts = previousVersion.split('.')
+    parts[parts.length - 1]++
+    const nextVersion = parts.join('.')
+    manifestYAML.dublin_core.version = nextVersion
+    manifestYAML.dublin_core.modified = manifestYAML.dublin_core.issued = new Date().toISOString().slice(0, 10)
+
+    for ( let source of manifestYAML.dublin_core.source ) {
+      if ( source.identifier === resourceId && source.language === languageId ) {
+        source.version = previousVersion
+      }
+    }
+
+    // TODO do something with manifestYAML.dublin_core.resources
+
+    const newYAML = YAML.dump(manifestYAML)
+    console.log(newYAML)
+    const newContent = base64.encode(utf8.encode(newYAML));
+    const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml') ;
+    const date = new Date(Date.now());
+    const dateString = date.toISOString();
+
+    await fetch(updateUri+'?token='+tokenid, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+        "author": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "branch": "master",
+        "committer": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "content": "${newContent}",
+        "dates": {
+          "author": "${dateString}",
+          "committer": "${dateString}"
+        },
+        "from_path": "manifest.yaml",
+        "message": "Replace Manifest with valid YAML file",
+        "new_branch": "master",
+        "sha": "${sha}",
+        "signoff": true
+      }`,
+    })
+  }
 }
 
 /**
@@ -334,11 +399,13 @@ export async function validManifest({server, organization, languageId, resourceI
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
- * @return {object} response 
+ * @return {object} response
  */
  export async function createRelease({server, organization, languageId, resourceId, version, notes, name, state, tokenid}) {
   // example: POST
   // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
+
+  await updateManifest( {server, organization,languageId,resourceId,version,tokenid} );
 
   // log release parameters
   console.log(`
@@ -390,7 +457,7 @@ export async function validManifest({server, organization, languageId, resourceI
       message '${message}',
       disconnected=${disconnected},
       url ${uri}
-      Error:`, 
+      Error:`,
       e)
     val.isValid = false
     val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
