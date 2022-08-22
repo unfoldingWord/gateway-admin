@@ -34,6 +34,7 @@ const ReleasePage = () => {
       releaseNotes,
       releaseName,
       releaseState,
+      releaseBooks,
     },
     actions: {
       setReleaseResource,
@@ -41,18 +42,19 @@ const ReleasePage = () => {
       setReleaseNotes,
       setReleaseName,
       setReleaseState,
+      setReleaseBooks,
     }
   } = useContext(AdminContext)
 
   useEffect( () => {
-    if ( releaseResource && releaseVersion && validVersionTag(releaseVersion) ) { 
-      setReleaseActive(true) 
+    if ( releaseResource && releaseVersion && validVersionTag(releaseVersion) ) {
+      setReleaseActive(true)
     } else {
       setReleaseActive(false)
     }
   }, [releaseResource, releaseVersion])
 
-  //  
+  //
   useEffect( () => {
 
     if ( !confirmRelease ) return;
@@ -63,13 +65,13 @@ const ReleasePage = () => {
       setReleaseMessage(<CircularProgress />)
       const tokenid = authentication.token.sha1;
       const _resourceId = resourceIdMapper(organization, releaseResource.id)
-      const _results = await createRelease({server, 
-          organization, languageId, resourceId: _resourceId, 
-          version: releaseVersion, 
+      const _results = await createRelease({server,
+          organization, languageId, resourceId: _resourceId,
+          version: releaseVersion,
           notes: releaseNotes,
           name: releaseName,
           state: releaseState,
-          tokenid 
+          tokenid
         })
       setReleaseMessage(<span>{_results.message}</span>)
       // initialize release state vars
@@ -124,7 +126,7 @@ const ReleasePage = () => {
             <br/>
           </div>
           {confirmRelease &&
-            <h2 className='mx-4'>Status: {releaseMessage}</h2>         
+            <h2 className='mx-4'>Status: {releaseMessage}</h2>
           }
         </div>
       </div>

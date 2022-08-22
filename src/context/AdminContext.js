@@ -20,6 +20,7 @@ import useObsTwRepoValidation from '@hooks/useObsTwRepoValidation'
 import useObsSnRepoValidation from '@hooks/useObsSnRepoValidation'
 import useObsSqRepoValidation from '@hooks/useObsSqRepoValidation'
 import useLocalStorage from '@hooks/useLocalStorage'
+import { titlesToBoolean } from '@common/BooksOfTheBible'
 
 import {ALL} from '@common/constants'
 
@@ -38,7 +39,7 @@ export default function AdminContextProvider({
   // others will pass, not running.
   // The refresh state will be updated by certain actions. For example,
   // if the user clicks the create repo button for OBS, then the state will
-  // be set to "obs". In which case, only the `useObsRepoValidation` hook 
+  // be set to "obs". In which case, only the `useObsRepoValidation` hook
   // will run.
   // Of course, the initial state will be to run them all.
   const [refresh, setRefresh] = useState(ALL)
@@ -50,6 +51,7 @@ export default function AdminContextProvider({
   const [releaseNotes, setReleaseNotes] = useState(null)
   const [releaseName, setReleaseName] = useState(null)
   const [releaseState, setReleaseState] = useState('prod')
+  const [releaseBooks, setReleaseBooks] = useState({ ...titlesToBoolean() })
 
 
   const {
@@ -91,7 +93,7 @@ export default function AdminContextProvider({
       twlRepoTreeStatus,
     },
   } = useTwlRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
-  
+
   const {
     state: {
       ltRepoTree,
@@ -310,6 +312,7 @@ export default function AdminContextProvider({
       releaseNotes,
       releaseName,
       releaseState,
+      releaseBooks,
     },
     actions: {
       setBooks: _setBooks,
@@ -319,6 +322,7 @@ export default function AdminContextProvider({
       setReleaseNotes: setReleaseNotes,
       setReleaseName: setReleaseName,
       setReleaseState: setReleaseState,
+      setReleaseBooks: setReleaseBooks,
     }
   };
 
