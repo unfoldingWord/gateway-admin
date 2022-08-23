@@ -10,7 +10,6 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import Radio from '@material-ui/core/Radio'
 import { makeStyles } from '@material-ui/core/styles'
-import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 
 import Button from '@material-ui/core/Button'
@@ -21,10 +20,7 @@ import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { resourceSelectList , resourceIdMapper } from '@common/ResourceList'
-import { validManifest } from '@utils/dcsApis'
-import {
-  NT_BOOKS, OT_BOOKS, titlesToBoolean,
-} from '@common/BooksOfTheBible'
+import { NT_BOOKS, OT_BOOKS } from '@common/BooksOfTheBible'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -37,9 +33,6 @@ const useStyles = makeStyles(theme => ({
 export default function ReleaseSettings() {
   const classes = useStyles()
 
-  const [textDisabled, setTextDisabled] = useState(true)
-  const [manifestValid, setManifestValid] = useState({})
-
   const {
     state: {
       owner: organization,
@@ -50,16 +43,14 @@ export default function ReleaseSettings() {
 
   const {
     state: {
-      releaseResource,
-      releaseVersion,
+      releaseResources,
       releaseNotes,
       releaseName,
       releaseState,
       releaseBooks,
     },
     actions: {
-      setReleaseResource,
-      setReleaseVersion,
+      setReleaseResources,
       setReleaseNotes,
       setReleaseName,
       setReleaseState,
@@ -67,14 +58,19 @@ export default function ReleaseSettings() {
     },
   } = useContext(AdminContext)
 
-  const handleResourceChange = (event, newvalue) => {
-    setReleaseResource(newvalue)
-    // setTimeout( () => console.log("new resource=",releaseResource), 1)
-  }
+  const handleResourceChange = (event) => {
+    const item = event.target.name
+    const isChecked = event.target.checked
+    console.log( item)
+    console.log( isChecked)
+    const newMap = new Map(releaseResources)
 
-  const handleVersionChange = event => {
-    setReleaseVersion(event.target.value)
-    // setTimeout( () => console.log("new version=",releaseVersion), 1)
+    if ( isChecked ) {
+      newMap.set(item, isChecked)
+    } else {
+      newMap.delete(item)
+    }
+    setReleaseResources(newMap)
   }
 
   const handleReleaseNotesChange = event => {
@@ -92,58 +88,56 @@ export default function ReleaseSettings() {
     // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
-  const handleChange = (name) => (event) => {
+  const handleReleaseBooksChange = (name) => (event) => {
     setReleaseBooks({ ...releaseBooks, [name]: event.target.checked })
   }
 
   const handleSelectNoneOt = () => {
-    let _bookSelectionState = releaseBooks
-    console.log(_bookSelectionState);
+    let _bookSelectionState = { ...releaseBooks }
     Object.keys(OT_BOOKS).forEach( (bookId) => {
       _bookSelectionState[bookId] = false
     })
-    console.log(_bookSelectionState);
 
     setReleaseBooks(_bookSelectionState)
   }
 
   const handleSelectAllOt = () => {
+    let _bookSelectionState = { ...releaseBooks }
+    Object.keys(OT_BOOKS).forEach( (bookId) => {
+      _bookSelectionState[bookId] = true
+    })
+
+    setReleaseBooks(_bookSelectionState)
   }
 
   const handleSelectNoneNt = () => {
+    let _bookSelectionState = { ...releaseBooks }
+    Object.keys(NT_BOOKS).forEach( (bookId) => {
+      _bookSelectionState[bookId] = false
+    })
+
+    setReleaseBooks(_bookSelectionState)
   }
 
   const handleSelectAllNt = () => {
+    let _bookSelectionState = { ...releaseBooks }
+    Object.keys(NT_BOOKS).forEach( (bookId) => {
+      _bookSelectionState[bookId] = true
+    })
+
+    setReleaseBooks(_bookSelectionState)
   }
 
 
   // debugging
   useEffect(() => {
     console.log('One or more of these changed:',
-      `${releaseResource}, ${releaseName}, ${releaseVersion},${releaseNotes}`,
+      `${releaseResources}, ${releaseName}, ${releaseNotes}`,
     )
-  }, [releaseResource, releaseName, releaseNotes, releaseVersion])
+    console.log(releaseBooks);
+    console.log(releaseResources);
 
-  useEffect( () => {
-    async function checkValidManifest() {
-      const _resourceId = resourceIdMapper(organization, releaseResource.id)
-      const _validManifest = await validManifest({
-        server, organization, languageId, resourceId: _resourceId,
-      })
-      setManifestValid(_validManifest)
-      setTextDisabled(false)
-    }
-
-    if ( releaseResource ) {
-      checkValidManifest()
-    }
-  }, [releaseResource])
-
-  const defaultProps = {
-    options: resourceSelectList(),
-    getOptionLabel: (option) => option.name,
-    getOptionSelected: (option, value) => option.name === value.name,
-  }
+  }, [releaseResources, releaseName, releaseNotes, releaseBooks])
 
   return (
     <>
@@ -167,7 +161,7 @@ export default function ReleaseSettings() {
                   <FormGroup>
                     {Object.entries(OT_BOOKS).map( ([bookId,bookName]) =>
                       <FormControlLabel
-                        control={<Checkbox checked={releaseBooks[bookId]} onChange={handleChange(bookId)} value={bookId} />}
+                        control={<Checkbox checked={releaseBooks[bookId]} onChange={handleReleaseBooksChange(bookId)} value={bookId} />}
                         label={bookName} key={bookId}
                       />,
                     )}
@@ -190,7 +184,7 @@ export default function ReleaseSettings() {
                             :
                             false
                         }
-                        onChange={handleChange('Open Bible Stories (OBS)')}
+                        onChange={handleReleaseBooksChange('Open Bible Stories (OBS)')}
                         value='Open Bible Stories (OBS)' />
                       }
                       label='Open Bible Stories (OBS)'
@@ -218,7 +212,7 @@ export default function ReleaseSettings() {
                   <FormGroup>
                     {Object.entries(NT_BOOKS).map( ([bookId,bookName]) =>
                       <FormControlLabel
-                        control={<Checkbox checked={releaseBooks[bookId]} onChange={handleChange(bookId)} value={bookId} />}
+                        control={<Checkbox checked={releaseBooks[bookId]} onChange={handleReleaseBooksChange(bookId)} value={bookId} />}
                         label={bookName} key={bookId}
                       />,
                     )}
@@ -229,16 +223,19 @@ export default function ReleaseSettings() {
             </Grid>
           </Grid>
 
-          <FormControl variant='outlined' className={classes.formControl} >
-            <Autocomplete
-              {...defaultProps}
-              id="select-resource"
-              // value={resource}
-              onChange={handleResourceChange}
-              renderInput={(params) => <TextField {...params}
-                label="Select Resource" margin="normal" />}
-            />
+          <FormControl required component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend">Select Resources</FormLabel>
+            <FormGroup>
+              {resourceSelectList().map( ({ id,name }) =>
+                <FormControlLabel
+                  control={<Checkbox checked={releaseResources.get(id) || null} onChange={handleResourceChange} name={id} />}
+                  label={name} key={id}
+                />,
+              )}
+            </FormGroup>
+            <FormHelperText />
           </FormControl>
+
           <FormControl>
             <FormLabel id="release-type-radio-buttons-group-label">Release Type</FormLabel>
             <RadioGroup
@@ -253,24 +250,7 @@ export default function ReleaseSettings() {
               <FormControlLabel value="prerelease" control={<Radio />} label="Pre-Release" />
             </RadioGroup>
           </FormControl>
-          <p>Last Release Version is:
-            { manifestValid && manifestValid.message && <i> {manifestValid.message}</i>
-              ||
-              <i> (Please select resource first)</i>
-            }
-          </p>
-          <FormControl variant='outlined' className={classes.formControl}>
-            <TextField id="version"
-              variant='outlined'
-              required={true}
-              label="Version"
-              // autoFocus={true}
-              value={releaseVersion}
-              type='text'
-              onChange={handleVersionChange}
-              disabled={textDisabled}
-            />
-          </FormControl>
+
           <FormControl variant='outlined' className={classes.formControl}>
             <TextField id="name"
               variant='outlined'
@@ -280,7 +260,6 @@ export default function ReleaseSettings() {
               value={releaseName}
               type='text'
               onChange={handleReleaseNameChange}
-              disabled={textDisabled}
             />
           </FormControl>
           <FormControl variant='outlined' className={classes.formControl}>
@@ -292,7 +271,6 @@ export default function ReleaseSettings() {
               multiline={true}
               onChange={handleReleaseNotesChange}
               value={releaseNotes}
-              // disabled={textDisabled}
             />
           </FormControl>
         </div>

@@ -46,7 +46,7 @@ export default function AdminContextProvider({
 
   // these two state variable captures the resource to release and
   // the version to assign to the release
-  const [releaseResource, setReleaseResource] = useState(null)
+  const [releaseResources, setReleaseResources] = useState(new Map())
   const [releaseVersion, setReleaseVersion] = useState(null)
   const [releaseNotes, setReleaseNotes] = useState(null)
   const [releaseName, setReleaseName] = useState(null)
@@ -307,7 +307,7 @@ export default function AdminContextProvider({
       twRepoTreeStatus,
       books,
       refresh,
-      releaseResource,
+      releaseResources,
       releaseVersion,
       releaseNotes,
       releaseName,
@@ -316,13 +316,13 @@ export default function AdminContextProvider({
     },
     actions: {
       setBooks: _setBooks,
-      setRefresh: setRefresh,
-      setReleaseResource: setReleaseResource,
-      setReleaseVersion: setReleaseVersion,
-      setReleaseNotes: setReleaseNotes,
-      setReleaseName: setReleaseName,
-      setReleaseState: setReleaseState,
-      setReleaseBooks: setReleaseBooks,
+      setRefresh,
+      setReleaseResources,
+      setReleaseVersion,
+      setReleaseNotes,
+      setReleaseName,
+      setReleaseState,
+      setReleaseBooks,
     }
   };
 
