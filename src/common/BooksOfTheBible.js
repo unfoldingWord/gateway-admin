@@ -291,14 +291,3 @@ export function bookSelectList() {
     (bookId) => ({ id: bookId, name: BIBLE_AND_OBS[bookId] }),
   )
 }
-
-export const titlesToBoolean = () => {
-  const titleObject = {}
-
-  Object.keys(BIBLE_AND_OBS).forEach(
-    ( bookId) => {
-      titleObject[bookId] = false
-    },
-  )
-  return titleObject
-}

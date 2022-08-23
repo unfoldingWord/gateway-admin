@@ -20,7 +20,6 @@ import useObsTwRepoValidation from '@hooks/useObsTwRepoValidation'
 import useObsSnRepoValidation from '@hooks/useObsSnRepoValidation'
 import useObsSqRepoValidation from '@hooks/useObsSqRepoValidation'
 import useLocalStorage from '@hooks/useLocalStorage'
-import { titlesToBoolean } from '@common/BooksOfTheBible'
 
 import {ALL} from '@common/constants'
 
@@ -51,7 +50,7 @@ export default function AdminContextProvider({
   const [releaseNotes, setReleaseNotes] = useState(null)
   const [releaseName, setReleaseName] = useState(null)
   const [releaseState, setReleaseState] = useState('prod')
-  const [releaseBooks, setReleaseBooks] = useState({ ...titlesToBoolean() })
+  const [releaseBooks, setReleaseBooks] = useState(new Map())
 
 
   const {

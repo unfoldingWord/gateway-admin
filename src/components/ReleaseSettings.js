@@ -61,8 +61,6 @@ export default function ReleaseSettings() {
   const handleResourceChange = (event) => {
     const item = event.target.name
     const isChecked = event.target.checked
-    console.log( item)
-    console.log( isChecked)
     const newMap = new Map(releaseResources)
 
     if ( isChecked ) {
@@ -88,44 +86,56 @@ export default function ReleaseSettings() {
     // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
-  const handleReleaseBooksChange = (name) => (event) => {
-    setReleaseBooks({ ...releaseBooks, [name]: event.target.checked })
+  const handleReleaseBooksChange = (event) => {
+    const item = event.target.name
+    const newMap = new Map(releaseBooks)
+
+    if ( event.target.checked ) {
+      newMap.set(item, true)
+    } else {
+      newMap.delete(item)
+    }
+    setReleaseBooks(newMap)
   }
 
   const handleSelectNoneOt = () => {
-    let _bookSelectionState = { ...releaseBooks }
+    const newMap = new Map(releaseBooks)
+
     Object.keys(OT_BOOKS).forEach( (bookId) => {
-      _bookSelectionState[bookId] = false
+      newMap.delete(bookId)
     })
 
-    setReleaseBooks(_bookSelectionState)
+    setReleaseBooks(newMap)
   }
 
   const handleSelectAllOt = () => {
-    let _bookSelectionState = { ...releaseBooks }
+    const newMap = new Map(releaseBooks)
+
     Object.keys(OT_BOOKS).forEach( (bookId) => {
-      _bookSelectionState[bookId] = true
+      newMap.set(bookId, true)
     })
 
-    setReleaseBooks(_bookSelectionState)
+    setReleaseBooks(newMap)
   }
 
   const handleSelectNoneNt = () => {
-    let _bookSelectionState = { ...releaseBooks }
+    const newMap = new Map(releaseBooks)
+
     Object.keys(NT_BOOKS).forEach( (bookId) => {
-      _bookSelectionState[bookId] = false
+      newMap.delete(bookId)
     })
 
-    setReleaseBooks(_bookSelectionState)
+    setReleaseBooks(newMap)
   }
 
   const handleSelectAllNt = () => {
-    let _bookSelectionState = { ...releaseBooks }
+    const newMap = new Map(releaseBooks)
+
     Object.keys(NT_BOOKS).forEach( (bookId) => {
-      _bookSelectionState[bookId] = true
+      newMap.set(bookId, true)
     })
 
-    setReleaseBooks(_bookSelectionState)
+    setReleaseBooks(newMap)
   }
 
 
@@ -161,7 +171,7 @@ export default function ReleaseSettings() {
                   <FormGroup>
                     {Object.entries(OT_BOOKS).map( ([bookId,bookName]) =>
                       <FormControlLabel
-                        control={<Checkbox checked={releaseBooks[bookId]} onChange={handleReleaseBooksChange(bookId)} value={bookId} />}
+                        control={<Checkbox checked={releaseBooks.get(bookId) || false} onChange={handleReleaseBooksChange} name={bookId} />}
                         label={bookName} key={bookId}
                       />,
                     )}
@@ -177,15 +187,9 @@ export default function ReleaseSettings() {
                   <FormGroup>
                     <FormControlLabel
                       control={
-                        <Checkbox checked={
-                          releaseBooks['Open Bible Stories (OBS)']
-                            ?
-                            releaseBooks['Open Bible Stories (OBS)']
-                            :
-                            false
-                        }
-                        onChange={handleReleaseBooksChange('Open Bible Stories (OBS)')}
-                        value='Open Bible Stories (OBS)' />
+                        <Checkbox checked={releaseBooks.get('Open Bible Stories (OBS)') || false}
+                          onChange={handleReleaseBooksChange}
+                          name='Open Bible Stories (OBS)' />
                       }
                       label='Open Bible Stories (OBS)'
                       key='Open Bible Stories (OBS)'
@@ -212,7 +216,7 @@ export default function ReleaseSettings() {
                   <FormGroup>
                     {Object.entries(NT_BOOKS).map( ([bookId,bookName]) =>
                       <FormControlLabel
-                        control={<Checkbox checked={releaseBooks[bookId]} onChange={handleReleaseBooksChange(bookId)} value={bookId} />}
+                        control={<Checkbox checked={releaseBooks.get(bookId) || false} onChange={handleReleaseBooksChange} name={bookId} />}
                         label={bookName} key={bookId}
                       />,
                     )}
