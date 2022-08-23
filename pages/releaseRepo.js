@@ -93,7 +93,7 @@ const ReleasePage = () => {
     <Layout>
       <div className='flex flex-col justify-center items-center'>
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
-          <h1 className='mx-4'>Release Repository</h1>
+          <h1 className='mx-4'>Release Book Packages</h1>
           <ReleaseSettings />
           <div className='flex justify-end'>
             <Button
@@ -121,7 +121,7 @@ const ReleasePage = () => {
                 }
               }
             >
-              Release Repository
+              Release Book Packages
             </Button>
             <br/>
           </div>
