@@ -12,11 +12,6 @@ export const RESOURCES = {
     sq: 'Study Questions',
     sn: 'Study Notes',
     obs: 'Open Bible Stories (OBS)',
-    "obs-tn": 'OBS Translation Notes',
-    "obs-twl": 'OBS Translation Word List',
-    "obs-tq": 'OBS Translation Questions',
-    "obs-sn": 'OBS Study Notes',
-    "obs-sq": 'OBS Study Questions',
 }
 
 
