@@ -7,7 +7,7 @@ import Layout from '@components/Layout'
 import ReleaseSettings from '@components/ReleaseSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { validVersionTag, createRelease } from '@utils/dcsApis'
+import { validVersionTag, createReleases } from '@utils/dcsApis'
 import { resourceIdMapper } from '@common/ResourceList'
 
 const ReleasePage = () => {
@@ -29,7 +29,7 @@ const ReleasePage = () => {
 
   const {
     state: {
-      releaseResource,
+      releaseResources,
       releaseVersion,
       releaseNotes,
       releaseName,
@@ -37,45 +37,49 @@ const ReleasePage = () => {
       releaseBooks,
     },
     actions: {
-      setReleaseResource,
+      setReleaseResources,
       setReleaseVersion,
       setReleaseNotes,
       setReleaseName,
       setReleaseState,
       setReleaseBooks,
-    }
+    },
   } = useContext(AdminContext)
 
   useEffect( () => {
-    if ( releaseResource && releaseVersion && validVersionTag(releaseVersion) ) {
+    if ( releaseResources.size > 0 && releaseVersion && validVersionTag(releaseVersion) ) {
       setReleaseActive(true)
     } else {
       setReleaseActive(false)
     }
-  }, [releaseResource, releaseVersion])
+  }, [releaseResources, releaseVersion])
 
   //
   useEffect( () => {
-
-    if ( !confirmRelease ) return;
-    if ( !releaseResource ) return;
-    if ( !releaseVersion ) return;
+    if ( !confirmRelease || releaseResources.size <= 0 || !releaseVersion ) {
+      return
+    }
 
     async function doRelease() {
       setReleaseMessage(<CircularProgress />)
       const tokenid = authentication.token.sha1;
-      const _resourceId = resourceIdMapper(organization, releaseResource.id)
-      const _results = await createRelease({server,
-          organization, languageId, resourceId: _resourceId,
-          version: releaseVersion,
-          notes: releaseNotes,
-          name: releaseName,
-          state: releaseState,
-          tokenid
-        })
+
+      const resourceIds = Array.from(releaseResources.keys()).map((resourceId) => resourceIdMapper(organization, resourceId))
+
+      const _results = await createReleases({
+        server,
+        organization,
+        languageId,
+        resourceIds,
+        version: releaseVersion,
+        notes: releaseNotes,
+        name: releaseName,
+        state: releaseState,
+        tokenid,
+      })
       setReleaseMessage(<span>{_results.message}</span>)
       // initialize release state vars
-      setReleaseResource(null)
+      setReleaseResources(new Map())
       setReleaseVersion(null)
       setReleaseNotes(null)
       setReleaseName(null)
@@ -84,8 +88,7 @@ const ReleasePage = () => {
     }
 
     doRelease()
-
-  }, [server, organization, languageId, releaseResource, releaseVersion, confirmRelease])
+  }, [server, organization, languageId, releaseResources, releaseVersion, confirmRelease])
 
 
 
@@ -102,7 +105,7 @@ const ReleasePage = () => {
               className='my-3 mx-1'
               variant='contained'
               onClick={() => {
-                setReleaseResource(null)
+                setReleaseResources(new Map())
                 setReleaseVersion(null)
                 router.push('/')
               }}

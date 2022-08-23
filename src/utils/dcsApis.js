@@ -328,7 +328,7 @@ export async function validManifest({server, organization, languageId, resourceI
   return val
 }
 
-export async function updateManifest({server, organization, languageId, resourceId, version, tokenid}) {
+export async function updateManifest({server, organization, languageId, resourceId, tokenid}) {
   const uri = server + "/" + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml');
 
   const res = await fetch(uri+'?token='+tokenid, {
@@ -393,19 +393,31 @@ export async function updateManifest({server, organization, languageId, resource
   }
 }
 
+export async function createReleases({server, organization, languageId, resourceIds, notes, name, state, tokenid}) {
+  const results = await new Promise.all(releaseIds.map( (resourceId) => {
+    return createRelease({server, organization, languageId, resourceId, notes, name, state, tokenid});
+  }))
+
+  return results
+}
+
 /**
  * Create a new release from the master branch
  * @param {string} server
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
+ * @param {string} notes
+ * @param {string} name
+ * @param {string} state
+ * @param {string} tokenid
  * @return {object} response
  */
- export async function createRelease({server, organization, languageId, resourceId, version, notes, name, state, tokenid}) {
+export async function createRelease({server, organization, languageId, resourceId, notes, name, state, tokenid}) {
   // example: POST
   // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
 
-  await updateManifest( {server, organization,languageId,resourceId,version,tokenid} );
+  return updateManifest( {server, organization,languageId,resourceId,tokenid} );
 
   // log release parameters
   console.log(`
