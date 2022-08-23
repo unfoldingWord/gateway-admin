@@ -228,7 +228,7 @@ export default function ReleaseSettings() {
             <FormGroup>
               {resourceSelectList().map( ({ id,name }) =>
                 <FormControlLabel
-                  control={<Checkbox checked={releaseResources.get(id) || null} onChange={handleResourceChange} name={id} />}
+                  control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
                   label={name} key={id}
                 />,
               )}
