@@ -41,7 +41,7 @@ export default function Drawer({
     }
   }
 
-  async function onReleaseRepoClick() {
+  async function onReleaseBpClick() {
     const okToContinue = await checkUnsavedChanges()
 
     if (okToContinue) {
@@ -108,11 +108,11 @@ export default function Drawer({
         </ListItem>
       </List>
       <List disablePadding>
-        <ListItem button key={'Release Repository'} onClick={onReleaseRepoClick}>
+        <ListItem button key={'Release Book Packages'} onClick={onReleaseBpClick}>
           <ListItemIcon>
             <BeenhereIcon />
           </ListItemIcon>
-          <ListItemText primary={'Release Repository'} />
+          <ListItemText primary={'Release Book Packages'} />
         </ListItem>
       </List>
       <List disablePadding>
