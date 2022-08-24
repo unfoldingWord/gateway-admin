@@ -279,11 +279,11 @@ export const OBS_FILENAMES = {
 }
 
 export function isNT(bookId) {
-  return NT_BOOKS.includes(bookId)
+  return !!NT_BOOKS[bookId]
 }
 
 export function isOT(bookId) {
-  return OT_BOOKS.includes(bookId)
+  return !!OT_BOOKS[bookId]
 }
 
 export function bookSelectList() {

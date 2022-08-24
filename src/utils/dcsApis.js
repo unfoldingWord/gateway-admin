@@ -48,44 +48,49 @@ export async function repoCreate({
   return res
 }
 
+function getProject({ resourceId, bookId, languageId }) {
+  const project = getResourceManifestProject({ resourceId })
+
+  project.title = ALL_BIBLE_BOOKS[bookId]
+  project.identifier = bookId
+  project.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
+
+  if ( resourceId === 'lt' || resourceId === 'st' ) {
+    project.path = './' + BIBLES_ABBRV_INDEX[bookId] + '-' + bookId.toUpperCase() + '.usfm'
+  } else if ( resourceId === 'twl' ) {
+    project.path = './twl_' + bookId.toUpperCase() + '.tsv'
+  } else if ( resourceId === 'tn' ) {
+    project.path = './'+languageId+'_tn_' +BIBLES_ABBRV_INDEX[bookId]+'-'+ bookId.toUpperCase() + '.tsv'
+  } else if ( resourceId === 'tq' ) {
+    project.path = './tq_' + bookId.toUpperCase() + '.tsv'
+  } else if ( resourceId === 'sn' ) {
+    project.path = './sn_' + bookId.toUpperCase() + '.tsv'
+  } else if ( resourceId === 'sq' ) {
+    project.path = './sq_' + bookId.toUpperCase() + '.tsv'
+  }
+
+  if ( isNT(bookId) ) {
+    project.categories = [ 'bible-nt' ]
+  } else {
+    project.categories = [ 'bible-ot' ]
+  }
+
+  return project
+}
+
 function addProject( {
   resourceId, manifest, bookId,
 }) {
   let currentProjects = manifest.projects
-  let projectTemplate = getResourceManifestProject({ resourceId })
-
-  const _title = ALL_BIBLE_BOOKS[bookId]
-  projectTemplate.title = _title
-  projectTemplate.identifier = bookId
-  projectTemplate.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
-
-  if ( resourceId === 'lt' || resourceId === 'st' ) {
-    projectTemplate.path = './' + BIBLES_ABBRV_INDEX[bookId] + '-' + bookId.toUpperCase() + '.usfm'
-  } else if ( resourceId === 'twl' ) {
-    projectTemplate.path = './twl_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'tn' ) {
-    projectTemplate.path = './tn_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'tq' ) {
-    projectTemplate.path = './tq_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'sn' ) {
-    projectTemplate.path = './sn_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'sq' ) {
-    projectTemplate.path = './sq_' + bookId.toUpperCase() + '.tsv'
-  }
-
-  if ( isNT(bookId) ) {
-    projectTemplate.categories = [ 'bible-nt' ]
-  } else {
-    projectTemplate.categories = [ 'bible-ot' ]
-  }
+  const project = getProject({ resourceId, bookId })
 
   // sort the projects using sort attribute
   let _projects
 
   if ( currentProjects === undefined || currentProjects[0] === null ) {
-    _projects = [projectTemplate]
+    _projects = [project]
   } else {
-    _projects = [...currentProjects, projectTemplate]
+    _projects = [...currentProjects, project]
   }
 
   if ( _projects.length > 1 ) {
@@ -358,9 +363,61 @@ async function latestReleaseVersion( {
   }
   return val
 }
+export async function updateBranchWithLatestBookFiles({
+  releaseBranchName,
+  server,
+  organization,
+  languageId,
+  resourceId,
+  tokenid,
+  books,
+}) {
+  const result = await Promise.all(books.map( async (bookId) => {
+    const project = getProject({ bookId, resourceId, languageId })
+    const path = project.path.substring(2) // remove './' from path.
+    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+
+    const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
+
+    if (res.ok) {
+      const body = await res.json()
+      console.log(body)
+      const sha = body.sha
+      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
+      const date = new Date(Date.now())
+      const dateString = date.toISOString()
+
+      return fetch(updateUri + '?token=' + tokenid, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+        "author": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "committer": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "content": "${body.content}",
+        "dates": {
+          "author": "${dateString}",
+          "committer": "${dateString}"
+        },
+        "from_path": "${path}",
+        "message": "Update ${path} from master to prepare for book package release",
+        "branch": "${releaseBranchName}",
+        "sha": "${sha}",
+        "signoff": true
+      }`,
+      })
+    }
+  }))
+  return result;
+}
 
 export async function updateManifest({
-  server, organization, languageId, resourceId, tokenid, releaseBranchName
+  server, organization, languageId, resourceId, tokenid, releaseBranchName,
 }) {
   const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
 
@@ -390,7 +447,6 @@ export async function updateManifest({
     // TODO do something with manifestYAML.dublin_core.resources
 
     const newYAML = YAML.dump(manifestYAML)
-    console.log(newYAML)
     const newContent = base64.encode(utf8.encode(newYAML))
     const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
     const date = new Date(Date.now())
@@ -404,7 +460,6 @@ export async function updateManifest({
           "email": "info@unfoldingword.org",
           "name": "unfoldingWord"
         },
-        "branch": "${releaseBranchName}",
         "committer": {
           "email": "info@unfoldingword.org",
           "name": "unfoldingWord"
@@ -416,7 +471,7 @@ export async function updateManifest({
         },
         "from_path": "manifest.yaml",
         "message": "Replace Manifest with valid YAML file",
-        "new_branch": "master",
+        "branch": "${releaseBranchName}",
         "sha": "${sha}",
         "signoff": true
       }`,
@@ -427,19 +482,17 @@ export async function updateManifest({
 }
 
 export async function createReleases({
-  server, organization, languageId, resourceIds, notes, name, state, tokenid,
+  server, organization, languageId, resourceIds, books, notes, name, state, tokenid,
 }) {
   // Release all at the same time!
   const results = await Promise.all(resourceIds.map( (resourceId) => createRelease({
-    server, organization, languageId, resourceId, notes, name, state, tokenid,
+    server, organization, languageId, resourceId, books, notes, name, state, tokenid,
   })))
 
-  return results.reduce( (prev, val) => {
-    return {
-      status: prev.status && val.status,
-      message: prev.message + ',\n' + val.message,
-    }
-  }, {status: true, message: ''});
+  return results.reduce( (prev, val) => ({
+    status: prev.status && val.status,
+    message: prev.message + ',\n' + val.message,
+  }), { status: true, message: '' })
 }
 
 /**
@@ -448,6 +501,7 @@ export async function createReleases({
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
+ * @param {array} books
  * @param {string} notes
  * @param {string} name
  * @param {string} state
@@ -455,13 +509,35 @@ export async function createReleases({
  * @return {object} response
  */
 export async function createRelease({
-  server, organization, languageId, resourceId, notes, name, state, tokenid,
+  server, organization, languageId, resourceId, books, notes, name, state, tokenid,
 }) {
-  // Do some stuff with books
+  const releaseBranchName = 'release'
 
-  const releaseBranchName = 'release';
+  await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches')+'?token='+tokenid, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "new_branch_name": "${releaseBranchName}"
+    }`,
+  })
 
-  const version = updateManifest( {
+  const success = await updateBranchWithLatestBookFiles({
+    releaseBranchName,
+    server,
+    organization,
+    languageId,
+    resourceId,
+    tokenid,
+    books,
+  })
+
+  console.log(success);
+
+  let version = await updateManifest( {
     server,
     organization,
     languageId,
@@ -470,9 +546,12 @@ export async function createRelease({
     releaseBranchName,
   })
 
+  version = 'v'+version
+
   // log release parameters
   console.log(`
     Name: ${name}
+    Notes: ${notes}
     Version: ${version}
     State: ${state}
   `)
