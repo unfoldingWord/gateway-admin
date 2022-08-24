@@ -14,8 +14,10 @@ import TextField from '@material-ui/core/TextField'
 
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-import { Grid } from '@material-ui/core'
-import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox'
+import {
+  Grid, Link, Box, Divider, Container
+} from '@material-ui/core'
+import Checkbox from '@material-ui/core/Checkbox'
 
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
@@ -73,17 +75,14 @@ export default function ReleaseSettings() {
 
   const handleReleaseNotesChange = event => {
     setReleaseNotes(event.target.value)
-    // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
   const handleReleaseNameChange = event => {
     setReleaseName(event.target.value)
-    // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
   const handleReleaseStateChange = event => {
     setReleaseState(event.target.value)
-    // setTimeout( () => console.log("new version=",releaseVersion), 1)
   }
 
   const handleReleaseBooksChange = (event) => {
@@ -231,10 +230,13 @@ export default function ReleaseSettings() {
             <FormLabel component="legend">Select Resources</FormLabel>
             <FormGroup>
               {resourceSelectList().map( ({ id,name }) =>
-                <FormControlLabel
-                  control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
-                  label={name} key={id}
-                />,
+                <>
+                  <FormControlLabel
+                    control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
+                    label={<Grid spacing={6} direction="row" justifyContent="space-around"><Grid item><span>{name}</span></Grid><Divider orientation="vertical" flexItem /><Grid item><Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link></Grid></Grid>} key={id}
+                  />
+                </>
+                ,
               )}
             </FormGroup>
             <FormHelperText />

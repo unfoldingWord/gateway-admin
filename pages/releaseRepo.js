@@ -30,7 +30,6 @@ const ReleasePage = () => {
   const {
     state: {
       releaseResources,
-      releaseVersion,
       releaseNotes,
       releaseName,
       releaseState,
@@ -38,7 +37,6 @@ const ReleasePage = () => {
     },
     actions: {
       setReleaseResources,
-      setReleaseVersion,
       setReleaseNotes,
       setReleaseName,
       setReleaseState,
@@ -47,16 +45,16 @@ const ReleasePage = () => {
   } = useContext(AdminContext)
 
   useEffect( () => {
-    if ( releaseResources.size > 0 && releaseVersion && validVersionTag(releaseVersion) ) {
+    if ( releaseResources.size > 0 && releaseBooks.size > 0 ) {
       setReleaseActive(true)
     } else {
       setReleaseActive(false)
     }
-  }, [releaseResources, releaseVersion])
+  }, [releaseResources, releaseBooks])
 
   //
   useEffect( () => {
-    if ( !confirmRelease || releaseResources.size <= 0 || !releaseVersion ) {
+    if ( !confirmRelease || releaseResources.size <= 0 || releaseBooks <= 0 ) {
       return
     }
 
@@ -66,12 +64,14 @@ const ReleasePage = () => {
 
       const resourceIds = Array.from(releaseResources.keys()).map((resourceId) => resourceIdMapper(organization, resourceId))
 
+      const books = Array.from(releaseBooks.keys())
+
       const _results = await createReleases({
         server,
         organization,
         languageId,
         resourceIds,
-        version: releaseVersion,
+        books,
         notes: releaseNotes,
         name: releaseName,
         state: releaseState,
@@ -80,7 +80,7 @@ const ReleasePage = () => {
       setReleaseMessage(<span>{_results.message}</span>)
       // initialize release state vars
       setReleaseResources(new Map())
-      setReleaseVersion(null)
+      setReleaseBooks(new Map())
       setReleaseNotes(null)
       setReleaseName(null)
       setReleaseState('prod')
@@ -88,7 +88,7 @@ const ReleasePage = () => {
     }
 
     doRelease()
-  }, [server, organization, languageId, releaseResources, releaseVersion, confirmRelease])
+  }, [server, organization, languageId, releaseResources, releaseBooks, confirmRelease])
 
 
 
@@ -106,7 +106,7 @@ const ReleasePage = () => {
               variant='contained'
               onClick={() => {
                 setReleaseResources(new Map())
-                setReleaseVersion(null)
+                setReleaseBooks(new Map())
                 router.push('/')
               }}
             >
