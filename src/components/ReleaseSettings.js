@@ -151,13 +151,13 @@ export default function ReleaseSettings() {
   return (
     <>
       <Paper className='flex flex-col h-90 w-full p-6 pt-3 my-2'>
-        <p><b>Release Repository Settings for Organization</b> <i>{organization}</i> <b>and Language ID</b> <i>{languageId}</i></p>
+        <p><b>Book Package Release Settings for Organization</b> <i>{organization}</i> <b>and Language ID</b> <i>{languageId}</i></p>
         <div className='flex flex-col justify-between'>
           <Grid container spacing={3}>
             <Grid item xs={5}>
               <Paper>
                 <Typography> <br/> </Typography>
-                <div>
+                <div className='flex space-x-4'>
                   <Button onClick={handleSelectAllOt} color="primary" variant="contained" className={classes.button}>
                     Select All
                   </Button>
@@ -201,7 +201,7 @@ export default function ReleaseSettings() {
             <Grid item xs={5}>
               <Paper>
                 <Typography> <br/> </Typography>
-                <div>
+                <div className='flex space-x-4'>
                   <Button onClick={handleSelectAllNt} color="primary" variant="contained" className={classes.button}>
                     Select All
                   </Button>
