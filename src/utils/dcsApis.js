@@ -10,7 +10,7 @@ import getResourceManifestProject from '@common/manifestProjects'
 import {
   ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT,
 } from '@common/BooksOfTheBible'
-import { doFetch, isServerDisconnected } from './network'
+import { isServerDisconnected } from './network'
 
 export function getResourceIdFromRepo(repo) {
   let resourceId = repo.split('_')[1]
@@ -48,14 +48,16 @@ export async function repoCreate({
   return res
 }
 
-function getProject({ resourceId, bookId, languageId }) {
+function getProject({
+  resourceId, bookId, languageId,
+}) {
   const project = getResourceManifestProject({ resourceId })
 
   project.title = ALL_BIBLE_BOOKS[bookId]
   project.identifier = bookId
   project.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
 
-  if ( resourceId === 'lt' || resourceId === 'st' ) {
+  if ( resourceId === 'lt' || resourceId === 'st' || resourceId === 'ult' || resourceId === 'ust' ) {
     project.path = './' + BIBLES_ABBRV_INDEX[bookId] + '-' + bookId.toUpperCase() + '.usfm'
   } else if ( resourceId === 'twl' ) {
     project.path = './twl_' + bookId.toUpperCase() + '.tsv'
@@ -250,119 +252,6 @@ export async function manifestReplace({
   return res
 }
 
-/**
- * determine if version tag is formatted properly
- * @param {string} versionTag
- * @return {boolean}
- */
-export function validVersionTag(versionTag) {
-  // if ( !versionTag.startsWith("v") ) return false
-
-  return true
-}
-
-
-/**
- * determine if version tag is formatted properly
- * @param {string} server
- * @param {string} organization
- * @param {string} languageId
- * @param {string} resourceId
- * @return {object}
- *                 shape of return object is {isValid: bool, message: string}
- */
-export async function validManifest({
-  server, organization, languageId, resourceId,
-}) {
-  // example:
-  // https://qa.door43.org/api/catalog/v5/entry/es-419_gl/es-419_tn/master
-  const uri = server + '/' + Path.join('api','catalog','v5','entry',organization,`${languageId}_${resourceId}`,'master')
-  let val = {}
-
-  try {
-    const response = await doFetch(uri)
-
-    if (response.status === 200) {
-      // master branch is in the catalog, thus must have a valid manifest
-      // now fetch the latest release!
-      val = await latestReleaseVersion({
-        server, organization, languageId, resourceId,
-      })
-    } else if (response.status === 404) {
-      val.isValid = false
-      val.message = `Repo does not exist: ${languageId}_${resourceId}`
-    } else if (response.status === 500) {
-      val.isValid = false
-      val.message = 'Repo does not have a valid manifest'
-    }
-  } catch (e) {
-    const message = e?.message
-    const disconnected = isServerDisconnected(e)
-
-    console.warn(`validManifest() - error fetching releases,
-      message '${message}',
-      disconnected=${disconnected},
-      url ${uri}
-      Error:`,
-    e)
-    val.isValid = false
-    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
-  }
-  return val
-}
-
-/**
- * determine if version tag is formatted properly
- * @param {string} server
- * @param {string} organization
- * @param {string} languageId
- * @param {string} resourceId
- * @return {object}
- *                 shape of return object is {isValid: bool, message: string}
- */
-async function latestReleaseVersion( {
-  server, organization, languageId, resourceId,
-}) {
-  // example:
-  // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases?draft=false&pre-release=false&page=1&limit=9999'
-  const uri = server + '/' + Path.join('api','v1','repos',organization,`${languageId}_${resourceId}`,'releases?page=1&limit=9999')
-  let val = {}
-
-  try {
-    const response = await doFetch(uri)
-
-    if (response.status === 200) {
-      // master branch is in the catalog, thus must have a valid manifest
-      // now fetch the latest release!
-      val.isValid = true
-
-      if ( response.data.length === 0 ) {
-        val.message = 'No releases yet, use "v1"'
-      } else {
-        val.message = response.data[0]['tag_name']
-      }
-    } else if (response.status === 404) {
-      val.isValid = false
-      val.message = `Repo does not exist: ${languageId}_${resourceId}`
-    } else {
-      val.isValid = false
-      val.message = 'Unexpected status returned:'+response.status
-    }
-  } catch (e) {
-    const message = e?.message
-    const disconnected = isServerDisconnected(e)
-
-    console.warn(`latestReleaseVersion() - error fetching releases,
-      message '${message}',
-      disconnected=${disconnected},
-      url ${uri}
-      Error:`,
-    e)
-    val.isValid = false
-    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
-  }
-  return val
-}
 export async function updateBranchWithLatestBookFiles({
   releaseBranchName,
   server,
@@ -372,14 +261,21 @@ export async function updateBranchWithLatestBookFiles({
   tokenid,
   books,
 }) {
-  const result = await Promise.all(books.map( async (bookId) => {
-    const project = getProject({ bookId, resourceId, languageId })
+  let result
+
+  // Promise.all() will not work here. We can't update multiple files concurrently with gitea for some reason.
+  for ( const bookId of books ) {
+    const project = getProject({
+      bookId, resourceId, languageId,
+    })
     const path = project.path.substring(2) // remove './' from path.
     const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
 
+    // eslint-disable-next-line no-await-in-loop
     const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
 
     if (res.ok) {
+      // eslint-disable-next-line no-await-in-loop
       const body = await res.json()
       console.log(body)
       const sha = body.sha
@@ -387,7 +283,8 @@ export async function updateBranchWithLatestBookFiles({
       const date = new Date(Date.now())
       const dateString = date.toISOString()
 
-      return fetch(updateUri + '?token=' + tokenid, {
+      // eslint-disable-next-line no-await-in-loop
+      result = await fetch(updateUri + '?token=' + tokenid, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: `{
@@ -412,73 +309,91 @@ export async function updateBranchWithLatestBookFiles({
       }`,
       })
     }
-  }))
-  return result;
+  }
+  return result
 }
 
 export async function updateManifest({
-  server, organization, languageId, resourceId, tokenid, releaseBranchName,
+  server, organization, languageId, resourceId, tokenid, releaseBranchName, books,
 }) {
   const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
 
-  const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
+  const res = await fetch(uri+'?token='+tokenid+'&ref='+releaseBranchName, { headers: { 'Content-Type': 'application/json' } })
 
   if (res.ok) {
     const body = await res.json()
-    console.log(body)
     const sha = body.sha
     const content = atob(body.content)
-    console.log(content)
-    const manifestYAML = YAML.load(content)
 
-    const previousVersion = manifestYAML.dublin_core.version
-    const parts = previousVersion.split('.')
-    parts[parts.length - 1]++
-    const nextVersion = parts.join('.')
-    manifestYAML.dublin_core.version = nextVersion
-    manifestYAML.dublin_core.modified = manifestYAML.dublin_core.issued = new Date().toISOString().slice(0, 10)
+    try {
+      const manifestYAML = YAML.load( content )
 
-    for ( let source of manifestYAML.dublin_core.source ) {
-      if ( source.identifier === resourceId && source.language === languageId ) {
-        source.version = previousVersion
+      const previousVersion = manifestYAML.dublin_core.version
+      const parts = previousVersion.split('.')
+      parts[parts.length - 1]++
+      const nextVersion = parts.join('.')
+      manifestYAML.dublin_core.version = nextVersion
+      manifestYAML.dublin_core.modified = manifestYAML.dublin_core.issued = new Date().toISOString().slice(0, 10)
+
+      for ( let source of manifestYAML.dublin_core.source ) {
+        if ( source.identifier === resourceId && source.language === languageId ) {
+          source.version = previousVersion
+        }
       }
+
+      if ( resourceId !== 'ta' && resourceId !== 'tw') {
+        for ( let bookId of books ) {
+          if ( !manifestYAML.projects.find( ( item ) => item.identifier === bookId ) ) {
+            const project = getProject( {
+              bookId, resourceId, languageId,
+            } )
+
+            if ( project.path ) {
+              const index = manifestYAML.projects.findLastIndex( ( item ) => item.sort > project.sort )
+              manifestYAML.projects.splice( index, 0, project )
+            }
+          }
+        }
+      }
+
+      // TODO do something with manifestYAML.dublin_core.resources
+
+      const newYAML = YAML.dump(manifestYAML)
+      const newContent = btoa(newYAML)
+      const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
+      const date = new Date(Date.now())
+      const dateString = date.toISOString()
+
+      await fetch(updateUri+'?token='+tokenid, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+          "author": {
+            "email": "info@unfoldingword.org",
+            "name": "unfoldingWord"
+          },
+          "committer": {
+            "email": "info@unfoldingword.org",
+            "name": "unfoldingWord"
+          },
+          "content": "${newContent}",
+          "dates": {
+            "author": "${dateString}",
+            "committer": "${dateString}"
+          },
+          "from_path": "manifest.yaml",
+          "message": "Replace Manifest with valid YAML file",
+          "branch": "${releaseBranchName}",
+          "sha": "${sha}",
+          "signoff": true
+        }`,
+      })
+      return nextVersion
+    } catch ( e ) {
+      console.log(e)
     }
-
-    // TODO do something with manifestYAML.dublin_core.resources
-
-    const newYAML = YAML.dump(manifestYAML)
-    const newContent = base64.encode(utf8.encode(newYAML))
-    const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
-    const date = new Date(Date.now())
-    const dateString = date.toISOString()
-
-    await fetch(updateUri+'?token='+tokenid, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: `{
-        "author": {
-          "email": "info@unfoldingword.org",
-          "name": "unfoldingWord"
-        },
-        "committer": {
-          "email": "info@unfoldingword.org",
-          "name": "unfoldingWord"
-        },
-        "content": "${newContent}",
-        "dates": {
-          "author": "${dateString}",
-          "committer": "${dateString}"
-        },
-        "from_path": "manifest.yaml",
-        "message": "Replace Manifest with valid YAML file",
-        "branch": "${releaseBranchName}",
-        "sha": "${sha}",
-        "signoff": true
-      }`,
-    })
-
-    return nextVersion
   }
+  return null
 }
 
 export async function createReleases({
@@ -511,31 +426,39 @@ export async function createReleases({
 export async function createRelease({
   server, organization, languageId, resourceId, books, notes, name, state, tokenid,
 }) {
-  const releaseBranchName = 'release'
+  let releaseBranchName = 'release'
 
-  await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-  })
-  await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches')+'?token='+tokenid, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: `{
-      "new_branch_name": "${releaseBranchName}"
+  const branchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+
+  console.log(branchExists)
+
+  if ( 404 === branchExists.status ) {
+    console.log('branche does not exist')
+    await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+      "new_branch_name": "${ releaseBranchName }"
     }`,
-  })
+    } )
+  }
 
-  const success = await updateBranchWithLatestBookFiles({
-    releaseBranchName,
-    server,
-    organization,
-    languageId,
-    resourceId,
-    tokenid,
-    books,
-  })
-
-  console.log(success);
+  if ( resourceId !== 'ta' && resourceId !== 'tw') {
+    const success = await updateBranchWithLatestBookFiles({
+      releaseBranchName,
+      server,
+      organization,
+      languageId,
+      resourceId,
+      tokenid,
+      books,
+    })
+    console.log(success)
+  } else {
+    releaseBranchName = 'master'
+  }
 
   let version = await updateManifest( {
     server,
@@ -544,7 +467,15 @@ export async function createRelease({
     resourceId,
     tokenid,
     releaseBranchName,
+    books,
   })
+
+  if ( ! version ) {
+    return {
+      status: false,
+      message: 'Failed to update manifest',
+    }
+  }
 
   version = 'v'+version
 
@@ -586,16 +517,26 @@ export async function createRelease({
 
     if ( res.status === 201 ) {
       val.status = true
-      val.message = `Created release ${version} of ${languageId}_${resourceId} `
+      val.message = `Created release ${version} of ${languageId}_${resourceId}`
+      val.version = version
+
+      // Update manifest in master after release.
+      await updateManifest( {
+        server,
+        organization,
+        languageId,
+        resourceId,
+        tokenid,
+        releaseBranchName: 'master',
+        books,
+      })
     } else if ( res.status === 404 ) {
       val.status = false
       val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
-    } else if ( res.status === 409 ) {
-      val.status = false
-      val.message = `Invalid JSON payload (409)`
     } else {
       val.status = false
-      val.message = `Unexpected response: status ${res.status}, message ${res.message}`
+      const body = await res.json()
+      val.message = `Unexpected response: status ${res.status}, message ${body.message}`
     }
   } catch (e) {
     const message = e?.message

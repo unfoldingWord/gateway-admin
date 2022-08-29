@@ -7,13 +7,14 @@ import Layout from '@components/Layout'
 import ReleaseSettings from '@components/ReleaseSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { validVersionTag, createReleases } from '@utils/dcsApis'
+import { createRelease, createReleases } from '@utils/dcsApis'
 import { resourceIdMapper } from '@common/ResourceList'
+import Link from '@material-ui/core/Link'
 
 const ReleasePage = () => {
   const router = useRouter()
   const [confirmRelease, setConfirmRelease] = useState(false)
-  const [releaseMessage, setReleaseMessage] = useState(<CircularProgress />)
+  const [releaseMessages, setReleaseMessages] = useState([])
   // The release button will be active (enabled) iff all are true:
   // resource is selected, release version supplied and is valid
   const [releaseActive, setReleaseActive] = useState(false)
@@ -59,25 +60,36 @@ const ReleasePage = () => {
     }
 
     async function doRelease() {
-      setReleaseMessage(<CircularProgress />)
+      const _releaseMessages = Array.from(releaseResources.keys()).map((resourceId, index) => <span key={index}>Releasing {resourceId}<CircularProgress key={resourceId}/></span>)
+      setReleaseMessages(_releaseMessages)
       const tokenid = authentication.token.sha1;
 
       const resourceIds = Array.from(releaseResources.keys()).map((resourceId) => resourceIdMapper(organization, resourceId))
 
       const books = Array.from(releaseBooks.keys())
 
-      const _results = await createReleases({
-        server,
-        organization,
-        languageId,
-        resourceIds,
-        books,
-        notes: releaseNotes,
-        name: releaseName,
-        state: releaseState,
-        tokenid,
-      })
-      setReleaseMessage(<span>{_results.message}</span>)
+      await Promise.allSettled( resourceIds.map( async (resourceId, index) => {
+        const result = await createRelease( {
+          server,
+          organization,
+          languageId,
+          resourceId,
+          books,
+          notes: releaseNotes,
+          name: releaseName,
+          state: releaseState,
+          tokenid,
+        } )
+        console.log(`finished ${index} with ${result.message}`)
+        _releaseMessages[index] = <span key={index}>{resourceId} Result {result.message}
+          {result.version ?
+            <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, resourceId)+'/releases/tag/'+result.version}>View {result.version} release</Link>:''
+          }
+        </span>
+        setReleaseMessages(_releaseMessages)
+        return result
+      } ))
+
       // initialize release state vars
       setReleaseResources(new Map())
       setReleaseBooks(new Map())
@@ -85,12 +97,11 @@ const ReleasePage = () => {
       setReleaseName(null)
       setReleaseState('prod')
       setReleaseActive(false)
+      setConfirmRelease(false)
     }
 
     doRelease()
   }, [server, organization, languageId, releaseResources, releaseBooks, confirmRelease])
-
-
 
   return (
     <Layout>
@@ -128,9 +139,7 @@ const ReleasePage = () => {
             </Button>
             <br/>
           </div>
-          {confirmRelease &&
-            <h2 className='mx-4'>Status: {releaseMessage}</h2>
-          }
+          {releaseMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)}
         </div>
       </div>
     </Layout>
