@@ -14,6 +14,36 @@ import { isServerDisconnected } from './network'
 
 
 /**
+ * determine if version tag is formatted properly
+ * @param {string} versionTag
+ * @return {boolean}
+ */
+ export function getNextVersionTag(versionTag) {
+  let newVersion = versionTag
+  // get to the integer we need
+  if ( newVersion.startsWith("v") ) {
+    // remove it
+    newVersion = versionTag.substring(1)
+  }
+
+  if ( newVersion.includes(".") ) {
+    newVersion = newVersion.split(".")[0]
+  }
+
+  const _newVersion = Number(newVersion);
+
+  if (Number.isInteger(_newVersion) && _newVersion > 0) {
+    _newVersion++
+    newVersion = "v"+_newVersion
+  } else {
+    newVersion = "v1" // default to version 1 -- "v1"
+  }
+  
+  
+  return newVersion
+}
+
+/**
  * determine latest release version
  * @param {string} server
  * @param {string} organization
@@ -32,17 +62,20 @@ import { isServerDisconnected } from './network'
     if (response.status === 200) {
       // master branch is in the catalog, thus must have a valid manifest
       // now fetch the latest release!
-      val.isValid = true
+      val.ok = true
       if ( response.data.length === 0 ) {
-        val.message = 'No releases yet, use "v1"'
+        val.message = 'No releases yet'
+        val.nextVersion = 'v1'
       } else {
-        val.message = response.data[0]['tag_name']
+        const oldversion = response.data[0]['tag_name']
+        val.nextVersion = getNextVersionTag(oldversion)
+        val.message = `Latest release was ${oldversion}; new version will be ${val.nextVersion}`
       }
     } else if (response.status === 404) {
-      val.isValid = false
+      val.ok = false
       val.message = `Repo does not exist: ${languageId}_${resourceId}`
     } else {
-      val.isValid = false
+      val.ok = false
       val.message = "Unexpected status returned:"+response.status
     }
   } catch (e) {
@@ -54,7 +87,7 @@ import { isServerDisconnected } from './network'
       url ${uri}
       Error:`, 
       e)
-    val.isValid = false
+    val.ok = false
     val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
   }
   return val
