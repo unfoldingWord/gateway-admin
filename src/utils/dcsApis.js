@@ -435,7 +435,7 @@ export async function createRelease({
   console.log(branchExists)
 
   if ( 404 === branchExists.status ) {
-    console.log('branche does not exist')
+    console.log('branch does not exist')
     await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
