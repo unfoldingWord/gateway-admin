@@ -18,28 +18,27 @@ import { isServerDisconnected } from './network'
  * @param {string} versionTag
  * @return {boolean}
  */
- export function getNextVersionTag(versionTag) {
+export function getNextVersionTag(versionTag) {
   let newVersion = versionTag
+
   // get to the integer we need
-  if ( newVersion.startsWith("v") ) {
+  if ( newVersion.startsWith('v') ) {
     // remove it
     newVersion = versionTag.substring(1)
   }
 
-  if ( newVersion.includes(".") ) {
-    newVersion = newVersion.split(".")[0]
+  if ( newVersion.includes('.') ) {
+    newVersion = newVersion.split('.')[0]
   }
 
-  const _newVersion = Number(newVersion);
+  let _newVersion = Number(newVersion)
 
   if (Number.isInteger(_newVersion) && _newVersion > 0) {
     _newVersion++
-    newVersion = "v"+_newVersion
+    newVersion = 'v'+_newVersion
   } else {
-    newVersion = "v1" // default to version 1 -- "v1"
+    newVersion = 'v1' // default to version 1 -- "v1"
   }
-  
-  
   return newVersion
 }
 
@@ -49,48 +48,29 @@ import { isServerDisconnected } from './network'
  * @param {string} organization
  * @param {string} languageId
  * @param {string} resourceId
- * @return {object} 
+ * @return {object}
  *                 shape of return object is {isValid: bool, message: string}
  */
- async function latestReleaseVersion({server, organization, languageId, resourceId}) {
+async function latestReleaseVersion({
+  server, organization, languageId, resourceId,
+}) {
   // example:
   // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases?draft=false&pre-release=false&page=1&limit=9999'
-  const uri = server + "/" + Path.join('api','v1','repos',organization,`${languageId}_${resourceId}`,'releases?page=1&limit=9999') ;
-  let val = {}
-  try {
-    const response = await doFetch(uri)
-    if (response.status === 200) {
-      // master branch is in the catalog, thus must have a valid manifest
-      // now fetch the latest release!
-      val.ok = true
-      if ( response.data.length === 0 ) {
-        val.message = 'No releases yet'
-        val.nextVersion = 'v1'
-      } else {
-        const oldversion = response.data[0]['tag_name']
-        val.nextVersion = getNextVersionTag(oldversion)
-        val.message = `Latest release was ${oldversion}; new version will be ${val.nextVersion}`
-      }
-    } else if (response.status === 404) {
-      val.ok = false
-      val.message = `Repo does not exist: ${languageId}_${resourceId}`
+  const uri = server + '/' + Path.join('api','v1','repos',organization,`${languageId}_${resourceId}`,'releases?page=1&limit=1')
+
+  const response = await fetch(uri)
+
+  if (response.ok) {
+    const body = await response.json()
+
+    if ( body.length === 0 ) {
+      return 'v1'
     } else {
-      val.ok = false
-      val.message = "Unexpected status returned:"+response.status
+      return body[0]['tag_name']
     }
-  } catch (e) {
-    const message = e?.message
-    const disconnected = isServerDisconnected(e)
-    console.warn(`latestReleaseVersion() - error fetching releases,
-      message '${message}',
-      disconnected=${disconnected},
-      url ${uri}
-      Error:`, 
-      e)
-    val.ok = false
-    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+  } else {
+    throw new Error('Failed to get latest version: '+response.status)
   }
-  return val
 }
 
 
@@ -359,7 +339,6 @@ export async function updateBranchWithLatestBookFiles({
     if (res.ok) {
       // eslint-disable-next-line no-await-in-loop
       const body = await res.json()
-      console.log(body)
       const sha = body.sha
       const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
       const date = new Date(Date.now())
@@ -396,7 +375,7 @@ export async function updateBranchWithLatestBookFiles({
 }
 
 export async function updateManifest({
-  server, organization, languageId, resourceId, tokenid, releaseBranchName, books,
+  server, organization, languageId, resourceId, tokenid, releaseBranchName, books, nextVersion, previousVersion,
 }) {
   const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
 
@@ -407,73 +386,73 @@ export async function updateManifest({
     const sha = body.sha
     const content = atob(body.content)
 
-    try {
-      const manifestYAML = YAML.load( content )
+    const manifestYAML = YAML.load( content )
 
-      const previousVersion = manifestYAML.dublin_core.version
-      const parts = previousVersion.split('.')
-      parts[parts.length - 1]++
-      const nextVersion = parts.join('.')
-      manifestYAML.dublin_core.version = nextVersion
-      manifestYAML.dublin_core.modified = manifestYAML.dublin_core.issued = new Date().toISOString().slice(0, 10)
+    if ( nextVersion.startsWith('v') ) {
+      // remove it
+      nextVersion = nextVersion.substring(1)
+    }
 
-      for ( let source of manifestYAML.dublin_core.source ) {
-        if ( source.identifier === resourceId && source.language === languageId ) {
-          source.version = previousVersion
-        }
+    if ( previousVersion.startsWith('v') ) {
+      // remove it
+      previousVersion = previousVersion.substring(1)
+    }
+    manifestYAML.dublin_core.version = nextVersion
+    manifestYAML.dublin_core.modified = manifestYAML.dublin_core.issued = new Date().toISOString().slice(0, 10)
+
+    for ( let source of manifestYAML.dublin_core.source ) {
+      if ( source.identifier === resourceId && source.language === languageId ) {
+        source.version = previousVersion
       }
+    }
 
-      if ( resourceId !== 'ta' && resourceId !== 'tw') {
-        for ( let bookId of books ) {
-          if ( !manifestYAML.projects.find( ( item ) => item.identifier === bookId ) ) {
-            const project = getProject( {
-              bookId, resourceId, languageId,
-            } )
+    if ( resourceId !== 'ta' && resourceId !== 'tw') {
+      for ( let bookId of books ) {
+        if ( !manifestYAML.projects.find( ( item ) => item.identifier === bookId ) ) {
+          const project = getProject( {
+            bookId, resourceId, languageId,
+          } )
 
-            if ( project.path ) {
-              const index = manifestYAML.projects.findLastIndex( ( item ) => item.sort > project.sort )
-              manifestYAML.projects.splice( index, 0, project )
-            }
+          if ( project.path ) {
+            const index = manifestYAML.projects.findLastIndex( ( item ) => item.sort > project.sort )
+            manifestYAML.projects.splice( index, 0, project )
           }
         }
       }
-
-      // TODO do something with manifestYAML.dublin_core.resources
-
-      const newYAML = YAML.dump(manifestYAML)
-      const newContent = btoa(newYAML)
-      const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
-      const date = new Date(Date.now())
-      const dateString = date.toISOString()
-
-      await fetch(updateUri+'?token='+tokenid, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: `{
-          "author": {
-            "email": "info@unfoldingword.org",
-            "name": "unfoldingWord"
-          },
-          "committer": {
-            "email": "info@unfoldingword.org",
-            "name": "unfoldingWord"
-          },
-          "content": "${newContent}",
-          "dates": {
-            "author": "${dateString}",
-            "committer": "${dateString}"
-          },
-          "from_path": "manifest.yaml",
-          "message": "Replace Manifest with valid YAML file",
-          "branch": "${releaseBranchName}",
-          "sha": "${sha}",
-          "signoff": true
-        }`,
-      })
-      return nextVersion
-    } catch ( e ) {
-      console.log(e)
     }
+
+    // TODO do something with manifestYAML.dublin_core.resources
+
+    const newYAML = YAML.dump(manifestYAML)
+    const newContent = btoa(newYAML)
+    const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
+    const date = new Date(Date.now())
+    const dateString = date.toISOString()
+
+    return fetch(updateUri+'?token='+tokenid, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+        "author": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "committer": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "content": "${newContent}",
+        "dates": {
+          "author": "${dateString}",
+          "committer": "${dateString}"
+        },
+        "from_path": "manifest.yaml",
+        "message": "Replace Manifest with valid YAML file",
+        "branch": "${releaseBranchName}",
+        "sha": "${sha}",
+        "signoff": true
+      }`,
+    })
   }
   return null
 }
@@ -508,24 +487,46 @@ export async function createReleases({
 export async function createRelease({
   server, organization, languageId, resourceId, books, notes, name, state, tokenid,
 }) {
-  let releaseBranchName = 'release'
+  const previousVersion = await latestReleaseVersion({
+    server, organization,languageId,resourceId,
+  })
+
+  const nextVersion = getNextVersionTag(previousVersion)
+  let releaseBranchName = 'release_'+nextVersion
+  let oldBranchName = 'release_'+previousVersion
 
   const branchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
     { headers: { 'Content-Type': 'application/json' } },
   )
 
+  const oldBranchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+
+  if ( 404 === oldBranchExists.status ) {
+    oldBranchName = 'master'
+  }
+
   console.log(branchExists)
 
-  if ( 404 === branchExists.status ) {
-    console.log('branch does not exist')
-    await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: `{
-      "new_branch_name": "${ releaseBranchName }"
-    }`,
-    } )
+  if ( 404 !== branchExists.status ) {
+    await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      },
+    )
   }
+
+  await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+    "new_branch_name": "${ releaseBranchName }",
+    "old_branch_name": "${ oldBranchName }"
+  }`,
+  } )
+
 
   if ( resourceId !== 'ta' && resourceId !== 'tw') {
     const success = await updateBranchWithLatestBookFiles({
@@ -542,7 +543,7 @@ export async function createRelease({
     releaseBranchName = 'master'
   }
 
-  let version = await updateManifest( {
+  await updateManifest( {
     server,
     organization,
     languageId,
@@ -550,22 +551,15 @@ export async function createRelease({
     tokenid,
     releaseBranchName,
     books,
+    previousVersion,
+    nextVersion,
   })
-
-  if ( ! version ) {
-    return {
-      status: false,
-      message: 'Failed to update manifest',
-    }
-  }
-
-  version = 'v'+version
 
   // log release parameters
   console.log(`
     Name: ${name}
     Notes: ${notes}
-    Version: ${version}
+    Version: ${nextVersion}
     State: ${state}
   `)
   // end log release parameters
@@ -588,7 +582,7 @@ export async function createRelease({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
-        "tag_name": "${version}",
+        "tag_name": "${nextVersion}",
         "target_commitish": "${releaseBranchName}",
         "name": "${name}",
         "body": "${notes}",
@@ -599,8 +593,8 @@ export async function createRelease({
 
     if ( res.status === 201 ) {
       val.status = true
-      val.message = `Created release ${version} of ${languageId}_${resourceId}`
-      val.version = version
+      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}`
+      val.version = nextVersion
 
       // Update manifest in master after release.
       await updateManifest( {
@@ -611,6 +605,8 @@ export async function createRelease({
         tokenid,
         releaseBranchName: 'master',
         books,
+        nextVersion,
+        previousVersion,
       })
     } else if ( res.status === 404 ) {
       val.status = false
