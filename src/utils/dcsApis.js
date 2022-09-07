@@ -499,7 +499,7 @@ export async function createRelease({
     { headers: { 'Content-Type': 'application/json' } },
   )
 
-  const oldBranchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
+  const oldBranchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',oldBranchName)+'?token='+tokenid,
     { headers: { 'Content-Type': 'application/json' } },
   )
 
@@ -513,7 +513,7 @@ export async function createRelease({
     await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
       {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       },
     )
   }
