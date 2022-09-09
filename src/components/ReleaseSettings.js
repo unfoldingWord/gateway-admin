@@ -186,9 +186,9 @@ export default function ReleaseSettings() {
                   <FormGroup>
                     <FormControlLabel
                       control={
-                        <Checkbox checked={releaseBooks.get('Open Bible Stories (OBS)') || false}
+                        <Checkbox checked={releaseBooks.get('obs') || false}
                           onChange={handleReleaseBooksChange}
-                          name='Open Bible Stories (OBS)' />
+                          name='obs' />
                       }
                       label='Open Bible Stories (OBS)'
                       key='Open Bible Stories (OBS)'

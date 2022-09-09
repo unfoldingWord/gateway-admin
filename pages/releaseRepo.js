@@ -7,7 +7,7 @@ import Layout from '@components/Layout'
 import ReleaseSettings from '@components/ReleaseSettings'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { createRelease, createReleases } from '@utils/dcsApis'
+import { createRelease } from '@utils/dcsApis'
 import { resourceIdMapper } from '@common/ResourceList'
 import Link from '@material-ui/core/Link'
 
@@ -60,15 +60,38 @@ const ReleasePage = () => {
     }
 
     async function doRelease() {
-      const _releaseMessages = Array.from(releaseResources.keys()).map((resourceId, index) => <span key={index}>Releasing {resourceId}<CircularProgress key={resourceId}/></span>)
-      setReleaseMessages(_releaseMessages)
       const tokenid = authentication.token.sha1;
 
       const resourceIds = Array.from(releaseResources.keys()).map((resourceId) => resourceIdMapper(organization, resourceId))
 
       const books = Array.from(releaseBooks.keys())
+      let realResourceIds = []
 
-      await Promise.allSettled( resourceIds.map( async (resourceId, index) => {
+      if ( books.includes('obs') ) {
+        resourceIds.forEach( (resourceId, index) => {
+          if ( ['tn','tq','twl', 'sn', 'sq'].includes(resourceId) ) {
+            realResourceIds.push('obs-'+resourceId)
+
+            if ( books.length > 1) {
+              realResourceIds.push(resourceId)
+            }
+          } else if ( 'obs' === resourceId ) {
+            realResourceIds.push(resourceId)
+          }
+        })
+        books.splice(books.indexOf('obs'),1)
+      } else {
+        realResourceIds = resourceIds
+      }
+
+      const _releaseMessages = realResourceIds.map((resourceId, index) => <span key={index}>Releasing {resourceId}<CircularProgress key={resourceId}/></span>)
+      setReleaseMessages(_releaseMessages)
+
+      console.log('releasing .........')
+      console.log(realResourceIds)
+      console.log(books)
+
+      await Promise.allSettled( realResourceIds.map( async (resourceId, index) => {
         const result = await createRelease( {
           server,
           organization,

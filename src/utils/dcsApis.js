@@ -10,6 +10,7 @@ import getResourceManifestProject from '@common/manifestProjects'
 import {
   ALL_BIBLE_BOOKS, BIBLES_ABBRV_INDEX, isNT,
 } from '@common/BooksOfTheBible'
+import { RESOURCES_WITH_NO_BOOK_FILES } from '@common/ResourceList'
 import { isServerDisconnected } from './network'
 
 
@@ -60,6 +61,7 @@ async function latestReleaseVersion({
 
   const response = await fetch(uri)
 
+  console.log(response)
   if (response.ok) {
     const body = await response.json()
 
@@ -190,7 +192,7 @@ export async function manifestAddBook({
   // only applies to scripture oriented resources, skip tw and ta
   let _manifest
 
-  if ( resourceId === 'ta' || resourceId === 'tw' ) {
+  if ( RESOURCES_WITH_NO_BOOK_FILES.includes ( resourceId ) ) {
     // skip adding book to project section
     _manifest = manifest
   } else {
@@ -406,7 +408,7 @@ export async function updateManifest({
       }
     }
 
-    if ( resourceId !== 'ta' && resourceId !== 'tw') {
+    if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
       for ( let bookId of books ) {
         if ( !manifestYAML.projects.find( ( item ) => item.identifier === bookId ) ) {
           const project = getProject( {
@@ -457,20 +459,6 @@ export async function updateManifest({
   return null
 }
 
-export async function createReleases({
-  server, organization, languageId, resourceIds, books, notes, name, state, tokenid,
-}) {
-  // Release all at the same time!
-  const results = await Promise.all(resourceIds.map( (resourceId) => createRelease({
-    server, organization, languageId, resourceId, books, notes, name, state, tokenid,
-  })))
-
-  return results.reduce( (prev, val) => ({
-    status: prev.status && val.status,
-    message: prev.message + ',\n' + val.message,
-  }), { status: true, message: '' })
-}
-
 /**
  * Create a new release from the master branch
  * @param {string} server
@@ -490,8 +478,9 @@ export async function createRelease({
   const previousVersion = await latestReleaseVersion({
     server, organization,languageId,resourceId,
   })
-
+  console.log(`previousVersion: ${previousVersion}`)
   const nextVersion = getNextVersionTag(previousVersion)
+  console.log(`nextVersion: ${nextVersion}`)
   let releaseBranchName = 'release_'+nextVersion
   let oldBranchName = 'release_'+previousVersion
 
@@ -506,8 +495,6 @@ export async function createRelease({
   if ( 404 === oldBranchExists.status ) {
     oldBranchName = 'master'
   }
-
-  console.log(branchExists)
 
   if ( 404 !== branchExists.status ) {
     await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
@@ -528,7 +515,7 @@ export async function createRelease({
   } )
 
 
-  if ( resourceId !== 'ta' && resourceId !== 'tw') {
+  if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
     const success = await updateBranchWithLatestBookFiles({
       releaseBranchName,
       server,
