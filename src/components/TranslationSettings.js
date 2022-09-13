@@ -8,6 +8,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
+import Checkbox from "@material-ui/core/Checkbox"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
 import { getGatewayLanguages } from '@common/languages'
 import { StoreContext } from '@context/StoreContext'
 import { FormHelperText } from '@material-ui/core'
@@ -40,6 +42,7 @@ export default function TranslationSettings({ authentication }) {
   const router = useRouter()
   const { actions: { logout } } = useContext(AuthContext)
   const classes = useStyles()
+  const [showAll, setShowAll] = useState(false)
   const [organizations, setOrganizations] = useState([])
   const [orgErrorMessage, setOrgErrorMessage] = useState(null)
   const [languages, setLanguages] = useState([])
@@ -73,7 +76,13 @@ export default function TranslationSettings({ authentication }) {
       let errorCode = 0
 
       try {
-        const orgs = await doFetch(`${server}/api/v1/user/orgs`,
+        let url = `${server}/api/v1/user/orgs`
+
+        if (showAll) {
+          url = `${server}/api/v1/orgs`
+        }
+
+        const orgs = await doFetch(url,
           authentication, HTTP_GET_MAX_WAIT_TIME)
           .then(response => {
             if (response?.status !== 200) {
@@ -113,7 +122,7 @@ export default function TranslationSettings({ authentication }) {
     if (authentication) {
       getOrgs()
     }
-  }, [authentication])
+  }, [authentication, showAll])
 
   useEffect(() => {
     async function getLanguages() {
@@ -142,7 +151,7 @@ export default function TranslationSettings({ authentication }) {
           onRetry={networkError?.authenticationError ? null : reloadApp}
         />
       }
-      <Paper className='flex flex-col h-80 w-full p-6 pt-3 my-2'>
+      <Paper className='flex flex-col w-full p-6 pt-3 my-2'>
         <h5>Translation Settings</h5>
         <div className='flex flex-col justify-between my-4'>
           <FormControl variant='outlined' className={classes.formControl} error={!!orgErrorMessage}>
@@ -164,6 +173,10 @@ export default function TranslationSettings({ authentication }) {
             </Select>
             <FormHelperText id='organization-select-message'>{orgErrorMessage}</FormHelperText>
           </FormControl>
+          <FormControlLabel
+            control={<Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} name="showAll" />}
+            label="Show all organizations"
+          />
           <FormControl variant='outlined' className={classes.formControl}>
             <InputLabel id='demo-simple-select-outlined-label'>
               Primary Translating Language
