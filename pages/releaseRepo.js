@@ -46,12 +46,12 @@ const ReleasePage = () => {
   } = useContext(AdminContext)
 
   useEffect( () => {
-    if ( releaseResources.size > 0 && releaseBooks.size > 0 ) {
+    if ( releaseResources.size > 0 && releaseBooks.size > 0 && releaseName && releaseName.length > 0 && releaseNotes && releaseNotes.length > 0 ) {
       setReleaseActive(true)
     } else {
       setReleaseActive(false)
     }
-  }, [releaseResources, releaseBooks])
+  }, [releaseResources, releaseBooks, releaseName, releaseNotes])
 
   //
   useEffect( () => {
@@ -116,8 +116,8 @@ const ReleasePage = () => {
       // initialize release state vars
       setReleaseResources(new Map())
       setReleaseBooks(new Map())
-      setReleaseNotes(null)
-      setReleaseName(null)
+      setReleaseNotes('')
+      setReleaseName('')
       setReleaseState('prod')
       setReleaseActive(false)
       setConfirmRelease(false)
