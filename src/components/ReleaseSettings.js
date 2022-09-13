@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import {
-  Grid, Link, Box, Divider, Container
+  Grid, Link, Box, Divider, Container,
 } from '@material-ui/core'
 import Checkbox from '@material-ui/core/Checkbox'
 
@@ -23,6 +23,7 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { resourceSelectList , resourceIdMapper } from '@common/ResourceList'
 import { NT_BOOKS, OT_BOOKS } from '@common/BooksOfTheBible'
+import { latestReleaseVersion } from '@utils/dcsApis'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -59,6 +60,11 @@ export default function ReleaseSettings() {
       setReleaseBooks,
     },
   } = useContext(AdminContext)
+
+  const resources = resourceSelectList()
+
+  const [currentVersions, setCurrentVersions] = useState(new Map())
+  const [refreshVersions, setRefreshVersions] = useState(true)
 
   const handleResourceChange = (event) => {
     const item = event.target.name
@@ -137,15 +143,36 @@ export default function ReleaseSettings() {
     setReleaseBooks(newMap)
   }
 
+  useEffect( () => {
+    async function fetchAllLatestVersion() {
+      const versions = new Map()
+
+      await Promise.allSettled( resources.map( async ({ id:resourceId,name }) => {
+        console.log(resourceId)
+        const currentVersion = await latestReleaseVersion({
+          server, organization,languageId,resourceId,
+        })
+        versions.set(resourceId, currentVersion)
+      }))
+      console.log(versions)
+      setCurrentVersions(versions)
+    }
+    console.log('this is running too much')
+
+    if (refreshVersions && languageId && organization && resources && server) {
+      fetchAllLatestVersion()
+      setRefreshVersions(false)
+    }
+
+  }, [languageId, organization, resources, server, refreshVersions])
 
   // debugging
   useEffect(() => {
     console.log('One or more of these changed:',
       `${releaseResources}, ${releaseName}, ${releaseNotes}`,
     )
-    console.log(releaseBooks);
-    console.log(releaseResources);
-
+    console.log(releaseBooks)
+    console.log(releaseResources)
   }, [releaseResources, releaseName, releaseNotes, releaseBooks])
 
   return (
@@ -153,6 +180,33 @@ export default function ReleaseSettings() {
       <Paper className='flex flex-col h-90 w-full p-6 pt-3 my-2'>
         <p><b>Book Package Release Settings for Organization</b> <i>{organization}</i> <b>and Language ID</b> <i>{languageId}</i></p>
         <div className='flex flex-col justify-between'>
+          <FormControl required component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend">Select Resources</FormLabel>
+            <FormGroup>
+              {resources.map( ({ id,name }) =>
+                <>
+                  <FormControlLabel
+                    control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
+                    label={
+                      <Grid container spacing={6} direction="row">
+                        <Grid item>
+                          <span>{name}</span>
+                        </Grid>
+                        <Grid item>
+                          <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link>
+                        </Grid>
+                        <Grid item>
+                          <span>Latest Release: {currentVersions.get(id)}</span>
+                        </Grid>
+                      </Grid>} key={id}
+                  />
+                </>
+                ,
+              )}
+            </FormGroup>
+            <FormHelperText />
+          </FormControl>
+
           <Grid container spacing={3}>
             <Grid item xs={5}>
               <Paper>
@@ -225,22 +279,6 @@ export default function ReleaseSettings() {
               </Paper>
             </Grid>
           </Grid>
-
-          <FormControl required component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Select Resources</FormLabel>
-            <FormGroup>
-              {resourceSelectList().map( ({ id,name }) =>
-                <>
-                  <FormControlLabel
-                    control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
-                    label={<Grid spacing={6} direction="row" justifyContent="space-around"><Grid item><span>{name}</span></Grid><Divider orientation="vertical" flexItem /><Grid item><Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link></Grid></Grid>} key={id}
-                  />
-                </>
-                ,
-              )}
-            </FormGroup>
-            <FormHelperText />
-          </FormControl>
 
           <FormControl>
             <FormLabel id="release-type-radio-buttons-group-label">Release Type</FormLabel>
