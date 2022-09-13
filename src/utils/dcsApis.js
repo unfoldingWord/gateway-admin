@@ -52,7 +52,7 @@ export function getNextVersionTag(versionTag) {
  * @return {object}
  *                 shape of return object is {isValid: bool, message: string}
  */
-async function latestReleaseVersion({
+export async function latestReleaseVersion({
   server, organization, languageId, resourceId,
 }) {
   // example:
@@ -66,7 +66,7 @@ async function latestReleaseVersion({
     const body = await response.json()
 
     if ( body.length === 0 ) {
-      return 'v1'
+      return 'v0'
     } else {
       return body[0]['tag_name']
     }
@@ -116,12 +116,13 @@ function getProject({
   resourceId, bookId, languageId,
 }) {
   const project = getResourceManifestProject({ resourceId })
+  console.log(resourceId)
 
   project.title = ALL_BIBLE_BOOKS[bookId]
   project.identifier = bookId
   project.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
 
-  if ( resourceId === 'lt' || resourceId === 'st' || resourceId === 'ult' || resourceId === 'ust' ) {
+  if ( resourceId === 'lt' || resourceId === 'st' || resourceId === 'ult' || resourceId === 'ust' || resourceId === 'glt' || resourceId === 'gst' ) {
     project.path = './' + BIBLES_ABBRV_INDEX[bookId] + '-' + bookId.toUpperCase() + '.usfm'
   } else if ( resourceId === 'twl' ) {
     project.path = './twl_' + bookId.toUpperCase() + '.tsv'
@@ -332,6 +333,7 @@ export async function updateBranchWithLatestBookFiles({
     const project = getProject({
       bookId, resourceId, languageId,
     })
+    console.log(project)
     const path = project.path.substring(2) // remove './' from path.
     const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
 
@@ -554,7 +556,6 @@ export async function createRelease({
   // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
 
   let val = {}
-  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases')
   let prerelease = false
 
   // compute the draft and prerelease booleans
@@ -563,6 +564,14 @@ export async function createRelease({
   if ( state === 'prerelease' ) {
     prerelease = true
   }
+
+  // Deleting any existing tags with same name.
+  await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'tags', nextVersion ) + '?token=' + tokenid, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  } )
+
+  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases')
 
   try {
     const res = await fetch(uri+'?token='+tokenid, {
