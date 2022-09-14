@@ -23,7 +23,9 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { resourceSelectList , resourceIdMapper } from '@common/ResourceList'
 import { NT_BOOKS, OT_BOOKS } from '@common/BooksOfTheBible'
-import { latestReleaseVersion } from '@utils/dcsApis'
+import { latestReleaseVersion, branchExists } from '@utils/dcsApis'
+import { AuthenticationContext } from "gitea-react-toolkit"
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -61,10 +63,25 @@ export default function ReleaseSettings() {
     },
   } = useContext(AdminContext)
 
+  const { state: authentication } = useContext(AuthenticationContext)
+
   const resources = resourceSelectList()
 
   const [currentVersions, setCurrentVersions] = useState(new Map())
   const [refreshVersions, setRefreshVersions] = useState(true)
+  const [bookSelectionMessage, setBookSelectionMessage] = useState('')
+
+  const prepResourceForRelease = async (resourceId) => {
+    const tokenid = authentication.token.sha1
+    const branch = 'release_' + currentVersions.get(resourceId)
+    const previousReleaseBranchExists = await branchExists({server,organization,languageId,resourceId,tokenid, branch})
+
+    if ( ! previousReleaseBranchExists ) {
+      setBookSelectionMessage('This is the first release of this resource with Gateway Admin, all books ready to be published must be selected.')
+    } else {
+      setBookSelectionMessage('')
+    }
+  }
 
   const handleResourceChange = (event) => {
     const item = event.target.name
@@ -73,6 +90,7 @@ export default function ReleaseSettings() {
 
     if ( isChecked ) {
       newMap.set(item, isChecked)
+      prepResourceForRelease(item)
     } else {
       newMap.delete(item)
     }
@@ -148,22 +166,18 @@ export default function ReleaseSettings() {
       const versions = new Map()
 
       await Promise.allSettled( resources.map( async ({ id:resourceId,name }) => {
-        console.log(resourceId)
         const currentVersion = await latestReleaseVersion({
-          server, organization,languageId,resourceId,
+          server, organization,languageId,resourceId: resourceIdMapper(organization, resourceId),
         })
-        versions.set(resourceId, currentVersion)
+        versions.set(resourceId, currentVersion === 'v0' ? 'none' : currentVersion)
       }))
-      console.log(versions)
       setCurrentVersions(versions)
     }
-    console.log('this is running too much')
 
     if (refreshVersions && languageId && organization && resources && server) {
       fetchAllLatestVersion()
       setRefreshVersions(false)
     }
-
   }, [languageId, organization, resources, server, refreshVersions])
 
   // debugging
@@ -180,33 +194,6 @@ export default function ReleaseSettings() {
       <Paper className='flex flex-col h-90 w-full p-6 pt-3 my-2'>
         <p><b>Book Package Release Settings for Organization</b> <i>{organization}</i> <b>and Language ID</b> <i>{languageId}</i></p>
         <div className='flex flex-col justify-between'>
-          <FormControl required component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Select Resources</FormLabel>
-            <FormGroup>
-              {resources.map( ({ id,name }) =>
-                <>
-                  <FormControlLabel
-                    control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
-                    label={
-                      <Grid container spacing={6} direction="row">
-                        <Grid item>
-                          <span>{name}</span>
-                        </Grid>
-                        <Grid item>
-                          <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link>
-                        </Grid>
-                        <Grid item>
-                          <span>Latest Release: {currentVersions.get(id)}</span>
-                        </Grid>
-                      </Grid>} key={id}
-                  />
-                </>
-                ,
-              )}
-            </FormGroup>
-            <FormHelperText />
-          </FormControl>
-
           <Grid container spacing={3}>
             <Grid item xs={5}>
               <Paper>
@@ -279,7 +266,33 @@ export default function ReleaseSettings() {
               </Paper>
             </Grid>
           </Grid>
-
+          <FormControl required component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend">Select Resources</FormLabel>
+            <FormGroup>
+              {resources.map( ({ id,name }) =>
+                <>
+                  <FormControlLabel
+                    control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
+                    label={
+                      <Grid container spacing={6} direction="row">
+                        <Grid item>
+                          <span>{name}</span>
+                        </Grid>
+                        <Grid item>
+                          <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link>
+                        </Grid>
+                        <Grid item>
+                          <span>Latest Release: {currentVersions.get(id)}</span>
+                        </Grid>
+                      </Grid>} key={id}
+                  />
+                </>
+                ,
+              )}
+            </FormGroup>
+            <FormHelperText />
+          </FormControl>
+          {bookSelectionMessage ? <Alert severity="warning">{bookSelectionMessage}</Alert> : '' }
           <FormControl>
             <FormLabel id="release-type-radio-buttons-group-label">Release Type</FormLabel>
             <RadioGroup

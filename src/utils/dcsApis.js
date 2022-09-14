@@ -461,6 +461,78 @@ export async function updateManifest({
   return null
 }
 
+export async function branchExists({
+  server, organization, languageId, resourceId, tokenid, branch,
+}) {
+  const exists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',branch)+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  return 200 === exists.status
+}
+
+async function deleteUnselectedBookFiles( {
+  releaseBranchName,
+  server,
+  organization,
+  languageId,
+  resourceId,
+  tokenid,
+  books,
+} ) {
+  let result
+
+  for (const [bookId, bookName] of Object.entries(ALL_BIBLE_BOOKS)) {
+
+    if ( books.includes(bookId) ) {
+      continue
+    }
+
+    const project = getProject({
+      bookId, resourceId, languageId,
+    })
+
+    const path = project.path.substring(2) // remove './' from path.
+    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+
+    // eslint-disable-next-line no-await-in-loop
+    const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
+
+    if (res.ok) {
+      // eslint-disable-next-line no-await-in-loop
+      const body = await res.json()
+      const sha = body.sha
+      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
+      const date = new Date(Date.now())
+      const dateString = date.toISOString()
+
+      // eslint-disable-next-line no-await-in-loop
+      result = await fetch(updateUri + '?token=' + tokenid, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+        "author": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "committer": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "dates": {
+          "author": "${dateString}",
+          "committer": "${dateString}"
+        },
+        "message": "Delete work in progress ${path} from to prepare for book package release",
+        "branch": "${releaseBranchName}",
+        "sha": "${sha}",
+        "signoff": true
+      }`,
+      })
+    }
+  }
+  return result
+}
+
 /**
  * Create a new release from the master branch
  * @param {string} server
@@ -486,19 +558,15 @@ export async function createRelease({
   let releaseBranchName = 'release_'+nextVersion
   let oldBranchName = 'release_'+previousVersion
 
-  const branchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
-    { headers: { 'Content-Type': 'application/json' } },
-  )
+  const releaseBranchExists = await branchExists( { server, organization, languageId, resourceId, tokenid, branch: releaseBranchName } )
 
-  const oldBranchExists = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',oldBranchName)+'?token='+tokenid,
-    { headers: { 'Content-Type': 'application/json' } },
-  )
+  const oldBranchExists = await branchExists( { server, organization, languageId, resourceId, tokenid, branch: oldBranchName } )
 
-  if ( 404 === oldBranchExists.status ) {
+  if ( ! oldBranchExists ) {
     oldBranchName = 'master'
   }
 
-  if ( 404 !== branchExists.status ) {
+  if ( releaseBranchExists ) {
     await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
       {
         method: 'DELETE',
@@ -507,17 +575,28 @@ export async function createRelease({
     )
   }
 
-  await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: `{
-    "new_branch_name": "${ releaseBranchName }",
-    "old_branch_name": "${ oldBranchName }"
-  }`,
-  } )
-
-
   if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
+    await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+        "new_branch_name": "${ releaseBranchName }",
+        "old_branch_name": "${ oldBranchName }"
+      }`,
+    } )
+
+    if ( 'master' === oldBranchName ) {
+      await deleteUnselectedBookFiles({
+        releaseBranchName,
+        server,
+        organization,
+        languageId,
+        resourceId,
+        tokenid,
+        books,
+      })
+    }
+
     const success = await updateBranchWithLatestBookFiles({
       releaseBranchName,
       server,
