@@ -37,72 +37,22 @@ const ReleasePage = () => {
       releaseState,
       releaseBooks,
       obsRepoTree,
-      obsRepoTreeManifest,
-      obsManifestSha,
-      obsRepoTreeStatus,
       obsTnRepoTree,
-      obsTnRepoTreeManifest,
-      obsTnManifestSha,
-      obsTnRepoTreeStatus,
       obsTwlRepoTree,
-      obsTwlRepoTreeManifest,
-      obsTwlManifestSha,
-      obsTwlRepoTreeStatus,
       obsTqRepoTree,
-      obsTqRepoTreeManifest,
-      obsTqManifestSha,
-      obsTqRepoTreeStatus,
       obsTaRepoTree,
-      obsTaRepoTreeManifest,
-      obsTaManifestSha,
-      obsTaRepoTreeStatus,
       obsTwRepoTree,
-      obsTwRepoTreeManifest,
-      obsTwRepoTreeStatus,
       obsSnRepoTree,
-      obsSnRepoTreeManifest,
-      obsSnManifestSha,
-      obsSnRepoTreeStatus,
       obsSqRepoTree,
-      obsSqRepoTreeManifest,
-      obsSqManifestSha,
-      obsSqRepoTreeStatus,
       tnRepoTree,
-      tnRepoTreeManifest,
-      tnManifestSha,
-      tnRepoTreeStatus,
       twlRepoTree,
-      twlRepoTreeManifest,
-      twlManifestSha,
-      twlRepoTreeStatus,
       ltRepoTree,
-      ltRepoTreeManifest,
-      ltManifestSha,
-      ltRepoTreeStatus,
       stRepoTree,
-      stRepoTreeManifest,
-      stManifestSha,
-      stRepoTreeStatus,
       tqRepoTree,
-      tqRepoTreeManifest,
-      tqManifestSha,
-      tqRepoTreeStatus,
       sqRepoTree,
-      sqRepoTreeManifest,
-      sqManifestSha,
-      sqRepoTreeStatus,
       snRepoTree,
-      snRepoTreeManifest,
-      snManifestSha,
-      snRepoTreeStatus,
       taRepoTree,
-      taRepoTreeManifest,
-      taManifestSha,
-      taRepoTreeStatus,
       twRepoTree,
-      twRepoTreeManifest,
-      twManifestSha,
-      twRepoTreeStatus,
     },
     actions: {
       setReleaseResources,
@@ -151,7 +101,7 @@ const ReleasePage = () => {
     case OBS_TQ:
       return obsTqRepoTree
     default:
-      throw new Error(`no such resouce ${resourceId}`)
+      throw new Error(`no such resource ${resourceId}`)
     }
   }
 
@@ -203,34 +153,29 @@ const ReleasePage = () => {
 
       await Promise.allSettled( realResourceIds.map( async (resourceId, index) => {
         const resourceTree = getResourceTree( resourceId )
-        try {
-          const result = await createRelease( {
-            server,
-            organization,
-            languageId,
-            resourceId,
-            books,
-            notes: releaseNotes,
-            name: releaseName,
-            state: releaseState,
-            tokenid,
-            resourceTree,
-          } )
 
-          console.log( `finished ${ index } with ${ result.message }` )
-          _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { result.message }
-            { result.version ?
-              <Link target="_blank"
-                href={ server + '/' + organization + '/' + languageId + '_' + resourceIdMapper( organization, resourceId ) + '/releases/tag/' + result.version }>View { result.version } release</Link> : ''
-            }
-          </span>
-          setReleaseMessages( _releaseMessages )
-          return result
-        } catch (e) {
-          console.log( `finished ${ index } with ${ e.message }` )
-          _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { e.message } </span>
-          setReleaseMessages( _releaseMessages )
-        }
+        const result = await createRelease( {
+          server,
+          organization,
+          languageId,
+          resourceId,
+          books,
+          notes: releaseNotes,
+          name: releaseName,
+          state: releaseState,
+          tokenid,
+          resourceTree,
+        } )
+
+        console.log( `finished ${ index } with ${ result.message }` )
+        _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { result.message }
+          { result.version ?
+            <Link target="_blank"
+              href={ server + '/' + organization + '/' + languageId + '_' + resourceIdMapper( organization, resourceId ) + '/releases/tag/' + result.version }> View { result.version } release</Link> : ''
+          }
+        </span>
+        setReleaseMessages( _releaseMessages )
+        return result
       } ))
 
       // initialize release state vars
@@ -253,6 +198,7 @@ const ReleasePage = () => {
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
           <h1 className='mx-4'>Release Resources</h1>
           <ReleaseSettings />
+          {releaseMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)}
           <div className='flex justify-end'>
             <Button
               size='large'
@@ -283,7 +229,6 @@ const ReleasePage = () => {
             </Button>
             <br/>
           </div>
-          {releaseMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)}
         </div>
       </div>
     </Layout>

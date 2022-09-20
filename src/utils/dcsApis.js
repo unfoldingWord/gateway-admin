@@ -331,65 +331,38 @@ export async function updateBranchWithLatestBookFiles({
   resourceId,
   tokenid,
   books,
-  resourceTree,
+  manifest,
 }) {
-  for ( const file of resourceTree ) {
-    let bookId = null, sourcePath = null, bookIdUpper = null
+  for (const bookId of books) {
+    const project = manifest.projects.find( (item) => item.identifier === bookId)
 
-    // Match twl_PHM.tsv or es-419_tn_57-TIT.tsv or en_tn_65-3JN.tsv
-    for ( const expression of [
-      '^' + resourceId + '_([A-Z1-3]{3})\\.tsv$',
-      languageId+'_' + resourceId + '_\\d{2}-([A-Z1-3]{3})\\.tsv$',
-      '^en_' + resourceId + '_\\d{2}-([A-Z1-3]{3})\\.tsv$',
-      '^\\d{2}-([A-Z1-3]{3})\\.usfm$',
-    ] ) {
-      console.log(expression)
-      console.log(file.path)
-      const matches = file.path.match(expression)
-      console.log(matches)
-
-      if ( matches ) {
-        [ sourcePath, bookIdUpper ] = matches
-        bookId = bookIdUpper.toLowerCase()
-        break
-      }
+    if ( ! project ) {
+      throw new Error(`Unable to find ${bookId} in manifest.yaml`)
     }
 
-    console.log( bookId )
+    const path = project.path.substring(2) // remove './' from path.
+    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
 
-    if ( ! bookId ) {
-      continue
-    }
-    console.log(books)
+    // eslint-disable-next-line no-await-in-loop
+    const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
 
-    if (books.includes(bookId.toLowerCase())) {
-      console.log(`get ${bookId} from ${sourcePath} in master`)
-      const project = getProject({
-        bookId, resourceId, languageId,
-      })
-      const path = project.path.substring(2) // remove './' from path.
-      const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',sourcePath)
+    if (res.ok) {
+      // eslint-disable-next-line no-await-in-loop
+      const body = await res.json()
+      const sha = body.sha
+
+      const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+      // eslint-disable-next-line no-await-in-loop
+      const fileExistsInReleaseBranch = await fetch(uri+'?token='+tokenid+'&ref='+releaseBranchName, { headers: { 'Content-Type': 'application/json' } })
+      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
+      const date = new Date(Date.now())
+      const dateString = date.toISOString()
 
       // eslint-disable-next-line no-await-in-loop
-      const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
-
-      if (res.ok) {
-        // eslint-disable-next-line no-await-in-loop
-        const body = await res.json()
-        const sha = body.sha
-
-        const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
-        // eslint-disable-next-line no-await-in-loop
-        const fileExistsInReleaseBranch = await fetch(uri+'?token='+tokenid+'&'+'ref='+releaseBranchName, { headers: { 'Content-Type': 'application/json' } })
-        const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
-        const date = new Date(Date.now())
-        const dateString = date.toISOString()
-
-        // eslint-disable-next-line no-await-in-loop
-        const result = await fetch(updateUri + '?token=' + tokenid, {
-          method: fileExistsInReleaseBranch.ok ? 'PUT' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: `{
+      const result = await fetch(updateUri + '?token=' + tokenid, {
+        method: fileExistsInReleaseBranch.ok ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
           "author": {
             "email": "info@unfoldingword.org",
             "name": "unfoldingWord"
@@ -408,103 +381,119 @@ export async function updateBranchWithLatestBookFiles({
           "sha": "${sha}",
           "signoff": true
         }`,
-        })
+      })
 
-        if ( ! result.ok ) {
-          // eslint-disable-next-line no-await-in-loop
-          const body = await result.json()
-          throw new Error(`API ${updateUri} failed with ${body.message ?? result.status}`)
-        }
-      } else {
+      if ( ! result.ok ) {
         // eslint-disable-next-line no-await-in-loop
-        const body = await res.json()
-        throw new Error(`API ${uri} failed with ${body.message ?? res.status}`)
+        const body = await result.json()
+        throw new Error(`API ${updateUri} failed with ${body.message ?? result.status}`)
       }
+    } else {
+      // eslint-disable-next-line no-await-in-loop
+      const body = await res.json()
+      throw new Error(`API ${uri} failed with ${body.message ?? res.status} ${body.errors ? body.errors.join(' ; ') : ''}`)
     }
   }
 }
 
 export async function updateManifest({
-  server, organization, languageId, resourceId, tokenid, releaseBranchName, books, nextVersion, previousVersion,
+  server, organization, languageId, resourceId, tokenid, releaseBranchName, books, nextVersion, previousVersion, firstRelease,
 }) {
   const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
 
   const res = await fetch(uri+'?token='+tokenid+'&ref='+releaseBranchName, { headers: { 'Content-Type': 'application/json' } })
 
-  if (res.ok) {
-    const body = await res.json()
-    const sha = body.sha
-    const content = atob(body.content)
+  if ( ! res.ok ) {
+    throw new Error(`Manifest.yaml missing at ${uri} in branch ${releaseBranchName}`)
+  }
 
-    const manifestYAML = YAML.load( content )
+  const body = await res.json()
+  const sha = body.sha
+  const content = atob(body.content)
+  const manifest = YAML.load( content )
 
-    if ( nextVersion.startsWith('v') ) {
-      // remove it
-      nextVersion = nextVersion.substring(1)
+  if ( nextVersion.startsWith('v') ) {
+    // remove it
+    nextVersion = nextVersion.substring(1)
+  }
+
+  if ( previousVersion.startsWith('v') ) {
+    // remove it
+    previousVersion = previousVersion.substring(1)
+  }
+  manifest.dublin_core.version = nextVersion
+  manifest.dublin_core.modified = manifest.dublin_core.issued = new Date().toISOString().slice(0, 10)
+
+  for ( let source of manifest.dublin_core.source ) {
+    if ( source.identifier === resourceId && source.language === languageId ) {
+      source.version = previousVersion
     }
+  }
 
-    if ( previousVersion.startsWith('v') ) {
-      // remove it
-      previousVersion = previousVersion.substring(1)
-    }
-    manifestYAML.dublin_core.version = nextVersion
-    manifestYAML.dublin_core.modified = manifestYAML.dublin_core.issued = new Date().toISOString().slice(0, 10)
+  if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
+    for ( let bookId of books ) {
+      if ( !manifest.projects.find( ( item ) => item.identifier === bookId ) ) {
+        const project = getProject( {
+          bookId, resourceId, languageId,
+        } )
 
-    for ( let source of manifestYAML.dublin_core.source ) {
-      if ( source.identifier === resourceId && source.language === languageId ) {
-        source.version = previousVersion
-      }
-    }
-
-    if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
-      for ( let bookId of books ) {
-        if ( !manifestYAML.projects.find( ( item ) => item.identifier === bookId ) ) {
-          const project = getProject( {
-            bookId, resourceId, languageId,
-          } )
-
-          if ( project.path ) {
-            const index = manifestYAML.projects.findLastIndex( ( item ) => item.sort > project.sort )
-            manifestYAML.projects.splice( index, 0, project )
-          }
+        if ( project.path ) {
+          const index = manifest.projects.findLastIndex( ( item ) => item.sort > project.sort )
+          manifest.projects.splice( index, 0, project )
         }
       }
     }
 
-    // TODO do something with manifestYAML.dublin_core.resources
-
-    const newYAML = YAML.dump(manifestYAML)
-    const newContent = btoa(newYAML)
-    const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
-    const date = new Date(Date.now())
-    const dateString = date.toISOString()
-
-    return fetch(updateUri+'?token='+tokenid, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: `{
-        "author": {
-          "email": "info@unfoldingword.org",
-          "name": "unfoldingWord"
-        },
-        "committer": {
-          "email": "info@unfoldingword.org",
-          "name": "unfoldingWord"
-        },
-        "content": "${newContent}",
-        "dates": {
-          "author": "${dateString}",
-          "committer": "${dateString}"
-        },
-        "from_path": "manifest.yaml",
-        "message": "Replace Manifest with valid YAML file",
-        "branch": "${releaseBranchName}",
-        "sha": "${sha}",
-        "signoff": true
-      }`,
-    })
+    if ( firstRelease ) {
+      manifest.projects = manifest.projects.filter( (item) => books.includes(item.identifier))
+    }
   }
-  return null
+
+  const updatedRes = await updateManifestInBranch({
+    server, organization, languageId, resourceId, tokenid, branch:releaseBranchName, manifest, sha,
+  })
+
+  if ( ! updatedRes.ok ) {
+    const body = await updatedRes.json()
+    throw new Error(`Update Manifest API call for branch ${releaseBranchName} failed with ${body.message ?? res.status}`)
+  }
+
+  return manifest
+}
+
+function updateManifestInBranch({
+  server, organization, languageId, resourceId, tokenid, branch, manifest, sha,
+}) {
+  const newYAML = YAML.dump(manifest)
+  const newContent = btoa(newYAML)
+  const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+
+  return fetch(updateUri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${newContent}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "manifest.yaml",
+      "message": "Replace Manifest with valid YAML file",
+      "branch": "${branch}",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
 }
 
 export async function branchExists({
@@ -575,49 +564,68 @@ async function deleteAllBookFiles( {
 export async function createRelease({
   server, organization, languageId, resourceId, books, notes, name, state, tokenid, resourceTree,
 }) {
-  console.log(resourceTree)
-  const previousVersion = await latestReleaseVersion({
-    server, organization,languageId,resourceId,
-  })
-  console.log(`previousVersion: ${previousVersion}`)
-  const nextVersion = getNextVersionTag(previousVersion)
-  console.log(`nextVersion: ${nextVersion}`)
-  let releaseBranchName = 'release_'+nextVersion
-  let oldBranchName = 'release_'+previousVersion
+  let val = {}
 
-  const releaseBranchExists = await branchExists( {
-    server, organization, languageId, resourceId, tokenid, branch: releaseBranchName,
-  } )
+  try {
+    let firstRelease = false
+    const previousVersion = await latestReleaseVersion({
+      server, organization,languageId,resourceId,
+    })
 
-  const oldBranchExists = await branchExists( {
-    server, organization, languageId, resourceId, tokenid, branch: oldBranchName,
-  } )
+    const nextVersion = getNextVersionTag(previousVersion)
 
-  if ( ! oldBranchExists ) {
-    oldBranchName = 'master'
-  }
+    let releaseBranchName = 'release_'+nextVersion
+    let oldBranchName = 'release_'+previousVersion
 
-  if ( releaseBranchExists ) {
-    await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches',releaseBranchName)+'?token='+tokenid,
-      {
-        method: 'DELETE',
+    if ( RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
+      releaseBranchName = 'master'
+    } else {
+      const releaseBranchExists = await branchExists( {
+        server, organization, languageId, resourceId, tokenid, branch: releaseBranchName,
+      } )
+
+      const oldBranchExists = await branchExists( {
+        server, organization, languageId, resourceId, tokenid, branch: oldBranchName,
+      } )
+
+      if ( ! oldBranchExists ) {
+        oldBranchName = 'master'
+        firstRelease = true
+      }
+
+      if ( releaseBranchExists ) {
+        await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches', releaseBranchName ) + '?token=' + tokenid,
+          {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+          },
+        )
+      }
+
+      await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-      },
-    )
-  }
+        body: `{
+          "new_branch_name": "${ releaseBranchName }",
+          "old_branch_name": "${ oldBranchName }"
+        }`,
+      } )
+    }
 
-  if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
-    await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'branches' ) + '?token=' + tokenid, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: `{
-        "new_branch_name": "${ releaseBranchName }",
-        "old_branch_name": "${ oldBranchName }"
-      }`,
-    } )
+    const manifest = await updateManifest( {
+      server,
+      organization,
+      languageId,
+      resourceId,
+      tokenid,
+      releaseBranchName,
+      books,
+      previousVersion,
+      nextVersion,
+      firstRelease,
+    })
 
-    if ( 'master' === oldBranchName ) {
-      console.log('deleting...')
+    if ( firstRelease ) {
       await deleteAllBookFiles({
         releaseBranchName,
         server,
@@ -627,66 +635,38 @@ export async function createRelease({
         tokenid,
         resourceTree,
       })
-      console.log('deleted')
     }
 
-    const success = await updateBranchWithLatestBookFiles({
-      releaseBranchName,
-      server,
-      organization,
-      languageId,
-      resourceId,
-      tokenid,
-      books,
-      resourceTree,
-    })
-    console.log(success)
-  } else {
-    releaseBranchName = 'master'
-  }
+    if (releaseBranchName !== 'master') {
+      await updateBranchWithLatestBookFiles( {
+        releaseBranchName,
+        server,
+        organization,
+        languageId,
+        resourceId,
+        tokenid,
+        books,
+        manifest,
+      } )
+    }
 
-  await updateManifest( {
-    server,
-    organization,
-    languageId,
-    resourceId,
-    tokenid,
-    releaseBranchName,
-    books,
-    previousVersion,
-    nextVersion,
-  })
+    console.log(`
+      Name: ${name}
+      Notes: ${notes}
+      Version: ${nextVersion}
+      State: ${state}
+    `)
 
-  // log release parameters
-  console.log(`
-    Name: ${name}
-    Notes: ${notes}
-    Version: ${nextVersion}
-    State: ${state}
-  `)
-  // end log release parameters
-  // example: POST
-  // https://qa.door43.org/api/v1/repos/es-419_gl/es-419_tn/releases
+    let prerelease = state === 'prerelease'
 
-  let val = {}
-  let prerelease = false
+    // Deleting any existing tags with same name.
+    await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'tags', nextVersion ) + '?token=' + tokenid, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    } )
 
-  // compute the draft and prerelease booleans
-  // - draft is always false
-  // - if state is 'prod', then set prelease to false
-  if ( state === 'prerelease' ) {
-    prerelease = true
-  }
+    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases')
 
-  // Deleting any existing tags with same name.
-  await fetch( server + '/' + Path.join( apiPath, 'repos', organization, `${ languageId }_${ resourceId }`, 'tags', nextVersion ) + '?token=' + tokenid, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-  } )
-
-  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'releases')
-
-  try {
     const res = await fetch(uri+'?token='+tokenid, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -706,17 +686,16 @@ export async function createRelease({
       val.version = nextVersion
 
       // Update manifest in master after release.
-      await updateManifest( {
-        server,
-        organization,
-        languageId,
-        resourceId,
-        tokenid,
-        releaseBranchName: 'master',
-        books,
-        nextVersion,
-        previousVersion,
-      })
+      if (releaseBranchName !== 'master') {
+        const sha = resourceTree.find((item) => item.path === 'manifest.yaml').sha
+        const updatedRes = await updateManifestInBranch({
+          server, organization, languageId, resourceId, tokenid, branch:'master', updatedManifest:manifest, sha,
+        })
+
+        if ( ! updatedRes.ok ) {
+          console.warn(`failed to update master manifest.yaml ${updatedRes.status}`)
+        }
+      }
     } else if ( res.status === 404 ) {
       val.status = false
       val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
@@ -733,12 +712,11 @@ export async function createRelease({
       `createRelease() - error creating release,
       message '${message}',
       disconnected=${disconnected},
-      url ${uri}
       Error:`,
       e,
     )
     val.status = false
-    val.message = `Network Error: Disconnected=${disconnected}, Error: ${message}`
+    val.message = `Error: Disconnected=${disconnected}, Error: ${message}`
   }
   return val
 }
