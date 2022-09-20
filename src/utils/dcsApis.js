@@ -62,6 +62,7 @@ export async function latestReleaseVersion({
   const response = await fetch(uri)
 
   console.log(response)
+
   if (response.ok) {
     const body = await response.json()
 
@@ -116,24 +117,29 @@ function getProject({
   resourceId, bookId, languageId,
 }) {
   const project = getResourceManifestProject({ resourceId })
-  console.log(resourceId)
 
   project.title = ALL_BIBLE_BOOKS[bookId]
   project.identifier = bookId
   project.sort = parseInt(BIBLES_ABBRV_INDEX[bookId])
 
-  if ( resourceId === 'lt' || resourceId === 'st' || resourceId === 'ult' || resourceId === 'ust' || resourceId === 'glt' || resourceId === 'gst' ) {
+  switch ( resourceId ) {
+  case 'lt':
+  case 'st':
+  case 'ult':
+  case 'usl':
+  case 'glt':
+  case 'gst':
     project.path = './' + BIBLES_ABBRV_INDEX[bookId] + '-' + bookId.toUpperCase() + '.usfm'
-  } else if ( resourceId === 'twl' ) {
-    project.path = './twl_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'tn' ) {
-    project.path = './'+languageId+'_tn_' +BIBLES_ABBRV_INDEX[bookId]+'-'+ bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'tq' ) {
-    project.path = './tq_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'sn' ) {
-    project.path = './sn_' + bookId.toUpperCase() + '.tsv'
-  } else if ( resourceId === 'sq' ) {
-    project.path = './sq_' + bookId.toUpperCase() + '.tsv'
+    break
+  case 'twl':
+  case 'tn':
+  case 'tq':
+  case 'sn':
+  case 'sq':
+    project.path = './' + resourceId + '_' + bookId.toUpperCase() + '.tsv'
+    break
+  default:
+    // error state.
   }
 
   if ( isNT(bookId) ) {
@@ -325,57 +331,97 @@ export async function updateBranchWithLatestBookFiles({
   resourceId,
   tokenid,
   books,
+  resourceTree,
 }) {
-  let result
+  for ( const file of resourceTree ) {
+    let bookId = null, sourcePath = null, bookIdUpper = null
 
-  // Promise.all() will not work here. We can't update multiple files concurrently with gitea for some reason.
-  for ( const bookId of books ) {
-    const project = getProject({
-      bookId, resourceId, languageId,
-    })
-    console.log(project)
-    const path = project.path.substring(2) // remove './' from path.
-    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+    // Match twl_PHM.tsv or es-419_tn_57-TIT.tsv or en_tn_65-3JN.tsv
+    for ( const expression of [
+      '^' + resourceId + '_([A-Z1-3]{3})\\.tsv$',
+      languageId+'_' + resourceId + '_\\d{2}-([A-Z1-3]{3})\\.tsv$',
+      '^en_' + resourceId + '_\\d{2}-([A-Z1-3]{3})\\.tsv$',
+      '^\\d{2}-([A-Z1-3]{3})\\.usfm$',
+    ] ) {
+      console.log(expression)
+      console.log(file.path)
+      const matches = file.path.match(expression)
+      console.log(matches)
 
-    // eslint-disable-next-line no-await-in-loop
-    const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
+      if ( matches ) {
+        [ sourcePath, bookIdUpper ] = matches
+        bookId = bookIdUpper.toLowerCase()
+        break
+      }
+    }
 
-    if (res.ok) {
-      // eslint-disable-next-line no-await-in-loop
-      const body = await res.json()
-      const sha = body.sha
-      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
-      const date = new Date(Date.now())
-      const dateString = date.toISOString()
+    console.log( bookId )
 
-      // eslint-disable-next-line no-await-in-loop
-      result = await fetch(updateUri + '?token=' + tokenid, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: `{
-        "author": {
-          "email": "info@unfoldingword.org",
-          "name": "unfoldingWord"
-        },
-        "committer": {
-          "email": "info@unfoldingword.org",
-          "name": "unfoldingWord"
-        },
-        "content": "${body.content}",
-        "dates": {
-          "author": "${dateString}",
-          "committer": "${dateString}"
-        },
-        "from_path": "${path}",
-        "message": "Update ${path} from master to prepare for book package release",
-        "branch": "${releaseBranchName}",
-        "sha": "${sha}",
-        "signoff": true
-      }`,
+    if ( ! bookId ) {
+      continue
+    }
+    console.log(books)
+
+    if (books.includes(bookId.toLowerCase())) {
+      console.log(`get ${bookId} from ${sourcePath} in master`)
+      const project = getProject({
+        bookId, resourceId, languageId,
       })
+      const path = project.path.substring(2) // remove './' from path.
+      const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',sourcePath)
+
+      // eslint-disable-next-line no-await-in-loop
+      const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
+
+      if (res.ok) {
+        // eslint-disable-next-line no-await-in-loop
+        const body = await res.json()
+        const sha = body.sha
+
+        const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+        // eslint-disable-next-line no-await-in-loop
+        const fileExistsInReleaseBranch = await fetch(uri+'?token='+tokenid+'&'+'ref='+releaseBranchName, { headers: { 'Content-Type': 'application/json' } })
+        const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
+        const date = new Date(Date.now())
+        const dateString = date.toISOString()
+
+        // eslint-disable-next-line no-await-in-loop
+        const result = await fetch(updateUri + '?token=' + tokenid, {
+          method: fileExistsInReleaseBranch.ok ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: `{
+          "author": {
+            "email": "info@unfoldingword.org",
+            "name": "unfoldingWord"
+          },
+          "committer": {
+            "email": "info@unfoldingword.org",
+            "name": "unfoldingWord"
+          },
+          "content": "${body.content}",
+          "dates": {
+            "author": "${dateString}",
+            "committer": "${dateString}"
+          },
+          "message": "Update ${path} from master to prepare for book package release",
+          "branch": "${releaseBranchName}",
+          "sha": "${sha}",
+          "signoff": true
+        }`,
+        })
+
+        if ( ! result.ok ) {
+          // eslint-disable-next-line no-await-in-loop
+          const body = await result.json()
+          throw new Error(`API ${updateUri} failed with ${body.message ?? result.status}`)
+        }
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        const body = await res.json()
+        throw new Error(`API ${uri} failed with ${body.message ?? res.status}`)
+      }
     }
   }
-  return result
 }
 
 export async function updateManifest({
@@ -470,43 +516,23 @@ export async function branchExists({
   return 200 === exists.status
 }
 
-async function deleteUnselectedBookFiles( {
+async function deleteAllBookFiles( {
   releaseBranchName,
   server,
   organization,
   languageId,
   resourceId,
   tokenid,
-  books,
+  resourceTree,
 } ) {
-  let result
-
-  for (const [bookId, bookName] of Object.entries(ALL_BIBLE_BOOKS)) {
-
-    if ( books.includes(bookId) ) {
-      continue
-    }
-
-    const project = getProject({
-      bookId, resourceId, languageId,
-    })
-
-    const path = project.path.substring(2) // remove './' from path.
-    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
-
-    // eslint-disable-next-line no-await-in-loop
-    const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
-
-    if (res.ok) {
-      // eslint-disable-next-line no-await-in-loop
-      const body = await res.json()
-      const sha = body.sha
-      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', path)
+  for ( const file of resourceTree ) {
+    if ( file.path.endsWith('.tsv') ) {
+      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', file.path)
       const date = new Date(Date.now())
       const dateString = date.toISOString()
 
       // eslint-disable-next-line no-await-in-loop
-      result = await fetch(updateUri + '?token=' + tokenid, {
+      await fetch(updateUri + '?token=' + tokenid, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: `{
@@ -522,15 +548,14 @@ async function deleteUnselectedBookFiles( {
           "author": "${dateString}",
           "committer": "${dateString}"
         },
-        "message": "Delete work in progress ${path} from to prepare for book package release",
+        "message": "Delete work in progress ${file.path} to prepare for release",
         "branch": "${releaseBranchName}",
-        "sha": "${sha}",
+        "sha": "${file.sha}",
         "signoff": true
       }`,
       })
     }
   }
-  return result
 }
 
 /**
@@ -544,11 +569,13 @@ async function deleteUnselectedBookFiles( {
  * @param {string} name
  * @param {string} state
  * @param {string} tokenid
+ * @param {array} resourceTree
  * @return {object} response
  */
 export async function createRelease({
-  server, organization, languageId, resourceId, books, notes, name, state, tokenid,
+  server, organization, languageId, resourceId, books, notes, name, state, tokenid, resourceTree,
 }) {
+  console.log(resourceTree)
   const previousVersion = await latestReleaseVersion({
     server, organization,languageId,resourceId,
   })
@@ -558,9 +585,13 @@ export async function createRelease({
   let releaseBranchName = 'release_'+nextVersion
   let oldBranchName = 'release_'+previousVersion
 
-  const releaseBranchExists = await branchExists( { server, organization, languageId, resourceId, tokenid, branch: releaseBranchName } )
+  const releaseBranchExists = await branchExists( {
+    server, organization, languageId, resourceId, tokenid, branch: releaseBranchName,
+  } )
 
-  const oldBranchExists = await branchExists( { server, organization, languageId, resourceId, tokenid, branch: oldBranchName } )
+  const oldBranchExists = await branchExists( {
+    server, organization, languageId, resourceId, tokenid, branch: oldBranchName,
+  } )
 
   if ( ! oldBranchExists ) {
     oldBranchName = 'master'
@@ -586,15 +617,17 @@ export async function createRelease({
     } )
 
     if ( 'master' === oldBranchName ) {
-      await deleteUnselectedBookFiles({
+      console.log('deleting...')
+      await deleteAllBookFiles({
         releaseBranchName,
         server,
         organization,
         languageId,
         resourceId,
         tokenid,
-        books,
+        resourceTree,
       })
+      console.log('deleted')
     }
 
     const success = await updateBranchWithLatestBookFiles({
@@ -605,6 +638,7 @@ export async function createRelease({
       resourceId,
       tokenid,
       books,
+      resourceTree,
     })
     console.log(success)
   } else {

@@ -10,6 +10,7 @@ import { AdminContext } from '@context/AdminContext'
 import { createRelease } from '@utils/dcsApis'
 import { resourceIdMapper } from '@common/ResourceList'
 import Link from '@material-ui/core/Link'
+import { ALL, OBS_SN, SN, SQ, TN, TQ, TWL, LT, ST, OBS, OBS_SQ, OBS_TW, OBS_TWL, OBS_TA, OBS_TN, OBS_TQ, TW, TA } from "@common/constants";
 
 const ReleasePage = () => {
   const router = useRouter()
@@ -35,6 +36,73 @@ const ReleasePage = () => {
       releaseName,
       releaseState,
       releaseBooks,
+      obsRepoTree,
+      obsRepoTreeManifest,
+      obsManifestSha,
+      obsRepoTreeStatus,
+      obsTnRepoTree,
+      obsTnRepoTreeManifest,
+      obsTnManifestSha,
+      obsTnRepoTreeStatus,
+      obsTwlRepoTree,
+      obsTwlRepoTreeManifest,
+      obsTwlManifestSha,
+      obsTwlRepoTreeStatus,
+      obsTqRepoTree,
+      obsTqRepoTreeManifest,
+      obsTqManifestSha,
+      obsTqRepoTreeStatus,
+      obsTaRepoTree,
+      obsTaRepoTreeManifest,
+      obsTaManifestSha,
+      obsTaRepoTreeStatus,
+      obsTwRepoTree,
+      obsTwRepoTreeManifest,
+      obsTwRepoTreeStatus,
+      obsSnRepoTree,
+      obsSnRepoTreeManifest,
+      obsSnManifestSha,
+      obsSnRepoTreeStatus,
+      obsSqRepoTree,
+      obsSqRepoTreeManifest,
+      obsSqManifestSha,
+      obsSqRepoTreeStatus,
+      tnRepoTree,
+      tnRepoTreeManifest,
+      tnManifestSha,
+      tnRepoTreeStatus,
+      twlRepoTree,
+      twlRepoTreeManifest,
+      twlManifestSha,
+      twlRepoTreeStatus,
+      ltRepoTree,
+      ltRepoTreeManifest,
+      ltManifestSha,
+      ltRepoTreeStatus,
+      stRepoTree,
+      stRepoTreeManifest,
+      stManifestSha,
+      stRepoTreeStatus,
+      tqRepoTree,
+      tqRepoTreeManifest,
+      tqManifestSha,
+      tqRepoTreeStatus,
+      sqRepoTree,
+      sqRepoTreeManifest,
+      sqManifestSha,
+      sqRepoTreeStatus,
+      snRepoTree,
+      snRepoTreeManifest,
+      snManifestSha,
+      snRepoTreeStatus,
+      taRepoTree,
+      taRepoTreeManifest,
+      taManifestSha,
+      taRepoTreeStatus,
+      twRepoTree,
+      twRepoTreeManifest,
+      twManifestSha,
+      twRepoTreeStatus,
     },
     actions: {
       setReleaseResources,
@@ -42,8 +110,50 @@ const ReleasePage = () => {
       setReleaseName,
       setReleaseState,
       setReleaseBooks,
+      setRefresh,
     },
   } = useContext(AdminContext)
+
+  const getResourceTree = (resourceId) => {
+    switch ( resourceId ) {
+    case TN:
+      return tnRepoTree
+    case TW:
+      return twRepoTree
+    case TA:
+      return taRepoTree
+    case SN:
+      return snRepoTree
+    case SQ:
+      return sqRepoTree
+    case TQ:
+      return tqRepoTree
+    case ST:
+      return stRepoTree
+    case LT:
+      return ltRepoTree
+    case TWL:
+      return twlRepoTree
+    case OBS:
+      return obsRepoTree
+    case OBS_SN:
+      return obsSnRepoTree
+    case OBS_SQ:
+      return obsSqRepoTree
+    case OBS_TW:
+      return obsTwRepoTree
+    case OBS_TA:
+      return obsTaRepoTree
+    case OBS_TN:
+      return obsTnRepoTree
+    case OBS_TWL:
+      return obsTwlRepoTree
+    case OBS_TQ:
+      return obsTqRepoTree
+    default:
+      throw new Error(`no such resouce ${resourceId}`)
+    }
+  }
 
   useEffect( () => {
     if ( releaseResources.size > 0 && releaseBooks.size > 0 && releaseName && releaseName.length > 0 && releaseNotes && releaseNotes.length > 0 ) {
@@ -92,25 +202,35 @@ const ReleasePage = () => {
       console.log(books)
 
       await Promise.allSettled( realResourceIds.map( async (resourceId, index) => {
-        const result = await createRelease( {
-          server,
-          organization,
-          languageId,
-          resourceId,
-          books,
-          notes: releaseNotes,
-          name: releaseName,
-          state: releaseState,
-          tokenid,
-        } )
-        console.log(`finished ${index} with ${result.message}`)
-        _releaseMessages[index] = <span key={index}>{resourceId} Result {result.message}
-          {result.version ?
-            <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, resourceId)+'/releases/tag/'+result.version}>View {result.version} release</Link>:''
-          }
-        </span>
-        setReleaseMessages(_releaseMessages)
-        return result
+        const resourceTree = getResourceTree( resourceId )
+        try {
+          const result = await createRelease( {
+            server,
+            organization,
+            languageId,
+            resourceId,
+            books,
+            notes: releaseNotes,
+            name: releaseName,
+            state: releaseState,
+            tokenid,
+            resourceTree,
+          } )
+
+          console.log( `finished ${ index } with ${ result.message }` )
+          _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { result.message }
+            { result.version ?
+              <Link target="_blank"
+                href={ server + '/' + organization + '/' + languageId + '_' + resourceIdMapper( organization, resourceId ) + '/releases/tag/' + result.version }>View { result.version } release</Link> : ''
+            }
+          </span>
+          setReleaseMessages( _releaseMessages )
+          return result
+        } catch (e) {
+          console.log( `finished ${ index } with ${ e.message }` )
+          _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { e.message } </span>
+          setReleaseMessages( _releaseMessages )
+        }
       } ))
 
       // initialize release state vars
@@ -121,6 +241,7 @@ const ReleasePage = () => {
       setReleaseState('prod')
       setReleaseActive(false)
       setConfirmRelease(false)
+      setRefresh(ALL)
     }
 
     doRelease()
@@ -130,7 +251,7 @@ const ReleasePage = () => {
     <Layout>
       <div className='flex flex-col justify-center items-center'>
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
-          <h1 className='mx-4'>Release Book Packages</h1>
+          <h1 className='mx-4'>Release Resources</h1>
           <ReleaseSettings />
           <div className='flex justify-end'>
             <Button
@@ -158,7 +279,7 @@ const ReleasePage = () => {
                 }
               }
             >
-              Release Book Packages
+              Release Resources
             </Button>
             <br/>
           </div>

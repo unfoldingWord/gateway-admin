@@ -257,7 +257,6 @@ export default function AdminContextProvider({
       obsTaRepoTreeStatus,
       obsTwRepoTree,
       obsTwRepoTreeManifest,
-      obsTwlManifestSha,
       obsTwRepoTreeStatus,
       obsSnRepoTree,
       obsSnRepoTreeManifest,
