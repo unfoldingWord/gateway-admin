@@ -462,7 +462,7 @@ export async function updateManifest({
 }
 
 async function updateManifestInBranch({
-  server, organization, languageId, resourceId, tokenid, branch, manifest, sha,
+  server, organization, languageId, resourceId, tokenid, branch, manifest,
 }) {
   const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
   const releaseBranchRes = await fetch(uri+'?token='+tokenid+'&ref='+branch, { headers: { 'Content-Type': 'application/json' } })
@@ -695,9 +695,8 @@ export async function createRelease({
 
       // Update manifest in master after release.
       if (releaseBranchName !== 'master') {
-        const sha = resourceTree.find((item) => item.path === 'manifest.yaml').sha
         const updatedRes = await updateManifestInBranch({
-          server, organization, languageId, resourceId, tokenid, branch:'master', updatedManifest:manifest, sha,
+          server, organization, languageId, resourceId, tokenid, branch:'master', manifest,
         })
 
         if ( ! updatedRes.ok ) {
