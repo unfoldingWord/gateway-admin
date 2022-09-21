@@ -401,10 +401,10 @@ export async function updateManifest({
 }) {
   const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
 
-  const res = await fetch(uri+'?token='+tokenid+'&ref='+releaseBranchName, { headers: { 'Content-Type': 'application/json' } })
+  const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
 
   if ( ! res.ok ) {
-    throw new Error(`Manifest.yaml missing at ${uri} in branch ${releaseBranchName}`)
+    throw new Error(`Manifest.yaml missing at ${uri} in master`)
   }
 
   const body = await res.json()
@@ -461,9 +461,17 @@ export async function updateManifest({
   return manifest
 }
 
-function updateManifestInBranch({
+async function updateManifestInBranch({
   server, organization, languageId, resourceId, tokenid, branch, manifest, sha,
 }) {
+  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
+  const releaseBranchRes = await fetch(uri+'?token='+tokenid+'&ref='+branch, { headers: { 'Content-Type': 'application/json' } })
+
+  if ( ! releaseBranchRes.ok ) {
+    throw new Error('Failed to get manifest.yaml in release branch')
+  }
+
+  const body = await releaseBranchRes.json()
   const newYAML = YAML.dump(manifest)
   const newContent = btoa(newYAML)
   const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
@@ -490,7 +498,7 @@ function updateManifestInBranch({
       "from_path": "manifest.yaml",
       "message": "Replace Manifest with valid YAML file",
       "branch": "${branch}",
-      "sha": "${sha}",
+      "sha": "${body.sha}",
       "signoff": true
     }`,
   })
