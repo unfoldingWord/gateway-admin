@@ -38,18 +38,18 @@ export default function AdminContextProvider({
   // others will pass, not running.
   // The refresh state will be updated by certain actions. For example,
   // if the user clicks the create repo button for OBS, then the state will
-  // be set to "obs". In which case, only the `useObsRepoValidation` hook 
+  // be set to "obs". In which case, only the `useObsRepoValidation` hook
   // will run.
   // Of course, the initial state will be to run them all.
   const [refresh, setRefresh] = useState(ALL)
 
   // these two state variable captures the resource to release and
   // the version to assign to the release
-  const [releaseResource, setReleaseResource] = useState(null)
-  const [releaseVersion, setReleaseVersion] = useState(null)
+  const [releaseResources, setReleaseResources] = useState(new Map())
   const [releaseNotes, setReleaseNotes] = useState(null)
   const [releaseName, setReleaseName] = useState(null)
   const [releaseState, setReleaseState] = useState('prod')
+  const [releaseBooks, setReleaseBooks] = useState(new Map())
 
 
   const {
@@ -91,7 +91,7 @@ export default function AdminContextProvider({
       twlRepoTreeStatus,
     },
   } = useTwlRepoValidation({authentication, owner, server, languageId, refresh, setRefresh});
-  
+
   const {
     state: {
       ltRepoTree,
@@ -257,7 +257,6 @@ export default function AdminContextProvider({
       obsTaRepoTreeStatus,
       obsTwRepoTree,
       obsTwRepoTreeManifest,
-      obsTwlManifestSha,
       obsTwRepoTreeStatus,
       obsSnRepoTree,
       obsSnRepoTreeManifest,
@@ -305,20 +304,20 @@ export default function AdminContextProvider({
       twRepoTreeStatus,
       books,
       refresh,
-      releaseResource,
-      releaseVersion,
+      releaseResources,
       releaseNotes,
       releaseName,
       releaseState,
+      releaseBooks,
     },
     actions: {
       setBooks: _setBooks,
-      setRefresh: setRefresh,
-      setReleaseResource: setReleaseResource,
-      setReleaseVersion: setReleaseVersion,
-      setReleaseNotes: setReleaseNotes,
-      setReleaseName: setReleaseName,
-      setReleaseState: setReleaseState,
+      setRefresh,
+      setReleaseResources,
+      setReleaseNotes,
+      setReleaseName,
+      setReleaseState,
+      setReleaseBooks,
     }
   };
 

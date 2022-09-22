@@ -108,11 +108,11 @@ export default function Drawer({
         </ListItem>
       </List>
       <List disablePadding>
-        <ListItem button key={'Release Book Packages'} onClick={onReleaseBpClick}>
+        <ListItem button key={'Release Resources'} onClick={onReleaseBpClick}>
           <ListItemIcon>
             <BeenhereIcon />
           </ListItemIcon>
-          <ListItemText primary={'Release Book Packages'} />
+          <ListItemText primary={'Release Resources'} />
         </ListItem>
       </List>
       <List disablePadding>
