@@ -1,0 +1,96 @@
+body {
+    font-family: sans-serif;
+    background: #f6f8f9;
+    padding: 0;
+    margin: 0;
+  }
+  
+  @page {
+    margin: 0.5in 0.5in;
+  
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 9px;
+      color: #606d78;
+    }
+  }
+  
+  .no-break {
+    break-inside: avoid;
+  }
+  
+  #root {
+    display: none;
+  }
+  #layout {
+    display: flex;
+  }
+  #aside {
+    width: 192px;
+    flex: 0 0 192px;
+    background: #011627;
+    min-height: 100vh;
+  }
+  #header {
+    background: #fff;
+    height: 110px;
+    border-bottom: 1px solid #d6d9dc;
+  }
+  
+  main {
+    flex: 1 1;
+  }
+  #grid {
+    display: table; /* can't use grid or flex with pagedjs */
+    border-collapse: collapse;
+    border: 0;
+  }
+  #menu {
+    display: table-cell;
+    position: relative;
+    width: 360px;
+    border: 0;
+  }
+  #block {
+    box-sizing: border-box;
+    position: sticky;
+    top: 1.5rem;
+    background: #fff;
+    border: 1px solid #d6d9dc;
+    min-height: 500px;
+    margin: 1.5rem;
+    margin-right: 0;
+    border-radius: 4px;
+    padding: 1rem;
+  }
+  .button-print {
+    box-sizing: border-box;
+    width: 100%;
+    background: #5541ea;
+    color: #fff;
+    border-radius: 4px;
+    padding: 1rem;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  #preview {
+    display: table-cell;
+    vertical-align: top;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  
+  @media print {
+    #root,
+    #aside,
+    #header,
+    #menu {
+      display: none;
+    }
+    #preview {
+      display: block;
+    }
+  }
+  
