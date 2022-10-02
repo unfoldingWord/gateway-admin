@@ -8,21 +8,6 @@ import {
   doFetch,
   isServerDisconnected,
 } from '@utils/network'
-import { ALL_BIBLE_BOOKS, isNT } from '@common/BooksOfTheBible';
-import { useProskomma, useImport, useCatalog, useRenderPreview } from 'proskomma-react-hooks';
-import {getLanguage} from "@common/languages";
-import {getBuildId} from "@utils/build";
-
-const i18n_default = {
-  // coverAlt: "Cover",
-  titlePage: "unfoldingWord Literal Translation: Preview",
-  copyright: "Licensed under a Creative Commons Attribution-Sharealike 4.0 International License",
-  // preface: "Preface",
-  tocBooks: "Books of the Bible",
-  ot: "Old Testament",
-  nt: "New Testament"
-  // notes: "Notes",
-};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function PreviewContent({ active, server, owner, repo, bookId, filename, onRefresh,
-  onAction, languageId, typeName
+  onAction, languageId, typeName, history
 }) {
   const {
     state: {
@@ -46,32 +31,9 @@ function PreviewContent({ active, server, owner, repo, bookId, filename, onRefre
     },
   } = useContext(AuthContext)
 
-  const [submitPreview, setSubmitPreview] = useState(false)
-  const [documents, setDocuments] = useState([])
-  const [i18n, setI18n] = useState(i18n_default)
-
-  const language = useMemo(() => {
-    const lang_ = getLanguage({ languageId })
-    return lang_
-  }, [languageId])
-
-  const verbose = true
-  const proskommaHook = useProskomma({
-    verbose,
+  history.push('/print', {
+    bookId: bookId
   })
-
-  const importHook = useImport({
-    ...proskommaHook,
-    documents: documents,
-    ready: documents.length && proskommaHook?.proskomma,
-    verbose,
-  });
-
-  const catalogHook = useCatalog({
-    ...proskommaHook,
-    cv: !importHook.importing,
-    verbose,
-  });
 
   const structure = {};
   if ( isNT(bookId) ) {
