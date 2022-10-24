@@ -4,7 +4,8 @@ import {WORKING,REPO_NOT_FOUND,BOOK_NOT_IN_MANIFEST,
 }
 from '@common/constants'
 
-import { Tooltip } from '@material-ui/core'
+import { useState } from 'react';
+import { Tooltip, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create'
 import BlockIcon from '@material-ui/icons/Block'
@@ -20,6 +21,7 @@ import ValidateContent from './ValidateContent'
 import MultiValidateContent from './MultiValidateContent'
 import ValidateListContent from './ValidateListContent'
 import DownloadCvResults from './DownloadCvResults'
+import DownloadPDF from './DownloadPDF'
 
 
 export function applyIcon(server,owner,bookId,
@@ -33,6 +35,12 @@ export function applyIcon(server,owner,bookId,
   //   manifest:${manifest}
   //   manifestSha:${manifestSha}
   // `)
+
+  const [action, setAction] = useState('');
+  const handleAction = (event) => {
+    setAction(event.target.value);
+  };
+
   if ( repo.endsWith("tw") || repo.endsWith("ta") ) {
     if ( repoErr === null && bookErr === WORKING ) {
       return (
@@ -100,13 +108,20 @@ export function applyIcon(server,owner,bookId,
     // the value for missingList.Content, which is an object
     // where the key is the path and the value is the file content
     return (
-      <ValidateListContent 
-        active={true} server={server} owner={owner} 
-        repo={repo} refresh={refresh} 
-        list={missingList} bookId={bookId} onRefresh={setRefresh} 
-        onContentValidation={setContentValidation}
-        onAction={setAction}
-      />
+      <FormControl fullWidth>
+        <InputLabel id="demo-s
+        imple-select-label">Age</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={action}
+          label="Action"
+          onChange={handleAction}
+        >
+        <MenuItem value="validate">Validate</MenuItem>
+        <MenuItem value="pdf">PDF</MenuItem>
+        </Select>
+      </FormControl>
     )
   }
 
@@ -119,6 +134,7 @@ export function applyIcon(server,owner,bookId,
         filename={filename} bookId={bookId} onRefresh={setRefresh} 
         onContentValidation={setContentValidation}
         onAction={setAction}
+        action={action}
       />
     )
   }
