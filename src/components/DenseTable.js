@@ -21,16 +21,16 @@ export default function DenseTable({cols, rows}) {
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
-            {cols.map( (col) => (
-              <TableCell>{col}</TableCell>
+            {cols.map( (col, colIndex) => (
+              <TableCell key={colIndex}>{col}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row,rowIndex) => (
             <TableRow key={rowIndex}>
-              {row.map( (val) => (
-                <TableCell>{val}</TableCell>
+              {row.map( (val, colIndex) => (
+                <TableCell key={colIndex}>{val}</TableCell>
               ))}
             </TableRow>
           ))}

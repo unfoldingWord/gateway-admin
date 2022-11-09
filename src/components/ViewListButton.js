@@ -58,7 +58,7 @@ function ViewListButton({ active=true, title, value }) {
               {
                 value?.Absent?.map( (item,index) => {
                   return (
-                    <li id={index}>
+                    <li key={index}>
                       {item}
                     </li>
                   )
@@ -74,7 +74,7 @@ function ViewListButton({ active=true, title, value }) {
               {
                 value?.Present?.map( (item,index) => {
                   return (
-                    <li id={index}>
+                    <li key={index}>
                       {item}
                     </li>
                   )
