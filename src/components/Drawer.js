@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import SettingsIcon from '@material-ui/icons/Settings'
 import BeenhereIcon from '@material-ui/icons/Beenhere';
+import AdjustIcon from '@material-ui/icons/Adjust';
 import BugReportIcon from '@material-ui/icons/BugReport'
 import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
@@ -127,7 +128,7 @@ export default function Drawer({
       <List disablePadding>
         <ListItem button key={'Convert Tsv9 to Tsv7'} onClick={onConvertTsvClick}>
           <ListItemIcon>
-            <BeenhereIcon />
+            <AdjustIcon />
           </ListItemIcon>
           <ListItemText primary={'Convert Tsv9 to Tsv7'} />
         </ListItem>

@@ -727,3 +727,24 @@ export async function createRelease({
   }
   return val
 }
+
+/*
+  Swagger example:
+  https://qa.door43.org/api/v1/repos/unfoldingword/en_tn/branches
+*/
+export async function tCCreateBranchesExist({
+  server, organization, languageId, tokenid
+}) {
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  const _results = await results.json()
+
+  for (let i=0; i<_results.length; i++) {
+    if ( _results[i].name.endsWith('-tc-create-1') ) {
+      return true
+    }
+  }
+  return false
+  // return 200 === results.status
+}
