@@ -50,6 +50,15 @@ export default function Drawer({
     }
   }
 
+  async function onConvertTsvClick() {
+    const okToContinue = await checkUnsavedChanges()
+
+    if (okToContinue) {
+      router.push('/convert9To7')
+      onClose()
+    }
+  }
+
   function onFeedbackClick() {
     onClose()
     showFeedback && showFeedback()
@@ -113,6 +122,14 @@ export default function Drawer({
             <BeenhereIcon />
           </ListItemIcon>
           <ListItemText primary={'Release Resources'} />
+        </ListItem>
+      </List>
+      <List disablePadding>
+        <ListItem button key={'Convert Tsv9 to Tsv7'} onClick={onConvertTsvClick}>
+          <ListItemIcon>
+            <BeenhereIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Convert Tsv9 to Tsv7'} />
         </ListItem>
       </List>
       <List disablePadding>
