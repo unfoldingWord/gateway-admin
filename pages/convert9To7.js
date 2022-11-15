@@ -1,4 +1,6 @@
-import { useContext, useEffect, useState } from 'react'
+import {
+  useContext, useEffect, useState,
+} from 'react'
 import { useRouter } from 'next/router'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -6,14 +8,16 @@ import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { tCCreateBranchesExist } from '@utils/dcsApis'
+import { tCCreateBranchesExist, createArchivedTsv9Branch } from '@utils/dcsApis'
+import { async } from 'regenerator-runtime'
 // import { createRelease } from '@utils/dcsApis'
-import Link from '@material-ui/core/Link'
+// import Link from '@material-ui/core/Link'
 
 const ConvertPage = () => {
   const router = useRouter()
   const [convertMessages, setConvertMessages] = useState([])
   const [disableConvert, setDisableConvert] = useState(true)
+  const [confirmConvert, setConfirmConvert] = useState(false)
 
   const { state: authentication } = useContext(AuthenticationContext)
   const {
@@ -25,29 +29,59 @@ const ConvertPage = () => {
   } = useContext(StoreContext)
 
   const {
-    state: {
-      tnRepoTree,
-    },
-    actions: {
-    },
+    state: { tnRepoTree },
+    actions,
   } = useContext(AdminContext)
 
-  //
+  // archive the existing branch for posterity
+  // then start converting
+  useEffect( () => {
+    async function archiveBranch () {
+      setDisableConvert(true)
+      let _convertMessages = []
+      const archiveResults = await createArchivedTsv9Branch({
+        server, organization, languageId, tokenid:authentication.token.sha1,
+      })
+      if ( archiveResults.status === 201 ) {
+        _convertMessages.push('Archive of master branch successful.')
+        setConvertMessages([..._convertMessages])
+      } else {
+        _convertMessages.push('Archived failed, status='+archiveResults.status)
+        setConvertMessages([..._convertMessages])
+        return
+      }
+      _convertMessages.push('Begin converting files...')
+      setConvertMessages([..._convertMessages])
+      console.log("tnrepo:", tnRepoTree)
+
+    }
+    if ( confirmConvert ) {
+      archiveBranch()
+    }
+  },[confirmConvert])
+
+  // check for non-merged user branches from tc-create
   useEffect( () => {
     async function checkForTcCreateBranches() {
-      let _convertMessages = convertMessages
-      _convertMessages.push("Checking for tC Create user branches...")
-      setConvertMessages(_convertMessages)
-      const anyTcCreateBranches = await tCCreateBranchesExist({server, organization, languageId, tokenid:authentication.token.sha1})
+      let _convertMessages = []
+      _convertMessages.push('Checking for tC Create user branches...')
+      setConvertMessages([..._convertMessages])
+      const anyTcCreateBranches = await tCCreateBranchesExist({
+        server, organization, languageId, tokenid:authentication.token.sha1,
+      })
+
       if ( anyTcCreateBranches ) {
-        _convertMessages.push("There are tC Create user branches - cannot continue")
-        setConvertMessages(_convertMessages)
+        _convertMessages.push('There are tC Create user branches - cannot continue')
+        setConvertMessages([..._convertMessages])
         setDisableConvert(true)
-      } else {
-        _convertMessages.push("There are no tC Create user branches, click Convert button to continue")
-        setDisableConvert(false)
+        return
       }
+
+      _convertMessages.push('There are no tC Create user branches, click Convert button to continue')
+      setConvertMessages([..._convertMessages])
+      setDisableConvert(false)
     }
+
     if ( authentication?.token && server && organization && languageId ) {
       checkForTcCreateBranches()
     }
@@ -69,9 +103,6 @@ const ConvertPage = () => {
             </ul>
           </div>
           {
-            convertMessages.length === 0 ?
-            <CircularProgress/>
-            :
             convertMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)
           }
           <div className='flex justify-end'>
@@ -94,7 +125,7 @@ const ConvertPage = () => {
               disabled={disableConvert}
               onClick={
                 () => {
-                  // setConfirmRelease(true)
+                  setConfirmConvert(true)
                 }
               }
             >

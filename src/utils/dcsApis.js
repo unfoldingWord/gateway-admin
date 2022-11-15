@@ -748,3 +748,26 @@ export async function tCCreateBranchesExist({
   return false
   // return 200 === results.status
 }
+
+export async function createArchivedTsv9Branch({
+  server, organization, languageId, tokenid
+}) {
+  return await fetch( 
+    server + '/' + Path.join( 
+      apiPath, 
+      'repos', 
+      organization, 
+      `${ languageId }_tn`, 
+      'branches'
+    ) + '?token=' + tokenid, 
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+          "new_branch_name": "ARCHIVED-TSV9",
+          "old_branch_name": "master"
+      }`,
+    } 
+  )
+
+}
