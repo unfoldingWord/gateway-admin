@@ -4,12 +4,16 @@ import {
 import { useRouter } from 'next/router'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { convertTsv9to7 } from 'tsv-groupdata-parser';
+
 import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { tCCreateBranchesExist, createArchivedTsv9Branch } from '@utils/dcsApis'
-import { async } from 'regenerator-runtime'
+import { doFetch } from '@utils/network'
+import { decodeBase64ToUtf8 } from '@utils/decode'
+
 // import { createRelease } from '@utils/dcsApis'
 // import Link from '@material-ui/core/Link'
 
@@ -53,6 +57,30 @@ const ConvertPage = () => {
       _convertMessages.push('Begin converting files...')
       setConvertMessages([..._convertMessages])
       console.log("tnrepo:", tnRepoTree)
+      for ( let i=0; i < tnRepoTree.length; i++) {
+        const item = tnRepoTree[i]
+        if ( item.path.endsWith('.tsv') ) {
+          _convertMessages.push('Working on '+item.path)
+          setConvertMessages([..._convertMessages])
+          const content = await doFetch(item.url) 
+          const _content = decodeBase64ToUtf8(content)
+          const result = convertTsv9to7(_content)
+          if ( result.errors.length === 0 ) {
+            _convertMessages.push('... Converted successfully:'+item.path)
+            setConvertMessages([..._convertMessages])
+          } else {
+            _convertMessages.push('... Convert failed:'+item.path)
+            _convertMessages.push([...result.errors])
+            setConvertMessages([..._convertMessages])
+          }
+        }
+      }
+      /*
+const result = convertTsv9to7(tsv);
+
+result.tsv - is the converted tsv (or null if severe structural problems occurred)
+result.errors - will be empty string if no errors, otherwise will all errors/warnings found in conversion
+      */
 
     }
     if ( confirmConvert ) {
