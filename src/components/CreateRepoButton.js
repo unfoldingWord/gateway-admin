@@ -1,10 +1,12 @@
 import {useState, useEffect, useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-import { Tooltip } from '@material-ui/core'
-import { IconButton } from '@material-ui/core'
+import Tooltip from '@material-ui/core/Tooltip'
+import IconButton from '@material-ui/core/IconButton'
 
 import { AuthContext } from '@context/AuthContext'
+import { StoreContext } from '@context/StoreContext'
+
 import * as dcsApis from '@utils/dcsApis'
 
 const useStyles = makeStyles(theme => ({
@@ -27,8 +29,11 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
     },
   } = useContext(AuthContext)
 
+  const { state: { languageId } } = useContext(StoreContext)
+
+
   const [submitCreate, setSubmitCreate] = useState(false)
-   
+
   useEffect(() => {
     if ( !submitCreate ) return;
 
@@ -37,14 +42,15 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
       const resourceId = dcsApis.getResourceIdFromRepo(repo)
 
       const res = await dcsApis.repoCreate({server: server, username: owner, repository: repo, tokenid})
-    
+
       if (res.status === 201) {
         console.log("Repo Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
         const manifestCreateRes = await dcsApis.manifestCreate({
-          server: server, 
-          username: owner, 
-          repository: repo, 
-          bookId, tokenid
+          server: server,
+          username: owner,
+          repository: repo,
+          tokenid,
+          languageId,
         })
         if ( manifestCreateRes.status === 201 ) {
           console.log("Manifest Created! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
@@ -56,11 +62,11 @@ function CreateRepoButton({ active, server, owner, repo, bookId, refresh, onRefr
           console.log('Repo Create Error:', res)
           console.log("Repo Failed! Parameters:",`Server:${server}, Owner:${owner}, Repo:${repo}`)
       }
-      onRefresh(resourceId)    
+      onRefresh(resourceId)
     }
     doSubmitCreate()
-  }, [submitCreate, server, owner, repo, onRefresh])
-    
+  }, [submitCreate, server, owner, repo, onRefresh, languageId])
+
   const classes = useStyles({ active })
   return (
       <Tooltip title="Create Repo">
