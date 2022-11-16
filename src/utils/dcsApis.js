@@ -12,7 +12,7 @@ import {
 } from '@common/BooksOfTheBible'
 import { RESOURCES_WITH_NO_BOOK_FILES } from '@common/ResourceList'
 import { isServerDisconnected } from './network'
-
+import { getLanguage } from '@common/languages'
 
 /**
  * determine if version tag is formatted properly
@@ -249,11 +249,20 @@ export async function manifestAddBook({
 // selected by the user.
 //
 export async function manifestCreate({
-  server, username, repository, bookId, tokenid,
+  server, username, repository, tokenid, languageId,
 }) {
-  //const resourceId = getResourceIdFromRepo(repository)
+  const language = getLanguage( { languageId } )
   const resourceId = repository.split('_')[1]
-  const manifestYaml = getResourceManifest( { resourceId } )
+  const manifestYaml = getResourceManifest( { resourceId } ).replace(
+    `language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'`,
+    `language:
+    direction: '${language.direction}'
+    identifier: '${language.languageId}'
+    title: '${language.localized}'`,
+  )
 
   const content = base64.encode(utf8.encode(manifestYaml))
   const uri = server + '/' + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml')
