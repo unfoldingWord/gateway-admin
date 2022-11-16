@@ -3,14 +3,14 @@ import {
 } from 'react'
 import { useRouter } from 'next/router'
 import Button from '@material-ui/core/Button'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import { convertTsv9to7 } from 'tsv-groupdata-parser';
+// import CircularProgress from '@material-ui/core/CircularProgress'
+import {convertTsv9to7} from '@utils/tsvConversion';
 
 import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { tCCreateBranchesExist, createArchivedTsv9Branch } from '@utils/dcsApis'
+import { tCCreateBranchesExist, createArchivedTsv9Branch, saveNewTsv7 } from '@utils/dcsApis'
 import { doFetch } from '@utils/network'
 import { decodeBase64ToUtf8 } from '@utils/decode'
 
@@ -58,30 +58,53 @@ const ConvertPage = () => {
       setConvertMessages([..._convertMessages])
       console.log("tnrepo:", tnRepoTree)
       for ( let i=0; i < tnRepoTree.length; i++) {
+        console.log(`Working on ${item.path}`)
         const item = tnRepoTree[i]
         if ( item.path.endsWith('.tsv') ) {
           _convertMessages.push('Working on '+item.path)
           setConvertMessages([..._convertMessages])
-          const content = await doFetch(item.url) 
-          const _content = decodeBase64ToUtf8(content)
-          const result = convertTsv9to7(_content)
-          if ( result.errors.length === 0 ) {
-            _convertMessages.push('... Converted successfully:'+item.path)
+          
+          // First validate the TSV filename
+          const filenameArray = item.path.split('_')
+          if ( filenameArray[1] !== 'tn' ) {
+            _convertMessages.push('... Not a valid tN filename, skipping')
             setConvertMessages([..._convertMessages])
-          } else {
+            continue
+          }
+          const _bookId = filenameArray[2].split('.')[0].substr(-3)
+          _convertMessages.push('... is bookdId '+_bookId)
+          setConvertMessages([..._convertMessages])
+          const content = await doFetch(item.url) 
+          console.log("content fetched:", content)
+          
+          if ( content.status === 1 ) {
+            _convertMessages.push('Stopping! '+content.statusText)
+            setConvertMessages([..._convertMessages])
+            break
+          } 
+          const _content = decodeBase64ToUtf8(content.data.content)
+          const result = convertTsv9to7(_content)
+          if ( result.tsv === null ) {
             _convertMessages.push('... Convert failed:'+item.path)
+            _convertMessages.push('Problem must be corrected before conversion retried!')
             _convertMessages.push([...result.errors])
+            setConvertMessages([..._convertMessages])
+            break
+          } else {
+            //  server, organization, languageId, oldFilename, newFilename, sha, content, tokenid
+            const res = await saveNewTsv7({
+              server, organization, languageId, 
+              oldFilename: item.path,
+              newFilename: `tn_${_bookId}.tsv`,
+              sha: content.data.sha,
+              content: result.tsv,
+              tokenid: authentication.token.sha1,
+            })
+            _convertMessages.push('... Converted:'+item.path)
             setConvertMessages([..._convertMessages])
           }
         }
       }
-      /*
-const result = convertTsv9to7(tsv);
-
-result.tsv - is the converted tsv (or null if severe structural problems occurred)
-result.errors - will be empty string if no errors, otherwise will all errors/warnings found in conversion
-      */
-
     }
     if ( confirmConvert ) {
       archiveBranch()
@@ -131,7 +154,7 @@ result.errors - will be empty string if no errors, otherwise will all errors/war
             </ul>
           </div>
           {
-            convertMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)
+            convertMessages.map((message, i) => <div key={i}><em className='mx-4' key={i}>{message}</em><br/></div>)
           }
           <div className='flex justify-end'>
             <Button

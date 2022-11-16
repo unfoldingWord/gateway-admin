@@ -752,6 +752,8 @@ export async function tCCreateBranchesExist({
 export async function createArchivedTsv9Branch({
   server, organization, languageId, tokenid
 }) {
+  const timestamp = new Date( Date.now() )
+  const _timestamp = timestamp.toISOString().replaceAll(':','')
   return await fetch( 
     server + '/' + Path.join( 
       apiPath, 
@@ -764,9 +766,44 @@ export async function createArchivedTsv9Branch({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
-          "new_branch_name": "ARCHIVED-TSV9",
+          "new_branch_name": "ARCHIVED-TSV9-${_timestamp}",
           "old_branch_name": "master"
       }`,
     } 
   )
+}
+
+export async function saveNewTsv7({
+  server, organization, languageId, oldFilename, newFilename, sha, content, tokenid
+}) {
+  const _content = base64.encode(utf8.encode(content))
+  const uri = server + '/' + Path.join(
+    apiPath,'repos',organization,`${ languageId }_tn`,'contents',newFilename)
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${_content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "${oldFilename}",
+      "message": "Converted from ${oldFilename} to ${newFilename}",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
 }
