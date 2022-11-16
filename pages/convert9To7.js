@@ -58,8 +58,8 @@ const ConvertPage = () => {
       setConvertMessages([..._convertMessages])
       console.log("tnrepo:", tnRepoTree)
       for ( let i=0; i < tnRepoTree.length; i++) {
-        console.log(`Working on ${item.path}`)
         const item = tnRepoTree[i]
+        console.log(`Working on ${item.path}`)
         if ( item.path.endsWith('.tsv') ) {
           _convertMessages.push('Working on '+item.path)
           setConvertMessages([..._convertMessages])
