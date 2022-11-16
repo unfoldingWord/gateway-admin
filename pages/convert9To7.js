@@ -41,7 +41,6 @@ const ConvertPage = () => {
   // then start converting
   useEffect( () => {
     async function archiveBranch () {
-      setDisableConvert(true)
       let _convertMessages = []
       const archiveResults = await createArchivedTsv9Branch({
         server, organization, languageId, tokenid:authentication.token.sha1,
@@ -177,6 +176,7 @@ const ConvertPage = () => {
               onClick={
                 () => {
                   setConfirmConvert(true)
+                  setDisableConvert(true)
                 }
               }
             >
