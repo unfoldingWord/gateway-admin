@@ -268,3 +268,16 @@ yarn cypress:run
 
 ## Creating Tests
  
+
+
+# Translation Notes Conversion from 9 column to 7
+
+## Steps
+
+1. Create an organization
+2. Fork the `unfoldingWord/en_tn` repo to the new organization
+3. In gA, use Account Settings to switch to the new organization with English
+4. In the book package view (the main, default workspace), select a book
+5. Notice that all repos will be reported as missing except for tN
+6. In the menu, select "Convert Tsv9 to Tsv7"
+

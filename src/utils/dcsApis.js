@@ -761,8 +761,22 @@ export async function tCCreateBranchesExist({
 export async function createArchivedTsv9Branch({
   server, organization, languageId, tokenid
 }) {
-  const timestamp = new Date( Date.now() )
-  const _timestamp = timestamp.toISOString().replaceAll(':','')
+
+  // if it already exists, return true
+  const archiveBranchName = 'ARCHIVED-TSV9'
+
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  const _results = await results.json()
+
+  for (let i=0; i<_results.length; i++) {
+    if ( _results[i].name === archiveBranchName ) {
+      // status 201 is what this API returns on success
+      return {status: 201}
+    }
+  }
+
   return await fetch( 
     server + '/' + Path.join( 
       apiPath, 
@@ -775,7 +789,7 @@ export async function createArchivedTsv9Branch({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
-          "new_branch_name": "ARCHIVED-TSV9-${_timestamp}",
+          "new_branch_name": "${archiveBranchName}",
           "old_branch_name": "master"
       }`,
     } 

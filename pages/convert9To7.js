@@ -13,6 +13,7 @@ import { AdminContext } from '@context/AdminContext'
 import { tCCreateBranchesExist, createArchivedTsv9Branch, saveNewTsv7 } from '@utils/dcsApis'
 import { doFetch } from '@utils/network'
 import { decodeBase64ToUtf8 } from '@utils/decode'
+import { TN } from '@common/constants';
 
 // import { createRelease } from '@utils/dcsApis'
 // import Link from '@material-ui/core/Link'
@@ -33,14 +34,19 @@ const ConvertPage = () => {
   } = useContext(StoreContext)
 
   const {
-    state: { tnRepoTree },
-    actions,
+    state: { 
+      tnRepoTree,
+    },
+    actions: {
+      setRefresh,
+    }
   } = useContext(AdminContext)
 
   // archive the existing branch for posterity
   // then start converting
   useEffect( () => {
     async function archiveBranch () {
+      setDisableConvert(true)
       let _convertMessages = []
       const archiveResults = await createArchivedTsv9Branch({
         server, organization, languageId, tokenid:authentication.token.sha1,
@@ -66,9 +72,17 @@ const ConvertPage = () => {
           // First validate the TSV filename
           const filenameArray = item.path.split('_')
           if ( filenameArray[1] !== 'tn' ) {
-            _convertMessages.push('... Not a valid tN filename, skipping')
-            setConvertMessages([..._convertMessages])
-            continue
+            const regex = /^tn_[1-3A-Z]{3}/;
+            const found = item.path.match(regex)
+            if ( found === null ) {
+              _convertMessages.push('... Not a valid TSV9 filename, skipping')
+              setConvertMessages([..._convertMessages])
+              continue
+            } else {
+              _convertMessages.push('... File already converted, skipping')
+              setConvertMessages([..._convertMessages])
+              continue
+            }
           }
           const _bookId = filenameArray[2].split('.')[0].substr(-3)
           _convertMessages.push('... is bookdId '+_bookId)
@@ -104,6 +118,8 @@ const ConvertPage = () => {
           }
         }
       }
+      setConfirmConvert(false)
+      setRefresh(TN)
     }
     if ( confirmConvert ) {
       archiveBranch()
@@ -176,7 +192,6 @@ const ConvertPage = () => {
               onClick={
                 () => {
                   setConfirmConvert(true)
-                  setDisableConvert(true)
                 }
               }
             >
