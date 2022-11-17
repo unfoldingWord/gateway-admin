@@ -82,7 +82,7 @@ export const TQ = "tq"
 export const TWL = "twl"
 export const TW = "tw"
 
-export const USE_NEW_TN_FORMAT_BRANCH = false
+export const USE_NEW_TN_FORMAT = true
 
 
 export const apiPath  = 'api/v1'

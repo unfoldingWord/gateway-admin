@@ -736,3 +736,143 @@ export async function createRelease({
   }
   return val
 }
+
+/*
+  Swagger example:
+  https://qa.door43.org/api/v1/repos/unfoldingword/en_tn/branches
+*/
+export async function tCCreateBranchesExist({
+  server, organization, languageId, tokenid
+}) {
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  const _results = await results.json()
+
+  for (let i=0; i<_results.length; i++) {
+    if ( _results[i].name.endsWith('-tc-create-1') ) {
+      return true
+    }
+  }
+  return false
+  // return 200 === results.status
+}
+
+export async function createArchivedTsv9Branch({
+  server, organization, languageId, tokenid
+}) {
+
+  // if it already exists, return true
+  const archiveBranchName = 'ARCHIVED-TSV9'
+
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  const _results = await results.json()
+
+  for (let i=0; i<_results.length; i++) {
+    if ( _results[i].name === archiveBranchName ) {
+      // status 201 is what this API returns on success
+      return {status: 201}
+    }
+  }
+
+  return await fetch( 
+    server + '/' + Path.join( 
+      apiPath, 
+      'repos', 
+      organization, 
+      `${ languageId }_tn`, 
+      'branches'
+    ) + '?token=' + tokenid, 
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+          "new_branch_name": "${archiveBranchName}",
+          "old_branch_name": "master"
+      }`,
+    } 
+  )
+}
+
+export async function saveNewTsv7({
+  server, organization, languageId, oldFilename, newFilename, sha, content, tokenid
+}) {
+  const _content = base64.encode(utf8.encode(content))
+  const uri = server + '/' + Path.join(
+    apiPath,'repos',organization,`${ languageId }_tn`,'contents',newFilename)
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${_content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "${oldFilename}",
+      "message": "Converted from ${oldFilename} to ${newFilename}",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
+}
+
+
+export async function updateManifestWithProjects({
+  server, organization, languageId, sha, manifest, tokenid
+}) {
+  // update the projects to have the new file naming convention
+  for (let i=0; i< manifest.projects.length; i++) {
+    const item = manifest.projects[i]
+    console.log("identifier:", item.identifier)
+    console.log("path:", item.path)
+    manifest.projects[i].path = `tn_${item.identifier.toUpperCase()}.tsv`
+  }
+
+  // update the manifest in the repo
+  const _manifest = YAML.safeDump(manifest)
+  const content = base64.encode(utf8.encode(_manifest))
+  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'contents','manifest.yaml')
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "manifest.yaml",
+      "message": "Updated to use new tN filenames",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
+  return res
+}

@@ -7,7 +7,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import SettingsIcon from '@material-ui/icons/Settings'
-import BeenhereIcon from '@material-ui/icons/Beenhere';
+import BeenhereIcon from '@material-ui/icons/Beenhere'
+import AdjustIcon from '@material-ui/icons/Adjust'
 import BugReportIcon from '@material-ui/icons/BugReport'
 import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
@@ -46,6 +47,15 @@ export default function Drawer({
 
     if (okToContinue) {
       router.push('/releaseRepo')
+      onClose()
+    }
+  }
+
+  async function onConvertTsvClick() {
+    const okToContinue = await checkUnsavedChanges()
+
+    if (okToContinue) {
+      router.push('/convert9To7')
       onClose()
     }
   }
@@ -113,6 +123,14 @@ export default function Drawer({
             <BeenhereIcon />
           </ListItemIcon>
           <ListItemText primary={'Release Resources'} />
+        </ListItem>
+      </List>
+      <List disablePadding>
+        <ListItem button key={'Convert Tsv9 to Tsv7'} onClick={onConvertTsvClick}>
+          <ListItemIcon>
+            <AdjustIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Convert Tsv9 to Tsv7'} />
         </ListItem>
       </List>
       <List disablePadding>
