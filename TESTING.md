@@ -274,10 +274,68 @@ yarn cypress:run
 
 ## Steps
 
-1. Create an organization
-2. Fork the `unfoldingWord/en_tn` repo to the new organization
-3. In gA, use Account Settings to switch to the new organization with English
-4. In the book package view (the main, default workspace), select a book
-5. Notice that all repos will be reported as missing except for tN
-6. In the menu, select "Convert Tsv9 to Tsv7"
+1. create an org
+2. go to https://qa.door43.org/Es-419_gl/es-419_tn
+3. click the button to fork
+4. fork to that new org
+5. login to gA
+6. go to account settings
+7. select new org 
+8. select es-419 as language
+9. click save and continue
+10. in menu, select "Convert Tsv9 to Tvs7"
+11. you will see this message:
+```
+Checking for tC Create user branches...
+There are tC Create user branches - cannot continue
+```
+12. click close to return to main workspace
+13. go to new org and repo
+14. go to branches
+15. delete all tc-create branches (in real life they need to be merged into master before conversion; so this prevents loss of data)
+16. return to conversion page
+17. Now it will say:
+```
+Checking for tC Create user branches...
+There are no tC Create user branches, click Convert button to continue
+```
+18. click the Convert button
+19. The progress output will be something like this:
+```
+Archive of master branch successful.
+Begin converting files...
+Working on en_tn_01-GEN.tsv
+... is bookdId GEN
+... Converted:en_tn_01-GEN.tsv
+Working on en_tn_02-EXO.tsv
+... is bookdId EXO
+... Converted:en_tn_02-EXO.tsv
+Working on en_tn_08-RUT.tsv
+... is bookdId RUT
+... Converted:en_tn_08-RUT.tsv
+Working on en_tn_32-JON.tsv
+... is bookdId JON
+... Converted:en_tn_32-JON.tsv
+Working on en_tn_56-2TI.tsv
+... is bookdId 2TI
+... Converted:en_tn_56-2TI.tsv
+Working on en_tn_57-TIT.tsv
+... is bookdId TIT
+... Converted:en_tn_57-TIT.tsv
+Working on en_tn_58-PHM.tsv
+... is bookdId PHM
+... Converted:en_tn_58-PHM.tsv
+Working on en_tn_65-3JN.tsv
+... is bookdId 3JN
+... Converted:en_tn_65-3JN.tsv
+Updating manifest
+Manifest updated
+```
+20. To test again, then:
+  - go to repo
+  - click settings
+  - scroll down to bottom
+  - click delete repository
+  - confirm it
+  - now you start at the top by re-forking
 

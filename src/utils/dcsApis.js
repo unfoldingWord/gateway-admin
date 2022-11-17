@@ -830,3 +830,49 @@ export async function saveNewTsv7({
     }`,
   })
 }
+
+
+export async function updateManifestWithProjects({
+  server, organization, languageId, sha, manifest, tokenid
+}) {
+  // update the projects to have the new file naming convention
+  for (let i=0; i< manifest.projects.length; i++) {
+    const item = manifest.projects[i]
+    console.log("identifier:", item.identifier)
+    console.log("path:", item.path)
+    manifest.projects[i].path = `tn_${item.identifier.toUpperCase()}.tsv`
+  }
+
+  // update the manifest in the repo
+  const _manifest = YAML.safeDump(manifest)
+  const content = base64.encode(utf8.encode(_manifest))
+  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'contents','manifest.yaml')
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "manifest.yaml",
+      "message": "Updated to use new tN filenames",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
+  return res
+}

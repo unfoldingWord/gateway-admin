@@ -10,7 +10,9 @@ import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { tCCreateBranchesExist, createArchivedTsv9Branch, saveNewTsv7 } from '@utils/dcsApis'
+import { tCCreateBranchesExist, 
+  createArchivedTsv9Branch, 
+  saveNewTsv7, updateManifestWithProjects } from '@utils/dcsApis'
 import { doFetch } from '@utils/network'
 import { decodeBase64ToUtf8 } from '@utils/decode'
 import { TN } from '@common/constants';
@@ -36,6 +38,8 @@ const ConvertPage = () => {
   const {
     state: { 
       tnRepoTree,
+      tnRepoTreeManifest,
+      tnManifestSha,
     },
     actions: {
       setRefresh,
@@ -61,7 +65,6 @@ const ConvertPage = () => {
       }
       _convertMessages.push('Begin converting files...')
       setConvertMessages([..._convertMessages])
-      console.log("tnrepo:", tnRepoTree)
       for ( let i=0; i < tnRepoTree.length; i++) {
         const item = tnRepoTree[i]
         console.log(`Working on ${item.path}`)
@@ -88,7 +91,6 @@ const ConvertPage = () => {
           _convertMessages.push('... is bookdId '+_bookId)
           setConvertMessages([..._convertMessages])
           const content = await doFetch(item.url) 
-          console.log("content fetched:", content)
           
           if ( content.status === 1 ) {
             _convertMessages.push('Stopping! '+content.statusText)
@@ -117,6 +119,25 @@ const ConvertPage = () => {
             setConvertMessages([..._convertMessages])
           }
         }
+      }
+      // update manifest
+      _convertMessages.push('Updating manifest')
+      setConvertMessages([..._convertMessages])
+
+      const res = await updateManifestWithProjects({server,
+        organization,
+        languageId, 
+        manifest: tnRepoTreeManifest, 
+        sha: tnManifestSha,
+        tokenid: authentication.token.sha1,
+      })
+      if ( res.status === 200 ) {
+        _convertMessages.push('Manifest updated')
+        _convertMessages.push('File format has been updated. The old files are archived on branch "ARCHIVED-TSV9"')
+        setConvertMessages([..._convertMessages])
+      } else {
+        _convertMessages.push('Manifest update failed with status='+res.status)
+        setConvertMessages([..._convertMessages])
       }
       setConfirmConvert(false)
       setRefresh(TN)
@@ -158,16 +179,6 @@ const ConvertPage = () => {
       <div className='flex flex-col justify-center items-center'>
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
           <h1 className='mx-4'>Convert TSV9 to TSV7 Format</h1>
-          <div>
-            <ul>
-              <li>User starts the conversion process.</li>
-              <li>Check for tCCreate branches, if they exist, do not continue.(All user branches need to be merged to master branch and deleted after)</li>
-              <li>Archive existing master(TSV 9 ) file.</li>
-              <li>Run conversion</li>
-              <li>Update the manifest</li>
-              <li>Inform user " File format has been updated. The old files are archived at ..."</li>
-            </ul>
-          </div>
           {
             convertMessages.map((message, i) => <div key={i}><em className='mx-4' key={i}>{message}</em><br/></div>)
           }
