@@ -17,8 +17,6 @@ import { doFetch } from '@utils/network'
 import { decodeBase64ToUtf8 } from '@utils/decode'
 import { TN } from '@common/constants';
 
-// import { createRelease } from '@utils/dcsApis'
-// import Link from '@material-ui/core/Link'
 
 const ConvertPage = () => {
   const router = useRouter()
