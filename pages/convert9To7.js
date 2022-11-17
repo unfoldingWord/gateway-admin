@@ -47,7 +47,7 @@ const ConvertPage = () => {
   // archive the existing branch for posterity
   // then start converting
   useEffect( () => {
-    async function archiveBranch () {
+    async function performConversion () {
       setDisableConvert(true)
       let _convertMessages = []
       const archiveResults = await createArchivedTsv9Branch({
