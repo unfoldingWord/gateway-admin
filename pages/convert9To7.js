@@ -141,7 +141,7 @@ const ConvertPage = () => {
       setRefresh(TN)
     }
     if ( confirmConvert ) {
-      archiveBranch()
+      performConversion().catch(console.error)
     }
   },[confirmConvert])
 
