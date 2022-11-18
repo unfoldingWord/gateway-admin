@@ -592,7 +592,14 @@ async function deleteAllBookFilesNotInManifest( {
 
   for ( const file of resourceTree ) {
     if ( file.path.endsWith('.tsv') ) {
-      if ( manifest.projects.some(( elem ) => elem.path === file.path )) {
+      if ( manifest.projects.some(( elem ) => {
+        let path = elem.path
+
+        if ( path.startsWith('./')) {
+          path = path.substring(2) // remove './' from path.
+        }
+        return path === file.path
+      } )) {
         continue // File is in manifest.
       }
 
