@@ -349,9 +349,13 @@ export async function updateBranchWithLatestBookFiles({
       throw new Error(`Unable to find ${bookId} in manifest.yaml`)
     }
 
-    const path = project.path.substring(2) // remove './' from path.
-    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+    let path = project.path
 
+    if ( path.startsWith('./')) {
+      path = project.path.substring(2) // remove './' from path.
+    }
+
+    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
     // eslint-disable-next-line no-await-in-loop
     const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
 
@@ -564,6 +568,72 @@ async function deleteAllBookFiles( {
   }
 }
 
+async function deleteAllBookFilesNotInManifest( {
+  releaseBranchName,
+  server,
+  organization,
+  languageId,
+  resourceId,
+  tokenid,
+  manifest,
+} ) {
+
+  const treesResponse = await fetch(
+    `${server}/api/v1/repos/${organization}/${languageId}_${resourceId}/git/trees/${releaseBranchName}?token=${tokenid}&recursive=false&per_page=999999`,
+    { headers: { 'Content-Type': 'application/json' } }
+  )
+
+  if ( ! treesResponse.ok ) {
+    throw new Error('Failed to get manifest.yaml in release branch')
+  }
+
+  const trees = await treesResponse.json()
+  const resourceTree = trees.tree
+
+  for ( const file of resourceTree ) {
+    if ( file.path.endsWith('.tsv') ) {
+      if ( manifest.projects.some(( elem ) => {
+        let path = elem.path
+
+        if ( path.startsWith('./')) {
+          path = path.substring(2) // remove './' from path.
+        }
+        return path === file.path
+      } )) {
+        continue // File is in manifest.
+      }
+
+      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', file.path)
+      const date = new Date(Date.now())
+      const dateString = date.toISOString()
+
+      // eslint-disable-next-line no-await-in-loop
+      await fetch(updateUri + '?token=' + tokenid, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+        "author": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "committer": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "dates": {
+          "author": "${dateString}",
+          "committer": "${dateString}"
+        },
+        "message": "Delete work in old ${file.path} to prepare for release",
+        "branch": "${releaseBranchName}",
+        "sha": "${file.sha}",
+        "signoff": true
+      }`,
+      })
+    }
+  }
+}
+
 /**
  * Create a new release from the master branch
  * @param {string} server
@@ -651,6 +721,20 @@ export async function createRelease({
         resourceId,
         tokenid,
         resourceTree,
+      })
+    }
+
+    if ('tn' === resourceId) {
+      // Clean up any old files such as when migrated from TSV9 to TSV7 delete old files.
+      await deleteAllBookFilesNotInManifest({
+        releaseBranchName,
+        server,
+        organization,
+        languageId,
+        resourceId,
+        tokenid,
+        resourceTree,
+        manifest,
       })
     }
 
@@ -777,14 +861,14 @@ export async function createArchivedTsv9Branch({
     }
   }
 
-  return await fetch( 
-    server + '/' + Path.join( 
-      apiPath, 
-      'repos', 
-      organization, 
-      `${ languageId }_tn`, 
+  return await fetch(
+    server + '/' + Path.join(
+      apiPath,
+      'repos',
+      organization,
+      `${ languageId }_tn`,
       'branches'
-    ) + '?token=' + tokenid, 
+    ) + '?token=' + tokenid,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -792,7 +876,7 @@ export async function createArchivedTsv9Branch({
           "new_branch_name": "${archiveBranchName}",
           "old_branch_name": "master"
       }`,
-    } 
+    }
   )
 }
 
