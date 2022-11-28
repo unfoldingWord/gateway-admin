@@ -53,6 +53,7 @@ const ConvertPage = () => {
       const archiveResults = await createArchivedTsv9Branch({
         server, organization, languageId, tokenid:authentication.token.sha1,
       })
+
       if ( archiveResults.status === 201 ) {
         _convertMessages.push('Archive of master branch successful.')
         setConvertMessages([..._convertMessages])
@@ -63,18 +64,22 @@ const ConvertPage = () => {
       }
       _convertMessages.push('Begin converting files...')
       setConvertMessages([..._convertMessages])
+
       for ( let i=0; i < tnRepoTree.length; i++) {
         const item = tnRepoTree[i]
         console.log(`Working on ${item.path}`)
+
         if ( item.path.endsWith('.tsv') ) {
           _convertMessages.push('Working on '+item.path)
           setConvertMessages([..._convertMessages])
-          
+
           // First validate the TSV filename
           const filenameArray = item.path.split('_')
+
           if ( filenameArray[1] !== 'tn' ) {
             const regex = /^tn_[1-3A-Z]{3}/;
             const found = item.path.match(regex)
+
             if ( found === null ) {
               _convertMessages.push('... Not a valid TSV9 filename, skipping')
               setConvertMessages([..._convertMessages])
@@ -85,18 +90,21 @@ const ConvertPage = () => {
               continue
             }
           }
+
           const _bookId = filenameArray[2].split('.')[0].substr(-3)
           _convertMessages.push('... is bookdId '+_bookId)
           setConvertMessages([..._convertMessages])
           const content = await doFetch(item.url) 
-          
+
           if ( content.status === 1 ) {
             _convertMessages.push('Stopping! '+content.statusText)
             setConvertMessages([..._convertMessages])
             break
-          } 
+          }
+
           const _content = decodeBase64ToUtf8(content.data.content)
           const result = convertTsv9to7(_content)
+
           if ( result.tsv === null ) {
             _convertMessages.push('... Convert failed:'+item.path)
             _convertMessages.push('Problem must be corrected before conversion retried!')
@@ -113,8 +121,15 @@ const ConvertPage = () => {
               content: result.tsv,
               tokenid: authentication.token.sha1,
             })
-            _convertMessages.push('... Converted:'+item.path)
-            setConvertMessages([..._convertMessages])
+
+            if ( res.status === 200 ) {
+              _convertMessages.push('... Converted:'+item.path)
+              setConvertMessages([..._convertMessages])
+            } else {
+              _convertMessages.push('File update failed with status='+res.status+' '+res.statusText)
+              console.log('Convert save to DCS failed:', res)
+              setConvertMessages([..._convertMessages])
+            }
           }
         }
       }
@@ -129,6 +144,7 @@ const ConvertPage = () => {
         sha: tnManifestSha,
         tokenid: authentication.token.sha1,
       })
+
       if ( res.status === 200 ) {
         _convertMessages.push('Manifest updated')
         _convertMessages.push('File format has been updated. The old files are archived on branch "ARCHIVED-TSV9"')
@@ -140,6 +156,7 @@ const ConvertPage = () => {
       setConfirmConvert(false)
       setRefresh(TN)
     }
+
     if ( confirmConvert ) {
       performConversion().catch(console.error)
     }

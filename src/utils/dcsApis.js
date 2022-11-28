@@ -577,10 +577,9 @@ async function deleteAllBookFilesNotInManifest( {
   tokenid,
   manifest,
 } ) {
-
   const treesResponse = await fetch(
     `${server}/api/v1/repos/${organization}/${languageId}_${resourceId}/git/trees/${releaseBranchName}?token=${tokenid}&recursive=false&per_page=999999`,
-    { headers: { 'Content-Type': 'application/json' } }
+    { headers: { 'Content-Type': 'application/json' } },
   )
 
   if ( ! treesResponse.ok ) {
@@ -861,7 +860,7 @@ export async function createArchivedTsv9Branch({
     }
   }
 
-  return await fetch(
+  return fetch(
     server + '/' + Path.join(
       apiPath,
       'repos',
@@ -913,6 +912,7 @@ export async function saveNewTsv7({
       "signoff": true
     }`,
   })
+  return res
 }
 
 
