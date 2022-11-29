@@ -76,6 +76,14 @@ function cvFilter(rowData, filename) {
     // all linked documents are not being processed
     return false
   }
+  if ( String(rowData.priority) === '950' ) {
+    // discard these since tC can now handle rc links with an asterisk
+    return false
+  }
+  if ( String(rowData.priority) === '538' ) {
+    // discard since this is returned for files that *do* have a newline at end
+    return false
+  }
   if ( (filename.startsWith("tq") || filename.startsWith("sq") )
       && String(rowData.priority) === '119' 
       && String(rowData.fieldName) === 'Quote') {
