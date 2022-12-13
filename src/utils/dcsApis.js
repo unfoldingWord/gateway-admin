@@ -12,7 +12,7 @@ import {
 } from '@common/BooksOfTheBible'
 import { RESOURCES_WITH_NO_BOOK_FILES } from '@common/ResourceList'
 import { isServerDisconnected } from './network'
-
+import { getLanguage } from '@common/languages'
 
 /**
  * determine if version tag is formatted properly
@@ -249,11 +249,20 @@ export async function manifestAddBook({
 // selected by the user.
 //
 export async function manifestCreate({
-  server, username, repository, bookId, tokenid,
+  server, username, repository, tokenid, languageId,
 }) {
-  //const resourceId = getResourceIdFromRepo(repository)
+  const language = getLanguage( { languageId } )
   const resourceId = repository.split('_')[1]
-  const manifestYaml = getResourceManifest( { resourceId } )
+  const manifestYaml = getResourceManifest( { resourceId } ).replace(
+    `language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'`,
+    `language:
+    direction: '${language.direction}'
+    identifier: '${language.languageId}'
+    title: '${language.localized}'`,
+  )
 
   const content = base64.encode(utf8.encode(manifestYaml))
   const uri = server + '/' + Path.join(apiPath,'repos',username,repository,'contents','manifest.yaml')
@@ -340,9 +349,13 @@ export async function updateBranchWithLatestBookFiles({
       throw new Error(`Unable to find ${bookId} in manifest.yaml`)
     }
 
-    const path = project.path.substring(2) // remove './' from path.
-    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
+    let path = project.path
 
+    if ( path.startsWith('./')) {
+      path = project.path.substring(2) // remove './' from path.
+    }
+
+    const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
     // eslint-disable-next-line no-await-in-loop
     const res = await fetch(uri+'?token='+tokenid, { headers: { 'Content-Type': 'application/json' } })
 
@@ -555,6 +568,71 @@ async function deleteAllBookFiles( {
   }
 }
 
+async function deleteAllBookFilesNotInManifest( {
+  releaseBranchName,
+  server,
+  organization,
+  languageId,
+  resourceId,
+  tokenid,
+  manifest,
+} ) {
+  const treesResponse = await fetch(
+    `${server}/api/v1/repos/${organization}/${languageId}_${resourceId}/git/trees/${releaseBranchName}?token=${tokenid}&recursive=false&per_page=999999`,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+
+  if ( ! treesResponse.ok ) {
+    throw new Error('Failed to get manifest.yaml in release branch')
+  }
+
+  const trees = await treesResponse.json()
+  const resourceTree = trees.tree
+
+  for ( const file of resourceTree ) {
+    if ( file.path.endsWith('.tsv') ) {
+      if ( manifest.projects.some(( elem ) => {
+        let path = elem.path
+
+        if ( path.startsWith('./')) {
+          path = path.substring(2) // remove './' from path.
+        }
+        return path === file.path
+      } )) {
+        continue // File is in manifest.
+      }
+
+      const updateUri = server + '/' + Path.join(apiPath, 'repos', organization, `${languageId}_${resourceId}`, 'contents', file.path)
+      const date = new Date(Date.now())
+      const dateString = date.toISOString()
+
+      // eslint-disable-next-line no-await-in-loop
+      await fetch(updateUri + '?token=' + tokenid, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+        "author": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "committer": {
+          "email": "info@unfoldingword.org",
+          "name": "unfoldingWord"
+        },
+        "dates": {
+          "author": "${dateString}",
+          "committer": "${dateString}"
+        },
+        "message": "Delete work in old ${file.path} to prepare for release",
+        "branch": "${releaseBranchName}",
+        "sha": "${file.sha}",
+        "signoff": true
+      }`,
+      })
+    }
+  }
+}
+
 /**
  * Create a new release from the master branch
  * @param {string} server
@@ -645,6 +723,20 @@ export async function createRelease({
       })
     }
 
+    if ('tn' === resourceId) {
+      // Clean up any old files such as when migrated from TSV9 to TSV7 delete old files.
+      await deleteAllBookFilesNotInManifest({
+        releaseBranchName,
+        server,
+        organization,
+        languageId,
+        resourceId,
+        tokenid,
+        resourceTree,
+        manifest,
+      })
+    }
+
     if (releaseBranchName !== 'master') {
       await updateBranchWithLatestBookFiles( {
         releaseBranchName,
@@ -726,4 +818,145 @@ export async function createRelease({
     val.message = `Error: Disconnected=${disconnected}, Error: ${message}`
   }
   return val
+}
+
+/*
+  Swagger example:
+  https://qa.door43.org/api/v1/repos/unfoldingword/en_tn/branches
+*/
+export async function tCCreateBranchesExist({
+  server, organization, languageId, tokenid
+}) {
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  const _results = await results.json()
+
+  for (let i=0; i<_results.length; i++) {
+    if ( _results[i].name.endsWith('-tc-create-1') ) {
+      return true
+    }
+  }
+  return false
+  // return 200 === results.status
+}
+
+export async function createArchivedTsv9Branch({
+  server, organization, languageId, tokenid
+}) {
+
+  // if it already exists, return true
+  const archiveBranchName = 'ARCHIVED-TSV9'
+
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  const _results = await results.json()
+
+  for (let i=0; i<_results.length; i++) {
+    if ( _results[i].name === archiveBranchName ) {
+      // status 201 is what this API returns on success
+      return {status: 201}
+    }
+  }
+
+  return fetch(
+    server + '/' + Path.join(
+      apiPath,
+      'repos',
+      organization,
+      `${ languageId }_tn`,
+      'branches'
+    ) + '?token=' + tokenid,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: `{
+          "new_branch_name": "${archiveBranchName}",
+          "old_branch_name": "master"
+      }`,
+    }
+  )
+}
+
+export async function saveNewTsv7({
+  server, organization, languageId, oldFilename, newFilename, sha, content, tokenid
+}) {
+  const _content = base64.encode(utf8.encode(content))
+  const uri = server + '/' + Path.join(
+    apiPath,'repos',organization,`${ languageId }_tn`,'contents',newFilename)
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${_content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "${oldFilename}",
+      "message": "Converted from ${oldFilename} to ${newFilename}",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
+  return res
+}
+
+
+export async function updateManifestWithProjects({
+  server, organization, languageId, sha, manifest, tokenid
+}) {
+  // update the projects to have the new file naming convention
+  for (let i=0; i< manifest.projects.length; i++) {
+    const item = manifest.projects[i]
+    console.log("identifier:", item.identifier)
+    console.log("path:", item.path)
+    manifest.projects[i].path = `tn_${item.identifier.toUpperCase()}.tsv`
+  }
+
+  // update the manifest in the repo
+  const _manifest = YAML.safeDump(manifest)
+  const content = base64.encode(utf8.encode(_manifest))
+  const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_tn`,'contents','manifest.yaml')
+  const date = new Date(Date.now())
+  const dateString = date.toISOString()
+  const res = await fetch(uri+'?token='+tokenid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{
+      "author": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "branch": "master",
+      "committer": {
+        "email": "info@unfoldingword.org",
+        "name": "unfoldingWord"
+      },
+      "content": "${content}",
+      "dates": {
+        "author": "${dateString}",
+        "committer": "${dateString}"
+      },
+      "from_path": "manifest.yaml",
+      "message": "Updated to use new tN filenames",
+      "new_branch": "master",
+      "sha": "${sha}",
+      "signoff": true
+    }`,
+  })
+  return res
 }

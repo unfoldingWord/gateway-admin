@@ -10,7 +10,7 @@ import {
   reloadApp,
 } from '@utils/network'
 import * as tsvparser from 'uw-tsv-parser'
-import { OK,USE_NEW_TN_FORMAT_BRANCH, ALL_PRESENT } from '@common/constants'
+import { OK,USE_NEW_TN_FORMAT, ALL_PRESENT } from '@common/constants'
 import { TN_FILENAMES, OBS_FILENAMES } from '@common/BooksOfTheBible'
 
 export async function checkTwForBook(authentication, bookId, languageId, owner, server, twRepoTree) {
@@ -105,8 +105,9 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     tnBranch = "master"
     tnFilename = `tn_${bookId.toUpperCase()}.tsv`
     tnColumn = 3
-  } else if ( USE_NEW_TN_FORMAT_BRANCH ) {
-    tnBranch = "newFormat"
+  } else if ( USE_NEW_TN_FORMAT ) {
+    // tnBranch = "newFormat"
+    tnBranch = "master"
     tnFilename = `tn_${bookId.toUpperCase()}.tsv`
     tnColumn = 3
   } else {
