@@ -246,6 +246,13 @@ export function convertTsv9to7(tsv_) {
         const Tags = '';
         SupportReference = SupportReference && `rc://*/ta/man/translate/${SupportReference}`;
 
+        /*
+          if original quote is empty copy the value of GL quote into it
+        */
+        if ( OrigQuote.trim().length === 0 ) {
+          OrigQuote = GLQuote;
+        }
+
         OrigQuote = OrigQuote.replaceAll(NO_BREAK_SPACE, ' '); // Replace non-break spaces
         OrigQuote = OrigQuote.replaceAll(ZERO_WIDTH_SPACE, ''); // Delete zero-width spaces
         OrigQuote = OrigQuote.replaceAll(THREE_DOTS, ELLIPSIS);
