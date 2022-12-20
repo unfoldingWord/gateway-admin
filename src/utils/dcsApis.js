@@ -362,7 +362,8 @@ export async function updateBranchWithLatestBookFiles({
     if (res.ok) {
       // eslint-disable-next-line no-await-in-loop
       const body = await res.json()
-      const sha = body.sha
+      let sha = body.sha
+      let method = 'POST'
 
       const uri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents',path)
       // eslint-disable-next-line no-await-in-loop
@@ -371,9 +372,16 @@ export async function updateBranchWithLatestBookFiles({
       const date = new Date(Date.now())
       const dateString = date.toISOString()
 
+      if ( fileExistsInReleaseBranch.ok ) {
+        method = 'PUT'
+        // eslint-disable-next-line no-await-in-loop
+        const releaseBranchFileBody = await fileExistsInReleaseBranch.json()
+        sha = releaseBranchFileBody.sha
+      }
+
       // eslint-disable-next-line no-await-in-loop
       const result = await fetch(updateUri + '?token=' + tokenid, {
-        method: fileExistsInReleaseBranch.ok ? 'PUT' : 'POST',
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: `{
           "author": {
