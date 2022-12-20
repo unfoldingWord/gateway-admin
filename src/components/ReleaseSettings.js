@@ -74,7 +74,14 @@ export default function ReleaseSettings() {
   const prepResourceForRelease = async (resourceId) => {
     const tokenid = authentication.token.sha1
     const branch = 'release_' + currentVersions.get(resourceId)
-    const previousReleaseBranchExists = await branchExists({server,organization,languageId,resourceId,tokenid, branch})
+    const previousReleaseBranchExists = await branchExists({
+      server,
+      organization,
+      languageId,
+      resourceId:resourceIdMapper(organization, resourceId),
+      tokenid,
+      branch,
+    })
 
     if ( ! previousReleaseBranchExists ) {
       setBookSelectionMessage('This is the first release of this resource with Gateway Admin, all books ready to be published must be selected.')
