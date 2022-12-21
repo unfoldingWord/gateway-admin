@@ -78,8 +78,12 @@ const ReleasePage = () => {
       return sqRepoTree
     case TQ:
       return tqRepoTree
+    case 'ust':
+    case 'gst':
     case ST:
       return stRepoTree
+    case 'ult':
+    case 'glt':
     case LT:
       return ltRepoTree
     case TWL:
@@ -120,7 +124,7 @@ const ReleasePage = () => {
     }
 
     async function doRelease() {
-      const tokenid = authentication.token.sha1;
+      const tokenid = authentication.token.sha1
 
       const resourceIds = Array.from(releaseResources.keys()).map((resourceId) => resourceIdMapper(organization, resourceId))
 
@@ -151,7 +155,7 @@ const ReleasePage = () => {
       console.log(realResourceIds)
       console.log(books)
 
-      await Promise.allSettled( realResourceIds.map( async (resourceId, index) => {
+      const statuses = await Promise.allSettled( realResourceIds.map( async (resourceId, index) => {
         const resourceTree = getResourceTree( resourceId )
 
         const result = await createRelease( {
@@ -177,6 +181,8 @@ const ReleasePage = () => {
         setReleaseMessages( _releaseMessages )
         return result
       } ))
+
+      console.log(statuses)
 
       // initialize release state vars
       setReleaseResources(new Map())
