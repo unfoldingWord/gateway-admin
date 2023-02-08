@@ -164,7 +164,7 @@ export function convertTsv9to7(tsv_) {
 
   try {
     if (tsvObjects && Array.isArray(tsvObjects) && tsvObjects.length) {
-      const lines = tsv_.split('\n');
+      const lines = tsv_.replace(/\r/g,'').split('\n');
       const line0 = lines[0];
       const fields = line0.split('\t');
 
