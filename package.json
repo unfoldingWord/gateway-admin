@@ -1,6 +1,6 @@
 {
   "name": "gateway-admin",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "scripts": {
     "dev": "bash -c \"source ./scripts/set-env.sh && next\"",
     "build": "bash -c \"source ./scripts/set-env.sh && next build\"",
