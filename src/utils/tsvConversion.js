@@ -164,8 +164,8 @@ export function convertTsv9to7(tsv_) {
 
   try {
     if (tsvObjects && Array.isArray(tsvObjects) && tsvObjects.length) {
-      const lines = tsv_.replace(/\r/g,'').split('\n');
-      const line0 = lines[0];
+      const lines = tsv_.split('\n');
+      const line0 = lines[0].trim();
       const fields = line0.split('\t');
 
       const expectedFields = ['Book', 'Chapter', 'Verse', 'ID', 'SupportReference', 'OrigQuote', 'Occurrence', 'GLQuote', 'OccurrenceNote'];
