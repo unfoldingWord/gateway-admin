@@ -154,6 +154,12 @@ export function convertTsv9to7(tsv_) {
   let msg;
   let tsv = null;
 
+  // remove any CR characters
+  const _tsv = tsv_.split('\n');
+  const __tsv = _tsv.map( (line) => line.trim() );
+  tsv_ = __tsv.join('\n');
+
+
   try {
     tsvObjects = tsvtojson_(tsv_);
   } catch (e) {
@@ -165,7 +171,8 @@ export function convertTsv9to7(tsv_) {
   try {
     if (tsvObjects && Array.isArray(tsvObjects) && tsvObjects.length) {
       const lines = tsv_.split('\n');
-      const line0 = lines[0].trim();
+      // lines = lines.map( (line) => line.trim() )
+      const line0 = lines[0];
       const fields = line0.split('\t');
 
       const expectedFields = ['Book', 'Chapter', 'Verse', 'ID', 'SupportReference', 'OrigQuote', 'Occurrence', 'GLQuote', 'OccurrenceNote'];
