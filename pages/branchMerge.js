@@ -1,25 +1,24 @@
-import { useContext, useEffect, useState } from 'react'
+import {
+  useContext, useEffect, useState,
+} from 'react'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from 'translation-helps-rcl/dist/components/Paper'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 
-import {
-  Grid, Link, Box, Divider, Container,
-} from '@material-ui/core'
-import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import Radio from '@material-ui/core/Radio'
 import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
-import FormGroup from '@material-ui/core/FormGroup'
 import FormControl from '@material-ui/core/FormControl'
 import FormLabel from '@material-ui/core/FormLabel'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormHelperText from '@material-ui/core/FormHelperText'
 import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
-import { resourceSelectList, resourceIdMapper } from '@common/ResourceList'
+import { resourceSelectAllList, resourceIdMapper } from '@common/ResourceList'
+import { getAllBranches } from '@utils/dcsApis'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -31,10 +30,10 @@ const useStyles = makeStyles(theme => ({
 
 const BranchMerge = () => {
   const classes = useStyles()
-
+  const [branches, setBranches] = useState([])
+  const [branch, setBranch] = useState('')
+  const [resourceId, setResourceId] = useState('')
   const router = useRouter()
-
-  const [resourceState, setResourceState] = useState('')
 
   const { state: authentication } = useContext(AuthenticationContext)
   const {
@@ -50,20 +49,32 @@ const BranchMerge = () => {
     actions: { setReleaseResources },
   } = useContext(AdminContext)
 
-  const resources = resourceSelectList()
+  const resources = resourceSelectAllList()
 
   const handleResourceChange = (event) => {
-    const item = event.target.name
-    const isChecked = event.target.checked
-    const newMap = new Map(releaseResources)
+    console.log('handleResourceChange() event:', event.target.defaultValue)
+    setResourceId(event.target.defaultValue)
+  }
 
-    if ( isChecked ) {
-      newMap.set(item, isChecked)
-      prepResourceForRelease(item)
-    } else {
-      newMap.delete(item)
+  useEffect( () => {
+    async function fetchBranches() {
+      const _rid = resourceIdMapper(organization,resourceId)
+      const tokenid = authentication.token.sha1
+      const allBranches = await getAllBranches( {
+        server, organization, languageId, resourceId:_rid, tokenid,
+      })
+      console.log('allBranches', allBranches)
+      setBranches(allBranches)
     }
-    setReleaseResources(newMap)
+
+    if ( resourceId !== '' ) {
+      fetchBranches()
+    }
+  }, [resourceId, server, organization, languageId, authentication])
+
+  const defaultProps = {
+    options: branches,
+    getOptionLabel: (option) => option ? option : '',
   }
 
 
@@ -74,26 +85,31 @@ const BranchMerge = () => {
           <div className='flex flex-col justify-center items-center'>
             <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
               <h1 className='mx-4'>No Conflict Merge Management</h1>
-              <FormControl required component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">Select a Resource</FormLabel>
-                <FormGroup>
-                  <RadioGroup
-                    aria-labelledby="release-type-radio-buttons-group-label"
-                    defaultValue="prod"
-                    name="release-type-radio-buttons-group"
-                    row
-                    value={resourceState}
-                    onChange={handleResourceChange}
-                  >
-                    {resources.map( ({ id,name }) =>
-                      <FormControlLabel key={id} value={id} control={<Radio />} label={name} />,
-                    )}
-                  </RadioGroup>
-
-                </FormGroup>
-                <FormHelperText />
+              <FormControl>
+                <FormLabel id="resource-type-radio-buttons-group-label" component="legend">Select a Resource</FormLabel>
+                <RadioGroup
+                  aria-labelledby="resource-type-radio-buttons-group-label"
+                  // defaultValue="lt"
+                  name="resource-type-radio-buttons-group"
+                  row
+                  onChange={handleResourceChange}
+                >
+                  {resources.map( ({ id,name }) =>
+                    <FormControlLabel key={id} value={id} control={<Radio />} label={name} />,
+                  )}
+                </RadioGroup>
               </FormControl>
-              <p>here is where a branch picker goes</p>
+              <Autocomplete
+                {...defaultProps}
+                id="select-branch"
+                value={branch}
+                onChange={(event, newValue) => {
+                  console.log('Autocomplete() onchange() setValue:', newValue)
+                  setBranch(newValue)
+                }}
+                renderInput={(params) => <TextField {...params} label="Select" margin="normal" />}
+              />
+
               <div className='flex justify-end'>
                 <Button
                   size='large'
@@ -123,3 +139,9 @@ const BranchMerge = () => {
 }
 
 export default BranchMerge
+
+/* code graveyard
+              <FormControl required component="fieldset" className={classes.formControl}>
+
+
+*/
