@@ -19,6 +19,12 @@ import { StoreContext } from '@context/StoreContext'
 import { AdminContext } from '@context/AdminContext'
 import { resourceSelectAllList, resourceIdMapper } from '@common/ResourceList'
 import { getAllBranches } from '@utils/dcsApis'
+// import {
+//   checkMergeDefaultIntoUserBranch,
+//   checkMergeUserIntoDefaultBranch,
+//   mergeDefaultIntoUserBranch,
+//   mergeUserIntoDefaultBranch,
+// } from 'dcs-branch-merger'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -29,10 +35,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const BranchMerge = () => {
-  const classes = useStyles()
+  // const classes = useStyles()
   const [branches, setBranches] = useState([])
   const [branch, setBranch] = useState('')
   const [resourceId, setResourceId] = useState('')
+  const [updateEnable, setUpdateEnable] = useState(false)
+  const [mergeEnable, setMergeEnable] = useState(false)
   const router = useRouter()
 
   const { state: authentication } = useContext(AuthenticationContext)
@@ -78,6 +86,16 @@ const BranchMerge = () => {
     getOptionLabel: (option) => option ? option : '',
   }
 
+  useEffect( () => {
+    if ( branch === '' ) {
+      setUpdateEnable(false)
+      setMergeEnable(false)
+    } else {
+      console.log("branch state value:", branch)
+      setUpdateEnable(true)
+      setMergeEnable(true)
+    }
+  }, [branch])
 
   return (
     <>
@@ -117,6 +135,12 @@ const BranchMerge = () => {
                   color='primary'
                   className='my-3 mx-1'
                   variant='contained'
+                  disabled={!updateEnable}
+                  onClick={
+                    () => {
+                      alert(`Update button clicked with branch ${branch}`)
+                    }
+                  }
                 >
               Update user branch with new stuff from Master
                 </Button>
@@ -125,9 +149,25 @@ const BranchMerge = () => {
                   color='primary'
                   className='my-3 mx-1'
                   variant='contained'
-                  //   disabled={!releaseActive}
+                  disabled={!mergeEnable}
+                  onClick={
+                    () => {
+                      alert(`Merge button clicked with branch ${branch}`)
+                    }
+                  }
                 >
               Merge user branch into Master!
+                </Button>
+                <Button
+                  size='large'
+                  color='primary'
+                  className='my-3 mx-1'
+                  variant='contained'
+                  onClick={() => {
+                    router.push('/')
+                  }}
+                >
+                  Close
                 </Button>
                 <br/>
               </div>
