@@ -65,6 +65,7 @@ const BranchMerge = () => {
       })
       console.log('allBranches', allBranches)
       setBranches(allBranches)
+      setBranch('')
     }
 
     if ( resourceId !== '' ) {
