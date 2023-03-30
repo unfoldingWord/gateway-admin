@@ -177,7 +177,7 @@ const BranchMerge = () => {
                     }
                   }
                 >
-              Update user branch with new stuff from Master
+              Update branch from Master
                 </Button>
                 <Button
                   size='large'
@@ -191,7 +191,7 @@ const BranchMerge = () => {
                     }
                   }
                 >
-              Merge user branch into Master!
+              Merge branch into Master!
                 </Button>
                 <Button
                   size='large'

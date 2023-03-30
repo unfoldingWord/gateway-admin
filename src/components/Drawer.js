@@ -10,6 +10,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import AdjustIcon from '@material-ui/icons/Adjust'
 import BugReportIcon from '@material-ui/icons/BugReport'
+import MergeTypeIcon from '@material-ui/icons/MergeType'
 import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
 import List from '@material-ui/core/List'
@@ -56,6 +57,15 @@ export default function Drawer({
 
     if (okToContinue) {
       router.push('/convert9To7')
+      onClose()
+    }
+  }
+
+  async function onBranchMergeClick() {
+    const okToContinue = await checkUnsavedChanges()
+
+    if (okToContinue) {
+      router.push('/branchMerge')
       onClose()
     }
   }
@@ -131,6 +141,14 @@ export default function Drawer({
             <AdjustIcon />
           </ListItemIcon>
           <ListItemText primary={'Convert Tsv9 to Tsv7'} />
+        </ListItem>
+      </List>
+      <List disablePadding>
+        <ListItem button key={'Update/Merge Changes'} onClick={onBranchMergeClick}>
+          <ListItemIcon>
+            <MergeTypeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Update/Merge Changes'} />
         </ListItem>
       </List>
       <List disablePadding>
