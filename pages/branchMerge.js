@@ -95,15 +95,16 @@ const BranchMerge = () => {
       console.log('branch state value:', branch)
       const _updateResults = await checkMergeDefaultIntoUserBranch(
         {
-          server, organization, repo, branch, tokenid,
+          server, owner:organization, repo, userBranch:branch, tokenid,
         },
       )
       const _mergeResults = await checkMergeUserIntoDefaultBranch(
         {
-          server, organization, repo, branch, tokenid,
+          server, owner:organization, repo, userBranch:branch, tokenid,
         },
       )
-
+      console.log("update results:", _updateResults)
+      console.log("merge results:", _mergeResults)
       /* sample return from check merger functions
         {
             "mergeNeeded": true,
