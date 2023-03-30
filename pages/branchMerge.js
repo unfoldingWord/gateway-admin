@@ -36,6 +36,7 @@ import {
 
 const BranchMerge = () => {
   // const classes = useStyles()
+  const pageDefaultStatusMessage = 'Select a resource'
   const [branches, setBranches] = useState([])
   const [branch, setBranch] = useState('')
   const [resourceId, setResourceId] = useState('')
@@ -43,6 +44,7 @@ const BranchMerge = () => {
   const [mergeEnable, setMergeEnable] = useState(false)
   const [doUpdate, setDoUpdate] = useState(false)
   const [doMerge, setDoMerge] = useState(false)
+  const [pageStatus, setPageStatus] = useState(pageDefaultStatusMessage)
   const router = useRouter()
 
   const { state: authentication } = useContext(AuthenticationContext)
@@ -76,9 +78,11 @@ const BranchMerge = () => {
       console.log('allBranches', allBranches)
       setBranches(allBranches)
       setBranch('')
+      setPageStatus('Select a branch')
     }
 
     if ( resourceId !== '' ) {
+      setPageStatus(`Fetching branches for ${resourceId}`)
       fetchBranches()
     }
   }, [resourceId, server, organization, languageId, authentication])
@@ -115,13 +119,28 @@ const BranchMerge = () => {
             "message": ""
         }
       */
+      const merge_able = !_mergeResults.error && !_mergeResults.conflict && _mergeResults.mergeNeeded
 
-      if ( !_mergeResults.error && !_mergeResults.conflict && _mergeResults.mergeNeeded ) {
+      if ( merge_able ) {
         setMergeEnable(true)
       }
 
-      if ( !_updateResults.error && !_updateResults.conflict && _updateResults.mergeNeeded ) {
+      const update_able = !_updateResults.error && !_updateResults.conflict && _updateResults.mergeNeeded
+
+      if ( update_able ) {
         setUpdateEnable(true)
+      }
+
+      if ( update_able && merge_able ) {
+        setPageStatus(`Update and merge checking complete.
+        Please update from master before merging your changes into master
+        `)
+      } else if ( update_able ) {
+        setPageStatus(`There are changes in master to update your branch`)
+      } else if ( merge_able ) {
+        setPageStatus(`Your changes may be merged into master without conflicts`)
+      } else {
+        setPageStatus(`There are no changes to sync at this time`)
       }
     }
 
@@ -130,6 +149,7 @@ const BranchMerge = () => {
       setUpdateEnable(false)
       setMergeEnable(false)
     } else {
+      setPageStatus(`Checking for update and merge...`)
       checkMergers()
     }
   }, [branch, server, organization, languageId, resourceId, authentication])
@@ -159,9 +179,10 @@ const BranchMerge = () => {
       */
 
       if ( _results.error ) {
-        alert(`Update of user branch failed:\n\n${_results.message}`)
+        setPageStatus(`Update of user branch failed:\n\n${_results.message}`)
+        console.log("Update from master failed:\n",_results.message)
       } else {
-        alert(`Update of user branch succeeded!`)
+        setPageStatus(`Update of user branch succeeded!`)
       }
       setDoUpdate(false)
       setBranch('')
@@ -197,12 +218,17 @@ const BranchMerge = () => {
       */
 
       if ( _results.error ) {
-        alert(`Merge of user branch into master failed:\n\n${_results.message}`)
+        setPageStatus(`Merge of user branch into master failed:\n\n${_results.message}`)
+        console.log("Merge into master failed:\n",_results.message)
       } else {
-        alert(`Merge of user branch into master succeeded!`)
+        setPageStatus(`Merge of user branch into master succeeded!`)
       }
       setDoMerge(false)
       setBranch('')
+      setTimeout(
+        () => setPageStatus(pageDefaultStatusMessage),
+        10000,
+      )
     }
 
 
@@ -285,6 +311,7 @@ const BranchMerge = () => {
                 </Button>
                 <br/>
               </div>
+              <p><strong>{pageStatus}</strong></p>
             </div>
           </div>
         </Paper>
