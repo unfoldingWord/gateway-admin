@@ -2,7 +2,7 @@ import {
   useContext, useEffect, useState,
 } from 'react'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
+// import { makeStyles } from '@material-ui/core/styles'
 import Paper from 'translation-helps-rcl/dist/components/Paper'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
@@ -16,23 +16,23 @@ import FormControl from '@material-ui/core/FormControl'
 import FormLabel from '@material-ui/core/FormLabel'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import { StoreContext } from '@context/StoreContext'
-import { AdminContext } from '@context/AdminContext'
+// import { AdminContext } from '@context/AdminContext'
 import { resourceSelectAllList, resourceIdMapper } from '@common/ResourceList'
 import { getAllBranches } from '@utils/dcsApis'
-// import {
-//   checkMergeDefaultIntoUserBranch,
-//   checkMergeUserIntoDefaultBranch,
-//   mergeDefaultIntoUserBranch,
-//   mergeUserIntoDefaultBranch,
-// } from 'dcs-branch-merger'
+import {
+  checkMergeDefaultIntoUserBranch,
+  checkMergeUserIntoDefaultBranch,
+  // mergeDefaultIntoUserBranch,
+  // mergeUserIntoDefaultBranch,
+} from 'dcs-branch-merger'
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    minWidth: '100%',
-  },
-}))
+// const useStyles = makeStyles(theme => ({
+//   formControl: {
+//     marginTop: theme.spacing(3),
+//     marginBottom: theme.spacing(3),
+//     minWidth: '100%',
+//   },
+// }))
 
 const BranchMerge = () => {
   // const classes = useStyles()
@@ -52,10 +52,10 @@ const BranchMerge = () => {
     },
   } = useContext(StoreContext)
 
-  const {
-    state: { releaseResources },
-    actions: { setReleaseResources },
-  } = useContext(AdminContext)
+  // const {
+  //   state: { releaseResources },
+  //   actions: { setReleaseResources },
+  // } = useContext(AdminContext)
 
   const resources = resourceSelectAllList()
 
@@ -87,15 +87,49 @@ const BranchMerge = () => {
   }
 
   useEffect( () => {
+    async function checkMergers() {
+      const _rid = resourceIdMapper(organization,resourceId)
+      const tokenid = authentication.token.sha1
+      const repo = languageId + '_' + _rid
+
+      console.log('branch state value:', branch)
+      const _updateResults = await checkMergeDefaultIntoUserBranch(
+        {
+          server, organization, repo, branch, tokenid,
+        },
+      )
+      const _mergeResults = await checkMergeUserIntoDefaultBranch(
+        {
+          server, organization, repo, branch, tokenid,
+        },
+      )
+
+      /* sample return from check merger functions
+        {
+            "mergeNeeded": true,
+            "conflict": false,
+            "error": false,
+            "message": ""
+        }
+      */
+
+      if ( !_mergeResults.error && !_mergeResults.conflict && _mergeResults.mergeNeeded ) {
+        setMergeEnable(true)
+      }
+
+      if ( !_updateResults.error && !_updateResults.conflict && _updateResults.mergeNeeded ) {
+        setUpdateEnable(true)
+      }
+    }
+
+
     if ( branch === '' ) {
       setUpdateEnable(false)
       setMergeEnable(false)
     } else {
-      console.log("branch state value:", branch)
-      setUpdateEnable(true)
-      setMergeEnable(true)
+      checkMergers()
     }
-  }, [branch])
+  }, [branch, server, organization, languageId, resourceId, authentication])
 
   return (
     <>

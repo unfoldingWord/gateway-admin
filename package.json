@@ -18,7 +18,7 @@
     "@sendgrid/mail": "^7.4.2",
     "autoprefixer": "^10.1.0",
     "core-js": "^3.8.3",
-    "dcs-branch-merger": "1.0.0-rc.3",
+    "dcs-branch-merger": "1.0.0-rc.6",
     "deep-equal": "^2.0.5",
     "gitea-react-toolkit": "1.11.0",
     "js-yaml-parser": "1.0.0",
