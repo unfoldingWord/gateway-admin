@@ -22,8 +22,8 @@ import { getAllBranches } from '@utils/dcsApis'
 import {
   checkMergeDefaultIntoUserBranch,
   checkMergeUserIntoDefaultBranch,
-  // mergeDefaultIntoUserBranch,
-  // mergeUserIntoDefaultBranch,
+  mergeDefaultIntoUserBranch,
+  mergeUserIntoDefaultBranch,
 } from 'dcs-branch-merger'
 
 // const useStyles = makeStyles(theme => ({
@@ -41,6 +41,8 @@ const BranchMerge = () => {
   const [resourceId, setResourceId] = useState('')
   const [updateEnable, setUpdateEnable] = useState(false)
   const [mergeEnable, setMergeEnable] = useState(false)
+  const [doUpdate, setDoUpdate] = useState(false)
+  const [doMerge, setDoMerge] = useState(false)
   const router = useRouter()
 
   const { state: authentication } = useContext(AuthenticationContext)
@@ -103,8 +105,8 @@ const BranchMerge = () => {
           server, owner:organization, repo, userBranch:branch, tokenid,
         },
       )
-      console.log("update results:", _updateResults)
-      console.log("merge results:", _mergeResults)
+      console.log('update results:', _updateResults)
+      console.log('merge results:', _mergeResults)
       /* sample return from check merger functions
         {
             "mergeNeeded": true,
@@ -131,6 +133,83 @@ const BranchMerge = () => {
       checkMergers()
     }
   }, [branch, server, organization, languageId, resourceId, authentication])
+
+
+  useEffect( () => {
+    async function doUpdateUserBranch() {
+      const _rid = resourceIdMapper(organization,resourceId)
+      const tokenid = authentication.token.sha1
+      const repo = languageId + '_' + _rid
+
+      console.log('doUpdateUserBranch()')
+      const _results = await mergeDefaultIntoUserBranch(
+        {
+          server, owner: organization, repo, userBranch: branch, tokenid,
+        },
+      )
+      /* Sample return value
+      {
+          "mergeNeeded": false,
+          "conflict": false,
+          "success": true,
+          "userBranchDeleted": false,
+          "error": false,
+          "message": "no merge needed"
+      }
+      */
+
+      if ( _results.error ) {
+        alert(`Update of user branch failed:\n\n${_results.message}`)
+      } else {
+        alert(`Update of user branch succeeded!`)
+      }
+      setDoUpdate(false)
+      setBranch('')
+    }
+
+
+    if ( doUpdate ) {
+      doUpdateUserBranch()
+    }
+  }, [doUpdate, branch, server, organization, languageId, resourceId, authentication])
+
+  useEffect( () => {
+    async function doMergeUserBranch() {
+      const _rid = resourceIdMapper(organization,resourceId)
+      const tokenid = authentication.token.sha1
+      const repo = languageId + '_' + _rid
+
+      console.log('doMergeUserBranch()')
+      const _results = await mergeUserIntoDefaultBranch(
+        {
+          server, owner: organization, repo, userBranch: branch, tokenid,
+        },
+      )
+      /* Sample return value
+      {
+          "mergeNeeded": false,
+          "conflict": false,
+          "success": true,
+          "userBranchDeleted": false,
+          "error": false,
+          "message": "no merge needed"
+      }
+      */
+
+      if ( _results.error ) {
+        alert(`Merge of user branch into master failed:\n\n${_results.message}`)
+      } else {
+        alert(`Merge of user branch into master succeeded!`)
+      }
+      setDoMerge(false)
+      setBranch('')
+    }
+
+
+    if ( doMerge ) {
+      doMergeUserBranch()
+    }
+  }, [doMerge, branch, server, organization, languageId, resourceId, authentication])
 
   return (
     <>
@@ -173,7 +252,7 @@ const BranchMerge = () => {
                   disabled={!updateEnable}
                   onClick={
                     () => {
-                      alert(`Update button clicked with branch ${branch}`)
+                      setDoUpdate(true)
                     }
                   }
                 >
@@ -187,7 +266,7 @@ const BranchMerge = () => {
                   disabled={!mergeEnable}
                   onClick={
                     () => {
-                      alert(`Merge button clicked with branch ${branch}`)
+                      setDoMerge(true)
                     }
                   }
                 >
