@@ -123,12 +123,16 @@ const BranchMerge = () => {
 
       if ( merge_able ) {
         setMergeEnable(true)
+      } else {
+        setMergeEnable(false)
       }
 
       const update_able = !_updateResults.error && !_updateResults.conflict && _updateResults.mergeNeeded
 
       if ( update_able ) {
         setUpdateEnable(true)
+      } else {
+        setUpdateEnable(false)
       }
 
       if ( update_able && merge_able ) {
