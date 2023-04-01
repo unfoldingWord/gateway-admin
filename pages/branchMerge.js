@@ -136,13 +136,13 @@ const BranchMerge = () => {
       }
 
       if ( update_able && merge_able ) {
-        setPageStatus(`Update and merge checking complete.
-        Please update from master before merging your changes into master
-        `)
+        setPageStatus(`Update from master before merging your changes into master`)
       } else if ( update_able ) {
         setPageStatus(`There are changes in master to update your branch`)
       } else if ( merge_able ) {
         setPageStatus(`Your changes may be merged into master without conflicts`)
+      } else if ( _updateResults.conflict || _mergeResults.conflict ) {
+        setPageStatus(`There are conflicts! Please resolve before updating or merging.`)
       } else {
         setPageStatus(`There are no changes to sync at this time`)
       }
@@ -270,7 +270,7 @@ const BranchMerge = () => {
                   console.log('Autocomplete() onchange() setValue:', newValue)
                   setBranch(newValue)
                 }}
-                renderInput={(params) => <TextField {...params} label="Select" margin="normal" />}
+                renderInput={(params) => <TextField {...params} label="Select a Branch" margin="normal" />}
               />
 
               <div className='flex justify-end'>
@@ -315,7 +315,7 @@ const BranchMerge = () => {
                 </Button>
                 <br/>
               </div>
-              <p><strong>{pageStatus}</strong></p>
+              <h2>{pageStatus}</h2>
             </div>
           </div>
         </Paper>
