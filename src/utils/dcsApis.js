@@ -832,6 +832,27 @@ export async function createRelease({
   Swagger example:
   https://qa.door43.org/api/v1/repos/unfoldingword/en_tn/branches
 */
+export async function getAllBranches({
+  server, organization, languageId, resourceId, tokenid,
+}) {
+  const results = await fetch(server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'branches')+'?token='+tokenid,
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+  console.log("results:", results)
+  const _results = await results.json()
+  let branches = []
+
+  for (let i=0; i<_results.length; i++) {
+    branches.push(_results[i].name )
+  }
+  return branches
+}
+
+
+/*
+  Swagger example:
+  https://qa.door43.org/api/v1/repos/unfoldingword/en_tn/branches
+*/
 export async function tCCreateBranchesExist({
   server, organization, languageId, tokenid
 }) {
