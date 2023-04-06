@@ -154,6 +154,12 @@ export function convertTsv9to7(tsv_) {
   let msg;
   let tsv = null;
 
+  // remove any CR characters
+  const _tsv = tsv_.split('\n');
+  const __tsv = _tsv.map( (line) => line.trim() );
+  tsv_ = __tsv.join('\n');
+
+
   try {
     tsvObjects = tsvtojson_(tsv_);
   } catch (e) {

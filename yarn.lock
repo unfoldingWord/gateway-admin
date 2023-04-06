@@ -2639,6 +2639,13 @@ dayjs@^1.10.4:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.6.tgz#2e79a226314ec3ec904e3ee1dd5a4f5e5b1c7afb"
   integrity sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==
 
+dcs-branch-merger@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/dcs-branch-merger/-/dcs-branch-merger-1.0.1.tgz#83dc29d44d64fdb1afbbdeabecdb249a8844a63a"
+  integrity sha512-iTOYHtQkMwSFcLkvqHBPO07rbIvRMfe3sDF+xvofGYrotjqV0zjdKK3cO8RSgSQ+eBMQhJ3t9k7hOiLsfo/+9w==
+  dependencies:
+    path "0.12.7"
+
 debounce-promise@^3.1.0:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/debounce-promise/-/debounce-promise-3.1.2.tgz#320fb8c7d15a344455cd33cee5ab63530b6dc7c5"
@@ -9314,10 +9321,10 @@ uuid@^8.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
-uw-content-validation@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/uw-content-validation/-/uw-content-validation-3.1.1.tgz#cfafc30f46181883bbcd5438f0d2d91314712fb3"
-  integrity sha512-Lg9CAug2cuz2YFVMc3C2vgk1EKOOFfj2vOf9hXzt1HS+Ia6MUmOv3chY8R3XUBQTlo0+BTC05+JJNfnYgB+Oig==
+uw-content-validation@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/uw-content-validation/-/uw-content-validation-3.1.2.tgz#090f9fb5b3b328b285509c2d8015f3c12d2d0489"
+  integrity sha512-Zs+Yy60umT+BSMcIAAsmSioRGv3Hlm3TmL4tHJ5QXt4NgU9cQWP6cKNPqGhx21+S2ogF2U04cnmb8+jykV6aKA==
   dependencies:
     ajv "^8.8.2"
     axios "^0.24.0"
