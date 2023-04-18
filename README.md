@@ -210,7 +210,7 @@ To point to production:
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE` [here](https://github.com/unfoldingWord/gateway-admin/LICENSE)
+Distributed under the MIT License. See `LICENSE` [here](https://github.com/unfoldingWord/gateway-admin/blob/develop/LICENSE)
 for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
