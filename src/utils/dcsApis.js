@@ -430,7 +430,7 @@ export async function updateManifest({
 
   const body = await res.json()
   const sha = body.sha
-  const content = atob(body.content)
+  const content = Buffer.from(body.content, "base64").toString("utf8")
   const manifest = YAML.load( content )
 
   if ( nextVersion.startsWith('v') ) {
