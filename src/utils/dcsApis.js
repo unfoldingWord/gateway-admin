@@ -494,7 +494,7 @@ async function updateManifestInBranch({
 
   const body = await releaseBranchRes.json()
   const newYAML = YAML.dump(manifest)
-  const newContent = btoa(newYAML)
+  const newContent = Buffer.from(newYAML, 'utf8').toString('base64')
   const updateUri = server + '/' + Path.join(apiPath,'repos',organization,`${languageId}_${resourceId}`,'contents','manifest.yaml')
   const date = new Date(Date.now())
   const dateString = date.toISOString()
