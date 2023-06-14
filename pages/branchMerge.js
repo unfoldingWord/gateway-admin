@@ -66,6 +66,7 @@ const BranchMerge = () => {
   const handleResourceChange = (event) => {
     console.log('handleResourceChange() event:', event.target.defaultValue)
     setResourceId(event.target.defaultValue)
+    setBranch('')
   }
 
   useEffect( () => {
@@ -186,7 +187,7 @@ const BranchMerge = () => {
         setPageStatus(`Update of user branch failed:\n\n${_results.message}`)
         console.log("Update from master failed:\n",_results.message)
       } else {
-        setPageStatus(`Update of user branch succeeded!`)
+        setPageStatus(`Update of user branch succeeded! Please (re)select a branch`)
       }
       setDoUpdate(false)
       setBranch('')
