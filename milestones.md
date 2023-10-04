@@ -2,7 +2,7 @@ An online tool for GLs to be able to manage Book Package creation, task assignme
 ___
 
 ## Phase 1
-*gatewayAdmin 0.9.x*
+*gatewayAdmin 0.9.x and 1.x.x*
 
 The goal of this phase is have all the initial building blocks (creation, validation, release) in place.
 
@@ -14,24 +14,28 @@ The goal of this phase is have all the initial building blocks (creation, valida
  
   Allow users to see the high level health of a reopository and make simple fixes 
   
-- [ ] **Create a Release**
+- [x] **Create a Release**
 
   Allow users to create a release in Catalog Next 
   
- - [ ] **Validate Content**
+- [x] **Validate Content**
  
   Integrate Content validation RCL
   
- - [ ] **Merging branches**
+- [ ] **Merging branches**
  
  Provide a UI for merging branches into master.
  
+ - [ ] **Conflict management**
+ 
 ## Phase 2
-*gatewayadmin 1.0.x*
+*gatewayadmin 1.5.x*
 
-- [ ] **Publish a release to Catalog Next**
+- [x] **Publish a release to Catalog Next**
 
 Integrate Catalog Next RCL for publish process automation (1.0 MVP)
+
+
 
 - [ ] **Task assignment and progress**
 
