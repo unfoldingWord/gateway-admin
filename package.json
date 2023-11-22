@@ -1,6 +1,6 @@
 {
   "name": "gateway-admin",
-  "version": "0.9.5",
+  "version": "0.9.8",
   "scripts": {
     "dev": "bash -c \"source ./scripts/set-env.sh && next\"",
     "build": "bash -c \"source ./scripts/set-env.sh && next build\"",
@@ -18,7 +18,7 @@
     "@sendgrid/mail": "^7.4.2",
     "autoprefixer": "^10.1.0",
     "core-js": "^3.8.3",
-    "dcs-branch-merger": "1.0.1",
+    "dcs-branch-merger": "1.4.1",
     "deep-equal": "^2.0.5",
     "gitea-react-toolkit": "1.11.0",
     "js-yaml-parser": "1.0.0",
