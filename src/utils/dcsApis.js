@@ -452,12 +452,14 @@ export async function updateManifest({
   }
 
   if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
-    for ( let bookId of books ) {
+    for (let bookId of books) {
+      // If the book is not in the manifest, add it
       if ( !manifest.projects.find( ( item ) => item.identifier === bookId ) ) {
         const project = getProject( {
           bookId, resourceId, languageId,
         } )
 
+        // If the project has a path, add it to the manifest
         if ( project.path ) {
           const index = manifest.projects.findLastIndex( ( item ) => item.sort > project.sort )
           manifest.projects.splice( index, 0, project )
@@ -465,11 +467,13 @@ export async function updateManifest({
       }
     }
 
+    // If this is a first release, remove any projects that are not in the books array
     if ( firstRelease ) {
       manifest.projects = manifest.projects.filter( (item) => books.includes(item.identifier))
     }
   }
 
+  // Update the manifest in the release branch
   const updatedRes = await updateManifestInBranch({
     server, organization, languageId, resourceId, tokenid, branch:releaseBranchName, manifest, sha,
   })
@@ -598,7 +602,7 @@ async function deleteAllBookFilesNotInManifest( {
   const resourceTree = trees.tree
 
   for ( const file of resourceTree ) {
-    if ( file.path.endsWith('.tsv') ) {
+    if ( file.path.endsWith('.tsv') || file.path.endsWith('.usfm') ) {
       if ( manifest.projects.some(( elem ) => {
         let path = elem.path
 
