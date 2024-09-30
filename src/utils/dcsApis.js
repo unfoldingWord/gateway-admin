@@ -735,7 +735,7 @@ export async function createRelease({
       })
     }
 
-    if ('tn' === resourceId) {
+    if (!RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId )) {
       // Clean up any old files such as when migrated from TSV9 to TSV7 delete old files.
       await deleteAllBookFilesNotInManifest({
         releaseBranchName,
