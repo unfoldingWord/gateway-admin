@@ -797,16 +797,6 @@ export async function createRelease({
       val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}`
       val.version = nextVersion
 
-      // Update manifest in master after release.
-      if (releaseBranchName !== 'master') {
-        const updatedRes = await updateManifestInBranch({
-          server, organization, languageId, resourceId, tokenid, branch:'master', manifest,
-        })
-
-        if ( ! updatedRes.ok ) {
-          console.warn(`failed to update master manifest.yaml ${updatedRes.status}`)
-        }
-      }
     } else if ( res.status === 404 ) {
       val.status = false
       val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
