@@ -255,12 +255,12 @@ export async function manifestCreate({
   const resourceId = repository.split('_')[1]
   const manifestYaml = getResourceManifest( { resourceId } ).replace(
     `language:
-    direction: 'ltr'
-    identifier: 'en'
-    title: 'English'`,
+    direction: ltr
+    identifier: en
+    title: English`,
     `language:
-    direction: '${language.direction}'
-    identifier: '${language.languageId}'
+    direction: ${language.direction}
+    identifier: ${language.languageId}
     title: '${language.localized}'`,
   ).replaceAll(
     `- en/`, `- ${language.languageId}/`,
