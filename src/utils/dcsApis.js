@@ -262,6 +262,8 @@ export async function manifestCreate({
     direction: '${language.direction}'
     identifier: '${language.languageId}'
     title: '${language.localized}'`,
+  ).replaceAll(
+    `- en/`, `- ${language.languageId}/`,
   )
 
   const content = base64.encode(utf8.encode(manifestYaml))
