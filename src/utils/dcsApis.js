@@ -98,7 +98,7 @@ export async function repoCreate({
     body: `{
       "auto_init": true,
       "default_branch": "master",
-      "description": "Init New Repo by Admin App",
+      "description": "Created by Gateway Admin (this description can be changed)",
       "gitignores": "macOS",
       "issue_labels": "",
       "license": "CC-BY-SA-4.0.md",

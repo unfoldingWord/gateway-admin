@@ -690,6 +690,9 @@ dublin_core:
   relation:
   - en/glt
   - en/gst
+  - en/ta
+  - en/tw
+  - en/twl
   - hbo/uhb?v=2.1.31
   - el-x-koine/ugnt?v=0.34
   rights: CC BY-SA 4.0
