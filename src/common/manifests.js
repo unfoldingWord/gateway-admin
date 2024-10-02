@@ -169,7 +169,7 @@ dublin_core:
   subject: 'TSV OBS Translation Words Links'
   title: 'OBS Translation Words Links'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -214,7 +214,7 @@ dublin_core:
   subject: 'TSV OBS Translation Questions'
   title: 'Open Bible Stories Translation Questions'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -259,7 +259,7 @@ dublin_core:
   subject: 'OBS Study Notes'
   title: 'Open Bible Stories Study Notes'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -305,7 +305,7 @@ dublin_core:
   subject: 'OBS Study Questions'
   title: 'Open Bible Stories Study Questions'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -350,7 +350,7 @@ dublin_core:
   subject: 'OBS Translation Notes'
   title: 'Open Bible Stories Translation Notes'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -399,7 +399,7 @@ dublin_core:
   subject: 'Open Bible Stories'
   title: 'Open Bible Stories'
   type: 'book'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -446,7 +446,7 @@ dublin_core:
   subject: 'TSV Study Questions'
   title: 'Study Questions'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -486,7 +486,7 @@ dublin_core:
   subject: 'TSV Study Notes'
   title: 'Study Notes'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -527,7 +527,7 @@ dublin_core:
   subject: 'TSV Translation Questions'
   title: 'Translation Questions'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -566,7 +566,7 @@ dublin_core:
   subject: 'TSV Translation Words Links'
   title: 'Translation Word Links'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -607,7 +607,7 @@ dublin_core:
   subject: 'Translation Words'
   title: 'Translation Words'
   type: 'dict'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -654,7 +654,7 @@ dublin_core:
   subject: 'Aligned Bible'
   title: 'Simplified Text'
   type: 'bundle'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -696,7 +696,7 @@ dublin_core:
   subject: 'Aligned Bible'
   title: 'Literal Text'
   type: 'bundle'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -736,7 +736,7 @@ dublin_core:
   subject: 'TSV Translation Notes'
   title: 'Translation Notes'
   type: 'help'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
@@ -779,7 +779,7 @@ dublin_core:
   subject: 'Translation Academy'
   title: 'Translation Academy'
   type: 'man'
-  version: '1'
+  version: '0'
 
 checking:
   checking_entity:
