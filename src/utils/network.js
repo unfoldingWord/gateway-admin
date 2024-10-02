@@ -243,12 +243,12 @@ export function onNetworkActionButton(networkError) {
  */
 export function doFetch(url, authentication={}, timeout=HTTP_GET_MAX_WAIT_TIME, noCache=true) {
   const authConfig = authentication?.config || {}
+  console.log(url)
   return get({
     url: url,
     config: {
       ...authConfig,
       timeout: timeout,
-      server: BASE_URL,
     },
     noCache: noCache,
     fullResponse: true,
