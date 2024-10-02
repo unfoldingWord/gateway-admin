@@ -287,7 +287,7 @@ dublin_core:
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical questions that guide discussions about the Open Bible Stories.'
   format: 'text/markdown'
-  identifier: 'en_obs-sq'
+  identifier: 'obs-sq'
   issued: '2024-10-01'
   language:
     direction: 'ltr'
@@ -299,7 +299,7 @@ dublin_core:
     - 'en/obs'
   rights: 'CC BY-SA 4.0'
   source:
-    - identifier: 'en_obs-sq'
+    - identifier: 'obs-sq'
       language: 'en'
       version: '4'
   subject: 'OBS Study Questions'
