@@ -146,32 +146,28 @@ const obs_twl_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-  - 'This list was copied and not necessarily correct for this resource'
-  - 'Door43 World Missions Community'
-  - 'Jesse Griffin (BA Biblical Studies, Liberty University; MA Biblical Languages, Gordon-Conwell Theological Seminary)'
-  - 'Perry Oakes (BA Biblical Studies, Taylor University; MA Theology, Fuller Seminary; MA Linguistics, University of Texas at Arlington; PhD Old Testament, Southwestern Baptist Theological Seminary)'
-  - 'Larry Sallee (Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary)'
-  - 'Joel D. Ruark (M.A.Th. Gordon-Conwell Theological Seminary; Th.M. Stellenbosch University; Ph.D. Candidate in Old Testament Studies, Stellenbosch University)'
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
-  description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
+  description: 'Open-licensed links from particular original languages words to Translation Words articles.'
   format: 'text/tsv'
   identifier: 'obs-twl'
-  issued: '2021-03-22'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-03-22'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
-  - 'en/obs?v=8'
+  - 'en/obs'
   rights: 'CC BY-SA 4.0'
   source:
   - identifier: 'obs-twl'
     language: 'en'
-    version: '0'
+    version: '3'
   subject: 'TSV OBS Translation Words Links'
-  title: 'unfoldingWord® OBS Translation Words Links'
+  title: 'OBS Translation Words Links'
   type: 'help'
   version: '1'
 
@@ -181,13 +177,12 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    title: 'OBS Translation Words Links'
+  - title: 'OBS Translation Words Links'
     versification: 'ufw'
     identifier: 'obs'
     sort: 1
     path: './twl_OBS.tsv'
-    categories: [ ]
+    categories: []
 `
 
 const obs_tq_manifest = `
@@ -196,34 +191,30 @@ const obs_tq_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-    - 'Larry Sallee, Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary'
-    - 'Susan Quigley, MA in Linguistics'
-    - 'Jerrell Hein'
-    - 'Lizz Carlton'
     - 'Door43 World Missions Community'
-  creator: 'unfoldingWord'
-  description: 'Comprehension and theological questions for unfoldingWord® Open Bible Stories. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+  creator: 'Door43 Word Missions Community'
+  description: 'Comprehension and theological questions for Open Bible Stories. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
   format: 'text/tsv'
   identifier: 'obs-tq'
-  issued: '2021-09-29'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-09-29'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
-    - 'en/obs?v=8'
+    - 'en/obs'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'obs-tq'
+    - identifier: 'obs-tq'
       language: 'en'
-      version: '7'
+      version: '9'
   subject: 'TSV OBS Translation Questions'
-  title: 'unfoldingWord® Open Bible Stories Translation Questions'
+  title: 'Open Bible Stories Translation Questions'
   type: 'help'
-  version: '8'
+  version: '1'
 
 checking:
   checking_entity:
@@ -231,12 +222,11 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
     identifier: 'obs'
     path: './tq_OBS.tsv'
     sort: 0
-    title: 'unfoldingWord® Open Bible Stories Translation Questions'
+    title: 'Open Bible Stories Translation Questions'
     versification: "ufw"
 `
 
@@ -246,29 +236,30 @@ const obs_sn_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-  creator: 'unfoldingWord'
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+  creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical study notes that help people understand the Open Bible Stories.'
   format: 'text/markdown'
-  identifier: 'en_obs-sn'
-  issued: '2020-05-01'
+  identifier: 'obs-sn'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2020-05-01'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
-    - 'en/obs?v=8'
+    - 'en/obs'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'en_obs-sn'
+    - identifier: 'obs-sn'
       language: 'en'
-      version: '3'
+      version: '5'
   subject: 'OBS Study Notes'
-  title: 'unfoldingWord® Open Bible Stories Study Notes'
+  title: 'Open Bible Stories Study Notes'
   type: 'help'
-  version: '4'
+  version: '1'
 
 checking:
   checking_entity:
@@ -276,12 +267,11 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
     identifier: 'obs'
     path: './sn_OBS.tsv'
     sort: 0
-    title: 'unfoldingWord® Open Bible Stories Study Notes'
+    title: 'Open Bible Stories Study Notes'
     versification: 'ufw'
 `
 
@@ -292,29 +282,30 @@ const obs_sq_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-  creator: 'unfoldingWord'
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+  creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical questions that guide discussions about the Open Bible Stories.'
   format: 'text/markdown'
   identifier: 'en_obs-sq'
-  issued: '2020-04-24'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2020-04-24'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
-    - 'en/obs?v=8'
+    - 'en/obs'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'en_obs-sq'
+    - identifier: 'en_obs-sq'
       language: 'en'
-      version: '2'
+      version: '4'
   subject: 'OBS Study Questions'
-  title: 'unfoldingWord® Open Bible Stories Study Questions'
+  title: 'Open Bible Stories Study Questions'
   type: 'help'
-  version: '3'
+  version: '1'
 
 checking:
   checking_entity:
@@ -322,12 +313,11 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
     identifier: 'obs'
     path: './sq_OBS.tsv'
     sort: 0
-    title: 'unfoldingWord® Open Bible Stories Study Questions'
+    title: 'Open Bible Stories Study Questions'
     versification: 'ufw'
 `
 
@@ -337,29 +327,30 @@ const obs_tn_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-  creator: 'unfoldingWord'
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+  creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
   format: 'text/markdown'
   identifier: 'obs-tn'
-  issued: '2020-05-01'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2020-05-01'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
-    - 'en/obs?v=8'
+    - 'en/obs'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'obs-tn'
+    - identifier: 'obs-tn'
       language: 'en'
-      version: '8'
+      version: '12'
   subject: 'OBS Translation Notes'
-  title: 'unfoldingWord® Open Bible Stories Translation Notes'
+  title: 'Open Bible Stories Translation Notes'
   type: 'help'
-  version: '9'
+  version: '1'
 
 checking:
   checking_entity:
@@ -367,12 +358,11 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
     identifier: 'obs'
     path: './tn_OBS.tsv'
     sort: 1
-    title: 'unfoldingWord® Open Bible Stories Translation Notes'
+    title: 'Open Bible Stories Translation Notes'
     versification: "ufw"
 `
 
@@ -382,17 +372,19 @@ const obs_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-  creator: 'unfoldingWord'
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+  creator: 'Door43 World Missions Community'
   description: 'Unrestricted visual Bible stories–50 key stories of the Bible, from Creation to Revelation, in text, audio, and video, in any language, for free. It increases understanding of the historical and redemptive narrative of the entire Bible.'
   format: 'text/markdown'
   identifier: 'obs'
-  issued: '2020-04-24'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2020-04-24'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/tw'
     - 'en/obs-tq'
@@ -401,14 +393,13 @@ dublin_core:
     - 'en/obs-sq'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'obs'
+    - identifier: 'obs'
       language: 'en'
-      version: '7'
+      version: '9'
   subject: 'Open Bible Stories'
-  title: 'unfoldingWord® Open Bible Stories'
+  title: 'Open Bible Stories'
   type: 'book'
-  version: '8'
+  version: '1'
 
 checking:
   checking_entity:
@@ -416,12 +407,11 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
     identifier: 'obs'
     path: './content'
     sort: 0
-    title: 'unfoldingWord® Open Bible Stories'
+    title: 'Open Bible Stories'
     versification:
 `
 
@@ -432,28 +422,29 @@ const sq_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'Comprehension and theological questions for each chapter of the Bible.'
   format: 'text/markdown'
-  identifier: 'tq'
-  issued: '2021-03-10'
+  identifier: 'sq'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-03-10'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/ult'
     - 'en/ust'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'sq'
+    - identifier: 'sq'
       language: 'en'
-      version: '0'
+      version: '1'
   subject: 'TSV Study Questions'
-  title: 'unfoldingWord® Study Questions'
+  title: 'Study Questions'
   type: 'help'
   version: '1'
 
@@ -470,28 +461,30 @@ const sn_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical study notes that provide historical, cultural, and linguistic information for studying the Bible.'
   format: 'text/tsv'
   identifier: 'sn'
-  issued: '2021-03-10'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-03-10'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
   - 'en/ult'
-  - 'el-x-koine/ugnt?v=0.18'
-  - 'hbo/uhb?v=2.1.17'
+  - 'el-x-koine/ugnt?v=0.34'
+  - 'hbo/uhb?v=2.1.31'
   rights: 'CC BY-SA 4.0'
   source:
   - identifier: 'sn'
     language: 'en'
-    version: '0'
+    version: '1'
   subject: 'TSV Study Notes'
-  title: 'unfoldingWord® Study Notes'
+  title: 'Study Notes'
   type: 'help'
   version: '1'
 
@@ -510,30 +503,31 @@ const tq_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'Comprehension and theological questions for each chapter of the Bible. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
   format: 'text/tsv'
   identifier: 'tq'
-  issued: '2021-03-10'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-03-10'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/ult'
     - 'en/ust'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'tq'
+    - identifier: 'tq'
       language: 'en'
-      version: '17'
+      version: '84'
   subject: 'TSV Translation Questions'
-  title: 'unfoldingWord® Translation Questions'
+  title: 'Translation Questions'
   type: 'help'
-  version: '18'
+  version: '1'
 
 checking:
   checking_entity:
@@ -548,27 +542,29 @@ const twl_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
   format: 'text/tsv'
   identifier: 'twl'
-  issued: '2021-03-10'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-03-10'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
-  - 'el-x-koine/ugnt?v=0.18'
-  - 'hbo/uhb?v=2.1.17'
+  - 'el-x-koine/ugnt?v=0.34'
+  - 'hbo/uhb?v=2.1.31'
   rights: 'CC BY-SA 4.0'
   source:
   - identifier: 'twl'
     language: 'en'
-    version: '0'
+    version: '84'
   subject: 'TSV Translation Words Links'
-  title: 'unfoldingWord® Translation Word Links'
+  title: 'Translation Word Links'
   type: 'help'
   version: '1'
 
@@ -584,33 +580,34 @@ const tw_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'A basic Bible lexicon that provides translators with clear, concise definitions and translation suggestions for every important word in the Bible. It provides translators and checkers with essential lexical information to help them make the best possible translation decisions.'
   format: 'text/markdown'
   identifier: 'tw'
-  issued: '2021-02-22'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-02-22'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/ult'
     - 'en/ust'
     - 'en/obs'
-    - 'el-x-koine/ugnt?v=0.18'
-    - 'hbo/uhb?v=2.1.17'
+    - 'el-x-koine/ugnt?v=0.34'
+    - 'hbo/uhb?v=2.1.31'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'tw'
+    - identifier: 'tw'
       language: 'en'
-      version: '20'
+      version: '84'
   subject: 'Translation Words'
-  title: 'unfoldingWord® Translation Words'
+  title: 'Translation Words'
   type: 'dict'
-  version: '21'
+  version: '1'
 
 checking:
   checking_entity:
@@ -618,12 +615,11 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
     identifier: 'bible'
     path: './bible'
     sort: 0
-    title: 'unfoldingWord® Translation Words'
+    title: 'Translation Words'
     versification:
 `
 
@@ -633,39 +629,32 @@ const st_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: "An open-licensed translation, intended to provide a 'functional' understanding of the Bible. It increases the translator’s understanding of the text by translating theological terms as descriptive phrases."
   format: 'text/usfm3'
-  identifier: 'ust'
-  issued: '2021-02-22'
+  identifier: 'gst'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-02-22'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/tw'
     - 'en/tq'
     - 'en/tn'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 't4t'
+    - identifier: 'ust'
       language: 'en'
-      version: '2014'
-    -
-      identifier: 'uhb'
-      language: 'hbo'
-      version: '2.1.17'
-    -
-      identifier: 'ugnt'
-      language: 'el-x-koine'
-      version: '0.18'
+      version: '84'
   subject: 'Aligned Bible'
-  title: 'unfoldingWord® Simplified Text'
+  title: 'Simplified Text'
   type: 'bundle'
-  version: '23'
+  version: '1'
 
 checking:
   checking_entity:
@@ -682,39 +671,32 @@ const lt_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
-  creator: 'unfoldingWord'
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+  creator: 'Door43 World Missions Community'
   description: "An open-licensed update of the ASV, intended to provide a 'form-centric' understanding of the Bible. It increases the translator's understanding of the lexical and grammatical composition of the underlying text by adhering closely to the word order and structure of the originals."
   format: 'text/usfm3'
-  identifier: 'ult'
-  issued: '2021-02-22'
+  identifier: 'glt'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-02-22'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/tw'
     - 'en/tq'
     - 'en/tn'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'asv'
+    - identifier: 'ult'
       language: 'en'
-      version: '1901'
-    -
-      identifier: 'uhb'
-      language: 'hbo'
-      version: '2.1.17'
-    -
-      identifier: 'ugnt'
-      language: 'el-x-koine'
-      version: '0.18'
+      version: '84'
   subject: 'Aligned Bible'
-  title: 'unfoldingWord® Literal Text'
+  title: 'Literal Text'
   type: 'bundle'
-  version: '23'
+  version: '1'
 
 checking:
   checking_entity:
@@ -729,30 +711,32 @@ const tn_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
   format: 'text/tsv'
   identifier: 'tn'
-  issued: '2021-02-22'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2021-02-22'
-  publisher: 'unfoldingWord'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
   - 'en/ult'
-  - 'hbo/uhb?v=2.1.17'
-  - 'el-x-koine/ugnt?v=0.18'
+  - 'hbo/uhb?v=2.1.31'
+  - 'el-x-koine/ugnt?v=0.34'
   rights: 'CC BY-SA 4.0'
   source:
   - identifier: 'tn'
     language: 'en'
-    version: '43'
+    version: '84'
   subject: 'TSV Translation Notes'
-  title: 'unfoldingWord® Translation Notes'
+  title: 'Translation Notes'
   type: 'help'
-  version: '44'
+  version: '1'
 
 checking:
   checking_entity:
@@ -769,17 +753,19 @@ const ta_manifest =
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
+    - 'Door43 World Missions Community'
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
   creator: 'Door43 World Missions Community'
   description: 'A modular handbook that provides a condensed explanation of Bible translation and checking principles that the global Church has implicitly affirmed define trustworthy translations. It enables translators to learn how to create trustworthy translations of the Bible in their own language.'
   format: 'text/markdown'
   identifier: 'ta'
-  issued: '2020-06-09'
+  issued: '2024-10-01'
   language:
     direction: 'ltr'
     identifier: 'en'
     title: 'English'
-  modified: '2020-06-09'
-  publisher: 'unfoldingWord®'
+  modified: '2024-10-01'
+  publisher: 'Door43 World Missions Community'
   relation:
     - 'en/ust'
     - 'en/ult'
@@ -787,14 +773,13 @@ dublin_core:
     - 'en/tw'
   rights: 'CC BY-SA 4.0'
   source:
-    -
-      identifier: 'ta'
+    - identifier: 'ta'
       language: 'en'
-      version: '12'
+      version: '84'
   subject: 'Translation Academy'
-  title: 'unfoldingWord® Translation Academy'
+  title: 'Translation Academy'
   type: 'man'
-  version: '13'
+  version: '1'
 
 checking:
   checking_entity:
@@ -802,32 +787,28 @@ checking:
   checking_level: '2'
 
 projects:
-  -
-    categories:
+  - categories:
       - 'ta'
     identifier: 'intro'
     path: './intro'
     sort: 0
-    title: 'Introduction to unfoldingWord® Translation Academy'
+    title: 'Introduction to Translation Academy'
     versification:
-  -
-    categories:
+  - categories:
       - 'ta'
     identifier: 'process'
     path: './process'
     sort: 1
     title: 'Process Manual'
     versification:
-  -
-    categories:
+  - categories:
       - 'ta'
     identifier: 'translate'
     path: './translate'
     sort: 2
     title: 'Translation Manual'
     versification:
-  -
-    categories:
+  - categories:
       - 'ta'
     identifier: 'checking'
     path: './checking'
