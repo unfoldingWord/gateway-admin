@@ -105,7 +105,7 @@ export async function repoCreate({
       "name": "${repository}",
       "private": false,
       "readme": "",
-      "template": true,
+      "template": false,
       "trust_model": "default"
     }`,
   })

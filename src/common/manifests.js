@@ -147,7 +147,7 @@ dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed links from particular original languages words to Translation Words articles.'
   format: 'text/tsv'
@@ -170,12 +170,10 @@ dublin_core:
   title: 'OBS Translation Words Links'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
   - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - title: 'OBS Translation Words Links'
     versification: 'ufw'
@@ -187,12 +185,11 @@ projects:
 
 const obs_tq_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 Word Missions Community'
   description: 'Comprehension and theological questions for Open Bible Stories. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
   format: 'text/tsv'
@@ -215,12 +212,10 @@ dublin_core:
   title: 'Open Bible Stories Translation Questions'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - categories:
     identifier: 'obs'
@@ -232,12 +227,11 @@ projects:
 
 const obs_sn_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical study notes that help people understand the Open Bible Stories.'
   format: 'text/markdown'
@@ -260,12 +254,10 @@ dublin_core:
   title: 'Open Bible Stories Study Notes'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - categories:
     identifier: 'obs'
@@ -278,12 +270,11 @@ projects:
 
 const obs_sq_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical questions that guide discussions about the Open Bible Stories.'
   format: 'text/markdown'
@@ -306,12 +297,10 @@ dublin_core:
   title: 'Open Bible Stories Study Questions'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - categories:
     identifier: 'obs'
@@ -323,12 +312,11 @@ projects:
 
 const obs_tn_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
   format: 'text/markdown'
@@ -351,12 +339,10 @@ dublin_core:
   title: 'Open Bible Stories Translation Notes'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - categories:
     identifier: 'obs'
@@ -368,12 +354,11 @@ projects:
 
 const obs_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Unrestricted visual Bible stories–50 key stories of the Bible, from Creation to Revelation, in text, audio, and video, in any language, for free. It increases understanding of the historical and redemptive narrative of the entire Bible.'
   format: 'text/markdown'
@@ -400,12 +385,10 @@ dublin_core:
   title: 'Open Bible Stories'
   type: 'book'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - categories:
     identifier: 'obs'
@@ -418,12 +401,11 @@ projects:
 
 const sq_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Comprehension and theological questions for each chapter of the Bible.'
   format: 'text/markdown'
@@ -447,14 +429,11 @@ dublin_core:
   title: 'Study Questions'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 
 const sn_manifest = `
@@ -462,7 +441,7 @@ dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical study notes that provide historical, cultural, and linguistic information for studying the Bible.'
   format: 'text/tsv'
@@ -487,24 +466,20 @@ dublin_core:
   title: 'Study Notes'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
   - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 
 const tq_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Comprehension and theological questions for each chapter of the Bible. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
   format: 'text/tsv'
@@ -528,14 +503,11 @@ dublin_core:
   title: 'Translation Questions'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 
 const twl_manifest = `
@@ -543,7 +515,7 @@ dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
   format: 'text/tsv'
@@ -567,21 +539,18 @@ dublin_core:
   title: 'Translation Word Links'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
   - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 const tw_manifest = `
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'A basic Bible lexicon that provides translators with clear, concise definitions and translation suggestions for every important word in the Bible. It provides translators and checkers with essential lexical information to help them make the best possible translation decisions.'
   format: 'text/markdown'
@@ -608,12 +577,10 @@ dublin_core:
   title: 'Translation Words'
   type: 'dict'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
 projects:
   - categories:
     identifier: 'bible'
@@ -625,14 +592,13 @@ projects:
 
 const st_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
-  description: "An open-licensed translation, intended to provide a 'functional' understanding of the Bible. It increases the translator’s understanding of the text by translating theological terms as descriptive phrases."
+  description: "An open-licensed translation, intended to provide a 'functional' understanding of the Bible. It increases the translator's understanding of the text by translating theological terms as descriptive phrases."
   format: 'text/usfm3'
   identifier: 'gst'
   issued: '2024-10-01'
@@ -655,24 +621,20 @@ dublin_core:
   title: 'Simplified Text'
   type: 'bundle'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 
 const lt_manifest = `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: "An open-licensed update of the ASV, intended to provide a 'form-centric' understanding of the Bible. It increases the translator's understanding of the lexical and grammatical composition of the underlying text by adhering closely to the word order and structure of the originals."
   format: 'text/usfm3'
@@ -697,14 +659,11 @@ dublin_core:
   title: 'Literal Text'
   type: 'bundle'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 
 const tn_manifest = `
@@ -712,7 +671,7 @@ dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'Open-licensed exegetical notes that provide historical, cultural, and linguistic information for translators. It provides translators and checkers with pertinent, just-in-time information to help them make the best possible translation decisions.'
   format: 'text/tsv'
@@ -737,24 +696,20 @@ dublin_core:
   title: 'Translation Notes'
   type: 'help'
   version: '0'
-
 checking:
   checking_entity:
   - 'unfoldingWord'
   checking_level: '2'
-
-projects:
-  -
+projects: []
 `
 const ta_manifest =
 `
 ---
-
 dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Door43 World Missions Community'
-    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)
+    - '(remove these two entries and replace with your own contributors, or change this to contributor: null)'
   creator: 'Door43 World Missions Community'
   description: 'A modular handbook that provides a condensed explanation of Bible translation and checking principles that the global Church has implicitly affirmed define trustworthy translations. It enables translators to learn how to create trustworthy translations of the Bible in their own language.'
   format: 'text/markdown'
@@ -780,12 +735,10 @@ dublin_core:
   title: 'Translation Academy'
   type: 'man'
   version: '0'
-
 checking:
   checking_entity:
     - 'unfoldingWord®'
   checking_level: '2'
-
 projects:
   - categories:
       - 'ta'
