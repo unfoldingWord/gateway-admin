@@ -796,16 +796,15 @@ export async function createRelease({
 
     if ( res.status === 201 ) {
       val.status = true
-      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}`
+      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}.`
       val.version = nextVersion
-
     } else if ( res.status === 404 ) {
       val.status = false
-      val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
+      val.message = `Repo does not exist (404): ${languageId}_${resourceId}.`
     } else {
       val.status = false
       const body = await res.json()
-      val.message = `Unexpected response: status ${res.status}, message ${body.message}`
+      val.message = `Unexpected response: status ${res.status}, message ${body.message}.`
     }
   } catch (e) {
     const message = e?.message

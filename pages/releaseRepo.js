@@ -173,7 +173,7 @@ const ReleasePage = () => {
         } )
 
         console.log( `finished ${ index } with ${ result.message }` )
-        _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { result.message }
+        _releaseMessages[ index ] = <span key={ index }>{ resourceId } result: { result.message }
           { result.version ?
             <Link target="_blank"
               href={ server + '/' + organization + '/' + languageId + '_' + resourceIdMapper( organization, resourceId ) + '/releases/tag/' + result.version }> View { result.version } release</Link> : ''
