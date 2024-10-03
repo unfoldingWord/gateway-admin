@@ -818,7 +818,7 @@ export async function createRelease({
       e,
     )
     val.status = false
-    val.message = `Error: Disconnected=${disconnected}, Error: ${message}`
+    val.message = `Error: ${message}`
   }
   return val
 }
