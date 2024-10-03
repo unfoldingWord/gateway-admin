@@ -286,7 +286,7 @@ export default function ReleaseSettings() {
                           <span>{name}</span>
                         </Grid>
                         <Grid item>
-                          <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)+(currentVersions.get(id) != 'none' ? '/releases/tag/'+currentVersions.get(id) : '')}</Link>
+                          <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id) + (currentVersions.get(id) && currentVersions.get(id) != 'none' ? '/releases/tag/'+currentVersions.get(id) : '')}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link>
                         </Grid>
                         <Grid item>
                           <span>Latest Release: {currentVersions.get(id)}</span>
