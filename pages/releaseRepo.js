@@ -149,7 +149,7 @@ const ReleasePage = () => {
         realResourceIds = resourceIds
       }
 
-      const _releaseMessages = realResourceIds.map((resourceId, index) => <span key={index}>Releasing {resourceId} <CircularProgress key={resourceId} size={20} style={{ paddingLeft: '10px' }}/></span>)
+      const _releaseMessages = realResourceIds.map((resourceId, index) => <span key={index}>Releasing {resourceId} <CircularProgress key={resourceId} size={40} style={{ paddingLeft: '10px' }}/></span>)
       setReleaseMessages(_releaseMessages)
 
       console.log('releasing .........')
