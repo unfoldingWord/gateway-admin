@@ -205,9 +205,9 @@ const ReleasePage = () => {
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
           <h1 className='mx-4'>Release Resources</h1>
           <ReleaseSettings />
-          <Paper className='flex flex-col h-90 w-full p-6 pt-3 my-2'>
+          {releaseMessages?.length ? <Paper className='flex flex-col h-90 w-full p-6 pt-3 my-2'>
             {releaseMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)}
-          </Paper>
+          </Paper> : ''}
           <div className='flex justify-end'>
             <Button
               size='large'
