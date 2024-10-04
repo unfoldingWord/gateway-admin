@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Paper from 'translation-helps-rcl/dist/components/Paper'
 import { AuthenticationContext } from 'gitea-react-toolkit'
 import Layout from '@components/Layout'
 import ReleaseSettings from '@components/ReleaseSettings'
@@ -148,7 +149,7 @@ const ReleasePage = () => {
         realResourceIds = resourceIds
       }
 
-      const _releaseMessages = realResourceIds.map((resourceId, index) => <span key={index}>Releasing {resourceId}<CircularProgress key={resourceId}/></span>)
+      const _releaseMessages = realResourceIds.map((resourceId, index) => <span key={index}>Releasing {resourceId} <CircularProgress key={resourceId} size={40} style={{ paddingLeft: '10px' }}/></span>)
       setReleaseMessages(_releaseMessages)
 
       console.log('releasing .........')
@@ -172,7 +173,7 @@ const ReleasePage = () => {
         } )
 
         console.log( `finished ${ index } with ${ result.message }` )
-        _releaseMessages[ index ] = <span key={ index }>{ resourceId } Result { result.message }
+        _releaseMessages[ index ] = <span key={ index }>{ resourceId } result: { result.message }
           { result.version ?
             <Link target="_blank"
               href={ server + '/' + organization + '/' + languageId + '_' + resourceIdMapper( organization, resourceId ) + '/releases/tag/' + result.version }> View { result.version } release</Link> : ''
@@ -204,7 +205,9 @@ const ReleasePage = () => {
         <div className='flex flex-col w-full px-4 lg:w-132 lg:p-0'>
           <h1 className='mx-4'>Release Resources</h1>
           <ReleaseSettings />
-          {releaseMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)}
+          {releaseMessages?.length ? <Paper className='flex flex-col h-90 w-full p-6 pt-3 my-2'>
+            {releaseMessages.map((message, i) => <h2 className='mx-4' key={i}>{message}</h2>)}
+          </Paper> : ''}
           <div className='flex justify-end'>
             <Button
               size='large'

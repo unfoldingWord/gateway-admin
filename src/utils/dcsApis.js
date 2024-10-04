@@ -98,14 +98,14 @@ export async function repoCreate({
     body: `{
       "auto_init": true,
       "default_branch": "master",
-      "description": "Init New Repo by Admin App",
+      "description": "Created by Gateway Admin (this description can be changed)",
       "gitignores": "macOS",
       "issue_labels": "",
       "license": "CC-BY-SA-4.0.md",
       "name": "${repository}",
       "private": false,
       "readme": "",
-      "template": true,
+      "template": false,
       "trust_model": "default"
     }`,
   })
@@ -255,13 +255,15 @@ export async function manifestCreate({
   const resourceId = repository.split('_')[1]
   const manifestYaml = getResourceManifest( { resourceId } ).replace(
     `language:
-    direction: 'ltr'
-    identifier: 'en'
-    title: 'English'`,
+    direction: ltr
+    identifier: en
+    title: English`,
     `language:
-    direction: '${language.direction}'
-    identifier: '${language.languageId}'
+    direction: ${language.direction}
+    identifier: ${language.languageId}
     title: '${language.localized}'`,
+  ).replaceAll(
+    `- en/`, `- ${language.languageId}/`,
   )
 
   const content = base64.encode(utf8.encode(manifestYaml))
@@ -794,16 +796,15 @@ export async function createRelease({
 
     if ( res.status === 201 ) {
       val.status = true
-      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}`
+      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}.`
       val.version = nextVersion
-
     } else if ( res.status === 404 ) {
       val.status = false
-      val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
+      val.message = `Repo does not exist (404): ${languageId}_${resourceId}.`
     } else {
       val.status = false
       const body = await res.json()
-      val.message = `Unexpected response: status ${res.status}, message ${body.message}`
+      val.message = `Unexpected response: status ${res.status}, message ${body.message}.`
     }
   } catch (e) {
     const message = e?.message
@@ -817,7 +818,7 @@ export async function createRelease({
       e,
     )
     val.status = false
-    val.message = `Error: Disconnected=${disconnected}, Error: ${message}`
+    val.message = `Error: ${message}`
   }
   return val
 }
