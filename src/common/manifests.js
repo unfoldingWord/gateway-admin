@@ -209,7 +209,7 @@ dublin_core:
       language: en
       version: '9'
   subject: TSV OBS Translation Questions
-  title: Open Bible Stories Translation Questions
+  title: OBS Translation Questions
   type: help
   version: '0'
 checking:
@@ -221,7 +221,7 @@ projects:
     identifier: obs
     path: ./tq_OBS.tsv
     sort: 0
-    title: Open Bible Stories Translation Questions
+    title: OBS Translation Questions
     versification: ufw
 `
 
@@ -336,7 +336,7 @@ dublin_core:
       language: en
       version: '12'
   subject: OBS Translation Notes
-  title: Open Bible Stories Translation Notes
+  title: OBS Translation Notes
   type: help
   version: '0'
 checking:
@@ -348,7 +348,7 @@ projects:
     identifier: obs
     path: ./tn_OBS.tsv
     sort: 1
-    title: Open Bible Stories Translation Notes
+    title: OBS Translation Notes
     versification: ufw
 `
 
