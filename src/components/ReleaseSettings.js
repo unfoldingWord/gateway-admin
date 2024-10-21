@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import {
-  Grid, Link, Box, Divider, Container,
+  Grid, Link,
 } from '@material-ui/core'
 import Checkbox from '@material-ui/core/Checkbox'
 
@@ -273,33 +273,57 @@ export default function ReleaseSettings() {
               </Paper>
             </Grid>
           </Grid>
-          <FormControl required component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Select Resources</FormLabel>
+          <FormControl
+            required
+            component='fieldset'
+            className={classes.formControl}
+          >
+            <FormLabel component='legend'>Select Resources</FormLabel>
             <FormGroup>
-              {resources.map( ({ id,name }) =>
-                <>
-                  <FormControlLabel
-                    control={<Checkbox checked={releaseResources.get(id) || false} onChange={handleResourceChange} name={id} />}
-                    label={
-                      <Grid container spacing={6} direction="row">
-                        <Grid item>
-                          <span>{name}</span>
-                        </Grid>
-                        <Grid item>
-                          <Link target="_blank" href={server + '/' + organization + '/' + languageId + '_' + resourceIdMapper(organization, id)}>{organization+'/'+languageId + '_' + resourceIdMapper(organization, id)}</Link>
-                        </Grid>
-                        <Grid item>
-                          <span>Latest Release: {currentVersions.get(id)}</span>
-                        </Grid>
-                      </Grid>} key={id}
-                  />
-                </>
-                ,
-              )}
+              {resources.map(({ id, name }) => (
+                <Grid container spacing={2} direction='row' key={id}
+                  onClick={() =>
+                    handleResourceChange({ target: { name: id, checked: !releaseResources.get(id) } })
+                  }
+                >
+                  <Grid item xs={4} style={{ margin: 'auto' }}>
+                    <Checkbox
+                      checked={releaseResources.get(id) || false}
+                      onChange={handleResourceChange}
+                      name={id}
+                    />
+                    {name}
+                  </Grid>
+                  <Grid item xs={4} style={{ margin: 'auto' }}>
+                    <Link
+                      target='_blank'
+                      href={`${server}/${organization}/${languageId}_${resourceIdMapper(organization, id)}`}
+                    >
+                      {`${organization}/${languageId}_${resourceIdMapper(organization, id)}`}
+                    </Link>
+                  </Grid>
+                  <Grid item xs={4} style={{ margin: 'auto' }}>
+                    <span>
+                      Latest Release:{' '}
+                      {currentVersions.get(id) &&
+                      currentVersions.get(id) !== 'none' ? (
+                          <Link
+                            target='_blank'
+                            href={`${server}/${organization}/${languageId}_${resourceIdMapper(organization, id)}/releases/tag/${currentVersions.get(id)}`}
+                          >
+                            {currentVersions.get(id)}
+                          </Link>
+                        ) : (
+                          'none'
+                        )}
+                    </span>
+                  </Grid>
+                </Grid>
+              ))}
             </FormGroup>
             <FormHelperText />
           </FormControl>
-          {bookSelectionMessage ? <Alert severity="warning">{bookSelectionMessage}</Alert> : '' }
+          {bookSelectionMessage ? <Alert severity="warning" style={{ marginBottom: '20px' }}>{bookSelectionMessage}</Alert> : '' }
           <FormControl>
             <FormLabel id="release-type-radio-buttons-group-label">Release Type</FormLabel>
             <RadioGroup

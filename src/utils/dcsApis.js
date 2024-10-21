@@ -98,14 +98,14 @@ export async function repoCreate({
     body: `{
       "auto_init": true,
       "default_branch": "master",
-      "description": "Init New Repo by Admin App",
+      "description": "Created by Gateway Admin (this description can be changed)",
       "gitignores": "macOS",
       "issue_labels": "",
       "license": "CC-BY-SA-4.0.md",
       "name": "${repository}",
       "private": false,
       "readme": "",
-      "template": true,
+      "template": false,
       "trust_model": "default"
     }`,
   })
@@ -255,13 +255,15 @@ export async function manifestCreate({
   const resourceId = repository.split('_')[1]
   const manifestYaml = getResourceManifest( { resourceId } ).replace(
     `language:
-    direction: 'ltr'
-    identifier: 'en'
-    title: 'English'`,
+    direction: ltr
+    identifier: en
+    title: English`,
     `language:
-    direction: '${language.direction}'
-    identifier: '${language.languageId}'
+    direction: ${language.direction}
+    identifier: ${language.languageId}
     title: '${language.localized}'`,
+  ).replaceAll(
+    `- en/`, `- ${language.languageId}/`,
   )
 
   const content = base64.encode(utf8.encode(manifestYaml))
@@ -452,12 +454,14 @@ export async function updateManifest({
   }
 
   if ( ! RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId ) ) {
-    for ( let bookId of books ) {
+    for (let bookId of books) {
+      // If the book is not in the manifest, add it
       if ( !manifest.projects.find( ( item ) => item.identifier === bookId ) ) {
         const project = getProject( {
           bookId, resourceId, languageId,
         } )
 
+        // If the project has a path, add it to the manifest
         if ( project.path ) {
           const index = manifest.projects.findLastIndex( ( item ) => item.sort > project.sort )
           manifest.projects.splice( index, 0, project )
@@ -465,11 +469,13 @@ export async function updateManifest({
       }
     }
 
+    // If this is a first release, remove any projects that are not in the books array
     if ( firstRelease ) {
       manifest.projects = manifest.projects.filter( (item) => books.includes(item.identifier))
     }
   }
 
+  // Update the manifest in the release branch
   const updatedRes = await updateManifestInBranch({
     server, organization, languageId, resourceId, tokenid, branch:releaseBranchName, manifest, sha,
   })
@@ -598,7 +604,7 @@ async function deleteAllBookFilesNotInManifest( {
   const resourceTree = trees.tree
 
   for ( const file of resourceTree ) {
-    if ( file.path.endsWith('.tsv') ) {
+    if ( file.path.endsWith('.tsv') || file.path.endsWith('.usfm') ) {
       if ( manifest.projects.some(( elem ) => {
         let path = elem.path
 
@@ -731,7 +737,7 @@ export async function createRelease({
       })
     }
 
-    if ('tn' === resourceId) {
+    if (!RESOURCES_WITH_NO_BOOK_FILES.includes( resourceId )) {
       // Clean up any old files such as when migrated from TSV9 to TSV7 delete old files.
       await deleteAllBookFilesNotInManifest({
         releaseBranchName,
@@ -790,26 +796,15 @@ export async function createRelease({
 
     if ( res.status === 201 ) {
       val.status = true
-      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}`
+      val.message = `Created release ${nextVersion} of ${languageId}_${resourceId}.`
       val.version = nextVersion
-
-      // Update manifest in master after release.
-      if (releaseBranchName !== 'master') {
-        const updatedRes = await updateManifestInBranch({
-          server, organization, languageId, resourceId, tokenid, branch:'master', manifest,
-        })
-
-        if ( ! updatedRes.ok ) {
-          console.warn(`failed to update master manifest.yaml ${updatedRes.status}`)
-        }
-      }
     } else if ( res.status === 404 ) {
       val.status = false
-      val.message = `Repo does not exist (404): ${languageId}_${resourceId}`
+      val.message = `Repo does not exist (404): ${languageId}_${resourceId}.`
     } else {
       val.status = false
       const body = await res.json()
-      val.message = `Unexpected response: status ${res.status}, message ${body.message}`
+      val.message = `Unexpected response: status ${res.status}, message ${body.message}.`
     }
   } catch (e) {
     const message = e?.message
@@ -823,7 +818,7 @@ export async function createRelease({
       e,
     )
     val.status = false
-    val.message = `Error: Disconnected=${disconnected}, Error: ${message}`
+    val.message = `Error: ${message}`
   }
   return val
 }
