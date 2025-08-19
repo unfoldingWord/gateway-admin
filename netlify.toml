@@ -1,6 +1,5 @@
 [build]
-  command = "NODE_OPTIONS=--openssl-legacy-provider
-npm run build npm run build"
+  command = "NODE_OPTIONS=--openssl-legacy-provider npm run build npm run build"
   publish = "out"
 
 [[plugins]]
