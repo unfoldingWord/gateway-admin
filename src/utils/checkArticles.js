@@ -162,7 +162,7 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
     // and in column 4 for the 9 column format. 
     // Note that in 9 the value is not an rc link, but just the bare articel name
     for (let i = 0; i < tnTable.length; i++) {
-      let rclink = tnTable[i][tnColumn]?.trim()
+      let rclink = tnTable[i][tnColumn]?.trim() || ""
       if (rclink === "") { continue }
       if (processed.includes(rclink)) { continue }
       processed.push(rclink)
