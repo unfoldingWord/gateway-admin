@@ -1,9 +1,16 @@
 [build]
-  command = "NODE_OPTIONS=--openssl-legacy-provider npm run build npm run build"
-  publish = "out"
+  command = "yarn build"
+  publish = ".next"
 
+[build.environment]
+  # Next 10 / webpack 4 breaks on OpenSSL 3 (Node 17+); Node 18 supports this flag.
+  NODE_VERSION = "18"
+  NODE_OPTIONS = "--openssl-legacy-provider"
+
+# Pinned to v4 in package.json devDependencies. v5 requires Next 13.5+ and
+# would fail on this Next 10 app; without a pin Netlify auto-installs v5.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
 [[plugins]]
-  package = "/scripts/zulip-notification"
+  package = "./scripts/zulip-notification"
