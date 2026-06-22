@@ -37,7 +37,7 @@
     "tc-ui-toolkit": "5.3.3",
     "translation-helps-rcl": "3.1.0",
     "use-deep-compare-effect": "^1.8.1",
-    "uw-content-validation": "3.2.1",
+    "uw-content-validation": "3.2.2",
     "uw-tsv-parser": "1.0.3",
     "word-aligner": "^1.1.1"
   },
