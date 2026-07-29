@@ -22,6 +22,7 @@ import { HTTP_CONFIG } from '@common/constants'
 import NetworkErrorPopup from '@components/NetworkErrorPopUp'
 import RepoValidationCard from './RepoValidationCard'
 import RepoObsValidationCard from './RepoObsValidationCard'
+import TranslationContextControl from './TranslationContextControl'
 import { clearCaches } from '@utils/fetchCache'
 
 const useStyles = makeStyles(() => ({
@@ -160,6 +161,8 @@ function RepoValidation() {
         <CircularProgress size={180} />
       </>
       :
+        <>
+        <TranslationContextControl server={server} owner={owner} />
         <Workspace
           layout={currentLayout}
           classes={classes}
@@ -253,6 +256,7 @@ function RepoValidation() {
             )
           }
         </Workspace>
+        </>
   )
 }
 
