@@ -173,9 +173,9 @@ export async function checkTaForBook(authentication, bookId, languageId, owner, 
         console.warn("malformed rc link to TA:", _rclink)
         _absent.push(_rclink)
       } else {
-        if (_rclink.startsWith("translate/")) {
-          // do nothing... already there
-        } else {
+        // an rc link already names its tA manual (e.g. translate/figs-metaphor
+        // or checking/headings); only a bare article name needs the default
+        if (!_rclink.includes("/")) {
           _rclink = "translate/" + _rclink
         }
         const query = `@ | filter path == "${_rclink}"`
